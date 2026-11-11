@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=30';
+import { api, DEMO } from './api.js?v=31';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=30';
+} from './config.js?v=31';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=30';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=30';
+} from './levels.js?v=31';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=31';
 
 // ---------------------------------------------------------------------------
 // État
@@ -337,6 +337,8 @@ function openSheet(view, html) {
   $('#sheet-body').innerHTML = html;
   $('#sheet').hidden = false;
   $('#backdrop').hidden = false;
+  $('#sheet-body').scrollTop = 0;
+  requestAnimationFrame(updateScrollHints);
   $('#cards').style.visibility = 'hidden';
 }
 function closeSheet() {
@@ -351,6 +353,19 @@ function closeSheet() {
   }
 }
 $('#backdrop').addEventListener('click', closeSheet);
+
+// Flèches de défilement de la feuille : ↓ s'il reste du contenu en bas (ex. bouton Signaler), ↑ une fois descendu.
+function updateScrollHints() {
+  const b = $('#sheet-body');
+  const more = b.scrollHeight - b.clientHeight - b.scrollTop > 40;
+  $('#hint-down').hidden = $('#sheet').hidden || !more;
+  $('#hint-up').hidden = $('#sheet').hidden || b.scrollTop < 80;
+}
+$('#sheet-body').addEventListener('scroll', updateScrollHints, { passive: true });
+new MutationObserver(() => requestAnimationFrame(updateScrollHints)).observe($('#sheet-body'), { childList: true, subtree: true });
+window.addEventListener('resize', updateScrollHints);
+$('#hint-down').addEventListener('click', () => { const b = $('#sheet-body'); b.scrollTo({ top: b.scrollHeight, behavior: 'smooth' }); });
+$('#hint-up').addEventListener('click', () => $('#sheet-body').scrollTo({ top: 0, behavior: 'smooth' }));
 $('.sheet-grip').addEventListener('click', closeSheet);
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
 
@@ -1037,12 +1052,11 @@ function settingsHtml() {
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>` : ''}
 
-    <button class="btn btn-ghost" id="btn-logout">Se déconnecter</button>
-
     <div class="section-title">Confidentialité</div>
     <p class="muted">Tu peux récupérer une copie de tes données (pseudo, signalements, badges, favoris) ou supprimer ton compte à tout moment.</p>
     <button type="button" class="link-btn" id="btn-export">Télécharger mes données</button>
     <a class="link-btn" href="confidentialite.html" style="display:block">Règles de confidentialité</a>
+    <button class="btn btn-ghost" id="btn-logout">Se déconnecter</button>
     <button class="btn btn-danger" id="btn-delete">Supprimer mon compte</button>
     <div id="delete-box"></div>
   `;

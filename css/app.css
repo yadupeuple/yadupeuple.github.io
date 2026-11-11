@@ -322,3 +322,10 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 .welcome-form .benefits { color: #E2E8F0; padding-left: 0; list-style: none; margin: 0 0 8px; }
 .welcome-form .result { text-align: center; color: #fff; }
 .welcome-form .result h2 { margin: 8px 0; }
+/* Flèches de défilement dans la feuille du bas */
+.scroll-hint { position: absolute; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--navy); color: #fff; display: grid; place-items: center; box-shadow: 0 4px 14px rgba(11,31,58,.35); z-index: 2; cursor: pointer; }
+.scroll-hint svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.scroll-hint.down { bottom: calc(14px + var(--safe-bottom)); animation: bob 1.6s ease-in-out infinite; }
+.scroll-hint.up { top: 18px; opacity: .85; }
+.scroll-hint[hidden] { display: none; }
+@keyframes bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 5px); } }
