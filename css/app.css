@@ -248,3 +248,6 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 
 .maplibregl-ctrl-attrib { font-size: 10px; }
 .maplibregl-ctrl-bottom-right { bottom: 132px; }
+/* Pastille de regroupement : compteur bien visible */
+.pill.cluster { background: var(--navy); color: #fff; font-size: 13px; padding: 5px 10px 5px 7px; z-index: 2; }
+.pill.cluster .dot { box-shadow: 0 0 0 2px #fff; }

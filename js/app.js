@@ -1,14 +1,14 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=15';
+import { api, DEMO } from './api.js?v=16';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=15';
+} from './config.js?v=16';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
-} from './levels.js?v=15';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=15';
+} from './levels.js?v=16';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=16';
 
 // ---------------------------------------------------------------------------
 // État
@@ -104,6 +104,73 @@ function renderMarkers() {
     m.el.classList.toggle('selected', state.selectedId === e.id);
   }
   applyZoomClass();
+  updateClusters();
+}
+
+// ---------------------------------------------------------------------------
+// Regroupement des pastilles trop proches (« 3 restos »)
+// ---------------------------------------------------------------------------
+const CLUSTER_PX = 46;
+const clusterMarkers = [];
+function updateClusters() {
+  for (const c of clusterMarkers) c.remove();
+  clusterMarkers.length = 0;
+  const pts = [];
+  for (const e of state.establishments.values()) {
+    const m = state.markers.get(e.id);
+    if (!m) continue;
+    const p = map.project([e.lng, e.lat]);
+    pts.push({ e, m, x: p.x, y: p.y, used: false });
+  }
+  for (const a of pts) {
+    if (a.used) continue;
+    const group = [a];
+    for (const b of pts) {
+      if (b === a || b.used) continue;
+      if (Math.hypot(a.x - b.x, a.y - b.y) < CLUSTER_PX) group.push(b);
+    }
+    if (group.length === 1) { a.used = true; a.m.el.style.display = ''; continue; }
+    for (const g of group) { g.used = true; g.m.el.style.display = 'none'; }
+    const members = group.map((g) => g.e);
+    const lng = members.reduce((t, e) => t + e.lng, 0) / members.length;
+    const lat = members.reduce((t, e) => t + e.lat, 0) / members.length;
+    // couleur = resto le plus chargé du groupe
+    let worst = describeStatus(mainStatus(members[0])).info;
+    for (const e of members) { const i = describeStatus(mainStatus(e)).info; if (i.rank > worst.rank) worst = i; }
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'pill cluster';
+    el.setAttribute('aria-label', `${members.length} restaurants`);
+    el.innerHTML = `<span class="dot" style="background:${worst.color}"></span>${members.length}`;
+    el.addEventListener('click', (ev) => { ev.stopPropagation(); openCluster(members); });
+    clusterMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).addTo(map));
+  }
+}
+map.on('moveend', updateClusters);
+
+function openCluster(members) {
+  const b = new maplibregl.LngLatBounds();
+  members.forEach((e) => b.extend([e.lng, e.lat]));
+  const cam = map.cameraForBounds(b, { padding: 90 });
+  // Si zoomer permet de les séparer, on zoome ; sinon on affiche la liste.
+  if (cam && cam.zoom > map.getZoom() + 0.6 && map.getZoom() < 16) {
+    map.easeTo({ center: cam.center, zoom: Math.min(cam.zoom, 17), duration: 450 });
+    return;
+  }
+  openSheet('cluster', `
+    <div class="sheet-head">
+      <div class="grow"><h2>${members.length} restaurants ici</h2></div>
+      <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+    </div>
+    <ul class="list" id="cluster-list">${members.map((r) => {
+      const st = describeStatus(mainStatus(r));
+      return `<li data-id="${r.id}" style="cursor:pointer">
+        <span class="badge-ico" style="background:${st.info.soft}"><span class="dot" style="width:12px;height:12px;border-radius:50%;background:${st.info.color}"></span></span>
+        <div class="grow"><div class="t">${esc(r.name)}</div><div class="s">${esc(r.city || '')} · ${esc(st.info.label)}</div></div>
+      </li>`;
+    }).join('')}</ul>`);
+  $('#btn-close').onclick = closeSheet;
+  $('#cluster-list').querySelectorAll('li[data-id]').forEach((li) => li.onclick = () => openDetail(li.dataset.id));
 }
 
 function applyZoomClass() {
