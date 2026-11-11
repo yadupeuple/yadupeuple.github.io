@@ -260,3 +260,16 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); vertical-align: middle; }
 .chip-btn { border: 0; cursor: pointer; font: inherit; }
 .chip-muted { opacity: .7; }
+/* Horaires d'ouverture */
+.os-open { color: #15803D; font-weight: 700; }
+.os-soon { color: #C2410C; font-weight: 700; }
+.os-closed { color: #B91C1C; font-weight: 700; }
+.pill.closed { opacity: .6; }
+.hours { margin-top: 6px; font-size: 13px; }
+.hours summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 4px; }
+.hours summary::-webkit-details-marker { display: none; }
+.hours summary::after { content: '▾'; font-size: 11px; color: var(--muted); }
+.hours[open] summary::after { content: '▴'; }
+.hours ul { list-style: none; padding: 6px 0 0; margin: 0; max-width: 260px; }
+.hours li { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; color: var(--ink); }
+.hours li.today { font-weight: 700; }

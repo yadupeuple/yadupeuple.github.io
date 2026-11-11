@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=20';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=20';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=22';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=22';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -79,6 +79,15 @@ export function createDemoApi() {
       const s = fakeStatus(id, service);
       if (!s.last_report_minutes && s.state !== 'recent') return [];
       return [0, 1, 2].map((i) => ({ level: LEVELS[(hash(id) + i) % 4], minutes_ago: (s.last_report_minutes || 3) + i * 7 }));
+    },
+    async openingHours() {
+      await wait();
+      const out = {};
+      for (const e of DEMO_ESTABLISHMENTS) {
+        const fri = [[600, 1440]], usual = [[600, 1380]];
+        out[e.id] = [usual, usual, usual, usual, usual, fri, fri];
+      }
+      return out;
     },
     async popularTimes(id) {
       await wait();

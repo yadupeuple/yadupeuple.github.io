@@ -196,3 +196,51 @@ export function bestTimeFromProfile(profile) {
   }
   return best;
 }
+
+// ---------------------------------------------------------------------------
+// Horaires d'ouverture : hours = 7 listes (0 = dimanche) de plages [début, fin] en minutes.
+// Une fin > 1440 déborde sur le lendemain (fermeture après minuit).
+// ---------------------------------------------------------------------------
+function nowParis() {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit', weekday: 'short', hour12: false,
+  }).formatToParts(new Date());
+  const get = (t) => parts.find((p) => p.type === t)?.value;
+  const days = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  return { day: days[get('weekday')], min: (Number(get('hour')) % 24) * 60 + Number(get('minute')) };
+}
+export const fmtMin = (m) => {
+  m = ((m % 1440) + 1440) % 1440;
+  if (m === 0) return 'minuit';
+  const h = Math.floor(m / 60), mm = m % 60;
+  return `${h}h${mm ? String(mm).padStart(2, '0') : ''}`;
+};
+// -> { open: bool, label: 'Ouvert · ferme à 23h' | 'Fermé · ouvre à 11h' | … } ou null si horaires inconnus
+export function openState(hours) {
+  if (!Array.isArray(hours) || hours.length !== 7) return null;
+  const { day, min } = nowParis();
+  const prev = (day + 6) % 7;
+  // Plage d'hier qui déborde après minuit
+  for (const [a, b] of hours[prev] || []) {
+    if (b > 1440 && min < b - 1440) return { open: true, closesSoon: b - 1440 - min <= 30, label: `Ouvert · ferme à ${fmtMin(b)}` };
+  }
+  for (const [a, b] of hours[day] || []) {
+    if (min >= a && min < b) return { open: true, closesSoon: b - min <= 30, label: `Ouvert · ferme à ${fmtMin(b)}` };
+  }
+  // Prochaine ouverture
+  for (const [a] of hours[day] || []) if (a > min) return { open: false, label: `Fermé · ouvre à ${fmtMin(a)}` };
+  for (let k = 1; k <= 7; k++) {
+    const d = (day + k) % 7;
+    const r = (hours[d] || [])[0];
+    if (r) return { open: false, label: k === 1 ? `Fermé · ouvre demain à ${fmtMin(r[0])}` : `Fermé · ouvre ${['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][d]} à ${fmtMin(r[0])}` };
+  }
+  return { open: false, label: 'Fermé' };
+}
+export function hoursLines(hours) {
+  if (!Array.isArray(hours)) return [];
+  const names = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+  return [1, 2, 3, 4, 5, 6, 0].map((d, i) => ({
+    day: d, name: names[i],
+    text: (hours[d] || []).length ? hours[d].map(([a, b]) => `${fmtMin(a)} – ${fmtMin(b)}`).join(', ') : 'Fermé',
+  }));
+}

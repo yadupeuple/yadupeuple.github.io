@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=20';
+import { api, DEMO } from './api.js?v=22';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=20';
+} from './config.js?v=22';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
-  levelFromPercent, gDay, dayHours, bestTimeFromProfile,
-} from './levels.js?v=20';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=20';
+  levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
+} from './levels.js?v=22';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=22';
 
 // ---------------------------------------------------------------------------
 // État
@@ -83,6 +83,8 @@ map.on('error', (e) => {
 
 function pillHtml(e) {
   // Une seule pastille : la couleur du service le plus chargé (salle ou Drive), détail dans la fiche.
+  const os = openState(state.hours?.[e.id]);
+  if (os && !os.open) return `<span class="dot" style="background:#9CA3AF"></span>${esc(brandShort(e))}`;
   const d = describeStatus(mainStatus(e));
   const live = d.isLive ? ' live' : '';
   return `<span class="dot${live}" style="background:${d.info.color};color:${d.info.color}"></span>${esc(brandShort(e))}`;
@@ -102,6 +104,8 @@ function renderMarkers() {
       state.markers.set(e.id, m);
     }
     m.el.innerHTML = pillHtml(e);
+    const os = openState(state.hours?.[e.id]);
+    m.el.classList.toggle('closed', !!(os && !os.open));
     m.el.classList.toggle('selected', state.selectedId === e.id);
   }
   applyZoomClass();
@@ -201,7 +205,11 @@ function renderMe() {
 // Données : restos + statuts
 // ---------------------------------------------------------------------------
 async function loadEstablishments() {
-  const rows = await api.listEstablishments();
+  const [rows, hours] = await Promise.all([
+    api.listEstablishments(),
+    api.openingHours ? api.openingHours().catch(() => ({})) : {},
+  ]);
+  state.hours = hours || {};
   for (const r of rows) state.establishments.set(r.id, { ...state.establishments.get(r.id), ...r });
   renderMarkers();
   renderCards();
@@ -258,6 +266,11 @@ function chipHtml(label, st) {
   return `<span class="chip"><span class="dot" style="background:${d.info.color}"></span>${label} · ${esc(d.info.label)}</span>`;
 }
 
+function openLabelHtml(e) {
+  const os = openState(state.hours?.[e.id]);
+  if (!os) return '';
+  return ` · <span class="${os.open ? (os.closesSoon ? 'os-soon' : 'os-open') : 'os-closed'}">${os.open ? (os.closesSoon ? 'Ferme bientôt' : 'Ouvert') : 'Fermé'}</span>`;
+}
 function renderCards() {
   const box = $('#cards');
   if (!state.establishments.size) { box.innerHTML = ''; return; }
@@ -272,7 +285,7 @@ function renderCards() {
   box.innerHTML = list.map(({ e, d }) => `
     <button class="card" data-id="${e.id}" type="button">
       <p class="card-title">${esc(e.name)}</p>
-      <div class="card-sub">${esc(e.city)}${fromMe ? ` · ${fmtDistance(d)}` : ''}</div>
+      <div class="card-sub">${esc(e.city)}${fromMe ? ` · ${fmtDistance(d)}` : ''}${openLabelHtml(e)}</div>
       <div class="card-row">
         ${e.has_dine_in ? chipHtml('Salle', e.status_salle) : ''}
         ${e.has_drive ? chipHtml('Drive', e.status_drive) : ''}
@@ -415,6 +428,19 @@ function curveHtml(e, profile) {
     </div>`;
 }
 
+function hoursHtml(e) {
+  const h = state.hours?.[e.id];
+  const os = openState(h);
+  if (!os) return '';
+  const today = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', weekday: 'long' }).format(new Date());
+  const rows = hoursLines(h).map((l) =>
+    `<li class="${l.name.toLowerCase() === today ? 'today' : ''}"><span>${l.name}</span><span>${esc(l.text)}</span></li>`).join('');
+  return `<details class="hours">
+    <summary class="${os.open ? (os.closesSoon ? 'os-soon' : 'os-open') : 'os-closed'}">${esc(os.label)}</summary>
+    <ul>${rows}</ul>
+  </details>`;
+}
+
 function routeHtml(e) {
   const p = myPosition();
   if (!p) {
@@ -445,6 +471,7 @@ function renderDetail(id) {
       <div class="grow">
         <h2>${esc(e.name)}</h2>
         <div class="sub">${esc((e.address || '').replace(/\n/g, ', '))}</div>
+        ${hoursHtml(e)}
       </div>
       <button class="round-btn ${fav ? 'fav-on' : ''}" id="btn-fav" aria-label="${fav ? 'Retirer des favoris' : 'Ajouter aux favoris'}">${ICON.star}</button>
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
