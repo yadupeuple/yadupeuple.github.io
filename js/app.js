@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=28';
+import { api, DEMO } from './api.js?v=29';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=28';
+} from './config.js?v=29';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=28';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=28';
+} from './levels.js?v=29';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=29';
 
 // ---------------------------------------------------------------------------
 // État
@@ -66,11 +66,18 @@ const map = new maplibregl.Map({
   style: FALLBACK_STYLE,
   center: DEFAULT_CENTER,
   zoom: DEFAULT_ZOOM,
-  attributionControl: { compact: true },
+  attributionControl: false,
   dragRotate: false,
   pitchWithRotate: false,
 });
 map.touchZoomRotate.disableRotation();
+// Mentions de la carte (obligatoires) : petit bouton « i » discret en haut à gauche, sous le titre,
+// replié par défaut ; un toucher affiche les crédits.
+map.addControl(new maplibregl.AttributionControl({ compact: true }), 'top-left');
+const foldAttrib = () => document.querySelectorAll('.maplibregl-ctrl-attrib').forEach((el) => el.classList.remove('maplibregl-compact-show'));
+map.on('load', foldAttrib);
+map.on('styledata', foldAttrib);
+map.on('movestart', foldAttrib);
 map.on('styleimagemissing', (e) => { if (e.id === 'ydp-shield') addShieldImage(map); });
 if (!(DEMO && new URLSearchParams(location.search).has('nomap'))) {
   map.setStyle(MAP_STYLE_URL, { transformStyle: airbnbize });

@@ -247,7 +247,9 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .maplibregl-ctrl-attrib { font-size: 10px; }
-.maplibregl-ctrl-bottom-right { bottom: 132px; }
+.maplibregl-ctrl-top-left { top: calc(58px + var(--safe-top)); left: 4px; }
+.maplibregl-ctrl-attrib.maplibregl-compact { opacity: .55; transform: scale(.85); transform-origin: top left; }
+.maplibregl-ctrl-attrib.maplibregl-compact-show { opacity: 1; }
 /* Pastille de regroupement : compteur bien visible */
 .pill.cluster { background: var(--navy); color: #fff; font-size: 13px; padding: 5px 10px 5px 7px; z-index: 2; }
 .pill.cluster .dot { box-shadow: 0 0 0 2px #fff; }
