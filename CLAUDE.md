@@ -19,6 +19,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Les statuts d'affluence ne se paient jamais.
 
 ## Technique
+- En ligne : https://yadupeuple.github.io (dépôt GitHub yadupeuple/yadupeuple.github.io, organisation « yadupeuple »).
 - Site statique sans étape de compilation : `index.html`, `css/`, `js/` (modules ES), `vendor/`.
 - Bibliothèques recopiées dans `vendor/` (pas de CDN) : MapLibre GL 5 (carte), supabase-js 2.
 - Fond de carte : OpenFreeMap « liberty » (en couleurs) (gratuit, sans clé), pastilles arrondies façon Airbnb.
