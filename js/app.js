@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=23';
+import { api, DEMO } from './api.js?v=24';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=23';
+} from './config.js?v=24';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=23';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=23';
+} from './levels.js?v=24';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=24';
 
 // ---------------------------------------------------------------------------
 // État
@@ -888,10 +888,11 @@ function settingsHtml() {
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>` : ''}
 
-    <div class="section-title">Mes données</div>
-    <button class="btn btn-ghost" id="btn-export">Voir mes données</button>
-    <div id="export-box"></div>
     <button class="btn btn-ghost" id="btn-logout">Se déconnecter</button>
+
+    <div class="section-title">Confidentialité</div>
+    <p class="muted">Tu peux récupérer une copie de tes données (pseudo, signalements, badges, favoris) ou supprimer ton compte à tout moment.</p>
+    <button type="button" class="link-btn" id="btn-export">Télécharger mes données</button>
     <button class="btn btn-danger" id="btn-delete">Supprimer mon compte</button>
     <div id="delete-box"></div>
   `;
@@ -919,10 +920,16 @@ function bindSettings(body) {
     renderCards();
   };
   $('#btn-export', body).onclick = async () => {
-    const data = await api.exportMyData();
-    const json = JSON.stringify(data, null, 2);
-    $('#export-box').innerHTML = `<pre class="export">${esc(json)}</pre><button class="btn btn-ghost" id="btn-copy">Copier</button>`;
-    $('#btn-copy').onclick = async () => { try { await navigator.clipboard.writeText(json); toast('Copié'); } catch { toast('Copie impossible'); } };
+    try {
+      const data = await api.exportMyData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'yadupeuple-mes-donnees.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      toast('Fichier téléchargé');
+    } catch (err) { toast(err.message || 'Téléchargement impossible.'); }
   };
   $('#btn-logout', body).onclick = async () => { await api.signOut(); closeSheet(); toast('Déconnecté'); showWelcome(); };
   $('#btn-delete', body).onclick = () => {
