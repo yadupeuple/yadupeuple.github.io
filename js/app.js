@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=39';
+import { api, DEMO } from './api.js?v=40';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=39';
+} from './config.js?v=40';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=39';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=39';
-import { BRAND_PATHS } from './brands.js?v=39';
+} from './levels.js?v=40';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=40';
+import { BRAND_PATHS } from './brands.js?v=40';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1082,35 +1082,65 @@ async function renderAccount(tab = 'badges') {
   }
 }
 
+// Badges rangés par catégorie ; les badges pas encore disponibles tout en bas.
+const BADGE_FAMILIES = [
+  ['Volume', 'Signalements'], ['Variété', 'Exploration'], ['Parrainage', 'Parrainage'],
+  ['Moments', 'Moments'], ['Fiabilité', 'Fiabilité'],
+];
+const BADGE_ICONS = {
+  v1: '📍', v10: '🖐️', v50: '🔟', v100: '🥉', v250: '🥈', v500: '🥇',
+  drive10: '🚗', explorer: '🧭', tour_zone: '🗺️',
+  ref1: '🤝', ref10: '📣', ref30: '👑',
+  coup_de_feu: '🔥', regulier: '📅', fiable: '✅', oeil_lynx: '🦉',
+};
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
-  return `<ul class="list">${rows.map((b) => {
+  const item = (b) => {
     const prog = b.is_active && b.target_value ? Math.round((b.current_value / b.target_value) * 100) : 0;
     const sub = !b.is_active ? 'Bientôt disponible' : b.earned ? 'Obtenu ✅' : `${b.current_value} / ${b.target_value}`;
-    return `<li style="${b.is_active ? '' : 'opacity:.5'}">
-      <span class="badge-ico ${b.earned ? 'on' : ''}">${b.earned ? '🏅' : b.is_active ? '🎯' : '🔒'}</span>
+    const ico = BADGE_ICONS[b.code] || '🏅';
+    return `<li class="${b.is_active ? '' : 'locked'}">
+      <span class="badge-ico ${b.earned ? 'on' : ''}">${b.is_active ? ico : '🔒'}</span>
       <div class="grow"><div class="t">${esc(b.name)}</div><div class="s">${esc(b.description)} · ${sub}</div>
       ${b.is_active && !b.earned ? `<div class="mini-progress"><div style="width:${prog}%"></div></div>` : ''}</div>
     </li>`;
-  }).join('')}</ul>`;
+  };
+  const known = BADGE_FAMILIES.map(([f]) => f);
+  const fams = [...BADGE_FAMILIES, ...[...new Set(rows.map((b) => b.family))].filter((f) => !known.includes(f)).map((f) => [f, f])];
+  const active = rows.filter((b) => b.is_active);
+  const locked = rows.filter((b) => !b.is_active);
+  let html = '';
+  for (const [fam, label] of fams) {
+    const list = active.filter((b) => b.family === fam).sort((a, b2) => (b2.earned - a.earned));
+    if (!list.length) continue;
+    const got = list.filter((b) => b.earned).length;
+    html += `<div class="badge-fam"><span>${esc(label)}</span><small>${got}/${list.length}</small></div><ul class="list">${list.map(item).join('')}</ul>`;
+  }
+  if (locked.length) html += `<div class="badge-fam muted-fam"><span>Bientôt disponibles</span></div><ul class="list">${locked.map(item).join('')}</ul>`;
+  return html;
 }
 
-async function renderLeaderboard(body, city = null, days = 7) {
+// Classements : « Ce mois-ci » (remis à zéro le 1er du mois) et « Depuis le début ».
+async function renderLeaderboard(body, city = null, scope = 'month') {
   const cities = [...new Set([...state.establishments.values()].map((e) => e.city))].sort((a, b) => a.localeCompare(b, 'fr'));
+  const month = new Intl.DateTimeFormat('fr-FR', { month: 'long', timeZone: 'Europe/Paris' }).format(new Date());
   body.innerHTML = `
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <select class="select" id="lb-city"><option value="">Toute la zone</option>${cities.map((c) => `<option ${c === city ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>
-      <select class="select" id="lb-days"><option value="7" ${days === 7 ? 'selected' : ''}>7 jours</option><option value="30" ${days === 30 ? 'selected' : ''}>30 jours</option></select>
+    <div class="seg">
+      <button data-scope="month" class="${scope === 'month' ? 'on' : ''}">Ce mois-ci</button>
+      <button data-scope="all" class="${scope === 'all' ? 'on' : ''}">Depuis le début</button>
     </div>
+    <select class="select" id="lb-city" style="width:100%;margin-bottom:6px"><option value="">Toute la zone</option>${cities.map((c) => `<option ${c === city ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>
+    <p class="muted" style="font-size:12.5px;margin:2px 0 8px">${scope === 'month'
+      ? `Points gagnés en ${month}. Le classement repart de zéro le 1er de chaque mois.`
+      : 'Tous les points gagnés depuis l\'inscription.'}</p>
     <div id="lb-list"><div class="spinner"></div></div>`;
-  const reload = () => renderLeaderboard(body, $('#lb-city').value || null, Number($('#lb-days').value));
-  $('#lb-city').onchange = reload;
-  $('#lb-days').onchange = reload;
-  const rows = await api.leaderboard(city, days) || [];
+  body.querySelectorAll('[data-scope]').forEach((b) => b.onclick = () => renderLeaderboard(body, $('#lb-city').value || null, b.dataset.scope));
+  $('#lb-city').onchange = () => renderLeaderboard(body, $('#lb-city').value || null, scope);
+  const rows = await api.ranking(scope, city) || [];
   $('#lb-list').innerHTML = rows.length ? `<ul class="list">${rows.map((r) => `
     <li class="${r.is_me ? 'me-row' : ''}"><span class="rank">${r.rang <= 3 ? ['🥇', '🥈', '🥉'][r.rang - 1] : r.rang}</span>
-    <div class="grow"><div class="t">${esc(r.pseudo)}${r.is_me ? ' (moi)' : ''}</div></div><strong>${r.points_periode} pts</strong></li>`).join('')}</ul>`
+    <div class="grow"><div class="t">${esc(r.pseudo)}${r.is_me ? ' (moi)' : ''}</div></div><strong>${r.points} pts</strong></li>`).join('')}</ul>`
     : '<p class="muted">Personne n\'a encore gagné de points sur cette période. À toi de jouer !</p>';
 }
 

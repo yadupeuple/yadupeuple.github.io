@@ -39,7 +39,7 @@ Fonctions appelées par l'appli (RPC) :
 | search_establishments(p_query ≥ 2 car., p_lat, p_lng, p_limit) | oui | recherche + statuts |
 | get_service_status(p_establishment, p_service) | oui | statut d'un service |
 | get_history(p_establishment, p_service, p_limit ≤ 5) | oui | 5 derniers signalements anonymes |
-| get_leaderboard(p_city, p_days ≤ 30) | oui | classement (top 10 + moi) |
+| get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 10 + moi) |
 | calmer_nearby(p_id) | oui | « Plus calme à côté : … » |
 | submit_report(p_establishment, p_service, p_level, p_wait, p_lat, p_lng, p_accuracy_m) | non | envoyer un signalement |
 | get_my_profile(), get_badges_progress(), change_pseudo(new_pseudo) | non | compte |
@@ -85,6 +85,9 @@ Supabase · mentions légales, RGPD, CGU · vérification de la marque · tests 
 ## Plus tard (idées validées, pas encore faites)
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
+Personnalisation du profil (idées d'Alexis, 12/11/2026) : niveaux jusqu'à 100 ; image de profil à choisir
+uniquement parmi celles proposées par l'appli ; bannières de profil ; images et bannières débloquées en
+montant de niveau ; illustrations de badges propres à l'appli (à créer plus tard).
 
 ## Mises à jour
 Après chaque modification du code, augmenter le numéro `?v=N` partout (imports des fichiers `js/`

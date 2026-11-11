@@ -355,3 +355,13 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .ref-form .btn { width: auto; padding: 8px 12px; }
 .invite-note { background: rgba(20,184,166,.15); border: 1px solid rgba(94,234,212,.35); color: #CCFBF1; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin: -14px 0 16px; }
 .welcome.with-form .invite-note { display: none; }
+/* Badges par catégorie */
+.badge-fam { display: flex; align-items: baseline; justify-content: space-between; margin: 16px 0 2px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--navy); }
+.badge-fam small { color: var(--muted); font-weight: 700; }
+.badge-fam.muted-fam { color: var(--muted); }
+.list li.locked { opacity: .5; }
+.badge-ico { font-size: 20px; }
+/* Classements */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #F1F5F9; border-radius: 12px; margin-bottom: 8px; }
+.seg button { border: 0; border-radius: 9px; padding: 9px 0; font: 700 14px/1 inherit; background: transparent; color: var(--ink); cursor: pointer; }
+.seg button.on { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); }

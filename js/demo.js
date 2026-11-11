@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=39';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=39';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=40';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=40';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -119,6 +119,15 @@ export function createDemoApi() {
         { rang: 3, pseudo: 'DriveMaster', points_periode: 40, is_me: false },
       ];
     },
+    async ranking(scope) {
+      await wait();
+      const k = scope === 'all' ? 3 : 1;
+      return [
+        { rang: 1, pseudo: 'BurgerHunter', points: 120 * k, is_me: false },
+        { rang: 2, pseudo: 'Testeur57', points: 85 * k, is_me: !!user },
+        { rang: 3, pseudo: 'DriveMaster', points: 40 * k, is_me: false },
+      ];
+    },
     async submitReport(r) {
       await wait(400);
       if (!user) return { ok: false, error: 'not_authenticated', message: 'Connectez-vous pour envoyer un signalement.' };
@@ -138,6 +147,10 @@ export function createDemoApi() {
         ['v50', 'Volume', '10 signalements', 'Faire 10 signalements ayant rapporté des points', false, 7, 10],
         ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements Drive ayant rapporté des points', false, 3, 10],
         ['explorer', 'Variété', 'Explorateur', 'Signaler dans 5 restaurants différents en gagnant des points', false, 4, 5],
+        ['ref1', 'Parrainage', 'Parrain', 'Parrainer 1 ami (après son premier signalement)', true, 1, 1],
+        ['ref10', 'Parrainage', 'Ambassadeur', 'Parrainer 10 amis', false, 2, 10],
+        ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 3 villes différentes en gagnant des points', false, 1, 3],
+        ['fiable', 'Fiabilité', 'Fiable', 'Avoir 10 signalements confirmés', null, null, null],
         ['coup_de_feu', 'Moments', 'Coup de feu', 'Signaler pendant un pic (12h-13h30 ou 19h-20h30)', null, null, null],
       ].map(([code, family, name, description, earned, cur, target]) => ({
         code, family, name, description, is_active: earned !== null, earned: !!earned, earned_at: null,
