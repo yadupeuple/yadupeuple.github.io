@@ -332,3 +332,6 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 /* Liste du bas cachée pendant l'animation d'entrée, puis fondu */
 .cards { transition: opacity .35s ease, transform .35s ease; }
 body.intro .cards { opacity: 0; transform: translateY(20px); pointer-events: none; }
+/* Accueil : le bleu va jusque sous la barre de navigation du téléphone */
+html.on-welcome, html.on-welcome body { background: #0B1F3A; }
+.welcome { bottom: calc(-1 * var(--safe-bottom)); padding-bottom: calc(24px + var(--safe-bottom)); min-height: 100lvh; }
