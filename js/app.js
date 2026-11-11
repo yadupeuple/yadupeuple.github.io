@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=18';
+import { api, DEMO } from './api.js?v=19';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=18';
+} from './config.js?v=19';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile,
-} from './levels.js?v=18';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=18';
+} from './levels.js?v=19';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=19';
 
 // ---------------------------------------------------------------------------
 // État
@@ -448,7 +448,7 @@ function renderDetail(id) {
     ${e.has_dine_in ? serviceBlock(e, 'salle') : ''}
     ${e.has_drive ? serviceBlock(e, 'drive') : ''}
     ${calmer ? `<div class="hint">💡 ${esc(calmer)}</div>` : ''}
-    ${best ? `<div class="hint">🕐 Meilleur moment pour y aller : <strong>vers ${fmtHour(best.t)}</strong> (${esc(LEVEL_INFO[best.level].label.toLowerCase())} d'habitude)</div>` : ''}
+    ${best ? `<div class="hint">🕐 Meilleur moment dans les 3 h : <strong>vers ${fmtHour(best.t)}</strong> (${esc(LEVEL_INFO[best.level].label.toLowerCase())} d'habitude)</div>` : ''}
     ${curveHtml(e, profile)}
     <button class="btn btn-primary" id="btn-report">J'y suis : je signale l'affluence</button>
   `;

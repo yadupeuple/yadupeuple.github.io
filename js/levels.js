@@ -191,6 +191,7 @@ export function bestTimeFromProfile(profile) {
   let best = null;
   for (const x of dayHours(profile, day)) {
     if (x.k + 1 <= nowK || !(x.v > 0)) continue;
+    if (x.k > nowK + 3) break; // conseil utile : seulement dans les 3 prochaines heures
     if (!best || x.v < best.v) best = { t: x.h, v: x.v, level: levelFromPercent(x.v) };
   }
   return best;
