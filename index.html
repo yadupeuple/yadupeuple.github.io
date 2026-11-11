@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Y'a du peuple ?</title>
+  <meta name="description" content="L'affluence des fast-foods en direct, salle et Drive.">
+  <meta name="theme-color" content="#0B1F3A">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="map" aria-label="Carte des restaurants"></div>
+
+  <!-- Barre du haut -->
+  <header class="topbar">
+    <div class="brand"><span class="brand-dot"></span>Y'a du peuple&nbsp;?</div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="btn-search" aria-label="Rechercher">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-account" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="demo-banner" id="demo-banner" hidden>Démo : données fictives</div>
+
+  <button class="locate-btn" id="btn-locate" aria-label="Me localiser">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>
+  </button>
+
+  <!-- Liste horizontale des restos proches -->
+  <section class="cards" id="cards" aria-label="Restaurants proches"></section>
+
+  <!-- Feuille du bas (fiche, signalement, compte, recherche) -->
+  <div class="backdrop" id="backdrop" hidden></div>
+  <section class="sheet" id="sheet" role="dialog" aria-modal="true" hidden>
+    <div class="sheet-grip"></div>
+    <div class="sheet-body" id="sheet-body"></div>
+  </section>
+
+  <!-- Écran d'accueil -->
+  <section class="welcome" id="welcome" hidden>
+    <div class="welcome-inner">
+      <div class="welcome-logo">
+        <img src="icons/icon.svg" alt="" width="84" height="84">
+      </div>
+      <h1>Y'a du peuple&nbsp;?</h1>
+      <p class="slogan" id="slogan">Venu pour manger, pas pour poireauter.</p>
+      <div class="welcome-actions">
+        <button class="btn btn-primary" id="welcome-login">Se connecter ou créer un compte</button>
+        <button class="btn btn-ghost-light" id="welcome-skip">Continuer sans compte</button>
+      </div>
+      <p class="welcome-note">La carte est consultable sans compte.<br>Un compte sert à signaler et à gagner des points.</p>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="vendor/maplibre-gl.js"></script>
+  <script src="vendor/supabase.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
