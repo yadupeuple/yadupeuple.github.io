@@ -365,3 +365,6 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #F1F5F9; border-radius: 12px; margin-bottom: 8px; }
 .seg button { border: 0; border-radius: 9px; padding: 9px 0; font: 700 14px/1 inherit; background: transparent; color: var(--ink); cursor: pointer; }
 .seg button.on { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.gis-btn { display: none; min-height: 44px; justify-content: center; }
+.gis-btn.ready { display: flex; }
+#auth-google[hidden] { display: none; }

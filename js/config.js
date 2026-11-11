@@ -15,3 +15,6 @@ export const ROUTE_SPEED_KMH = 46;
 
 // Rafraîchissement automatique des statuts (ms).
 export const REFRESH_MS = 60_000;
+
+// Connexion Google (bouton officiel « Google Identity Services ») : identifiant client public, pas secret.
+export const GOOGLE_CLIENT_ID = '493917725058-b20mpb2og4k3m1rrnpqnvceg754j4fvq.apps.googleusercontent.com';

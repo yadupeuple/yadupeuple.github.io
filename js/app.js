@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=40';
+import { api, DEMO } from './api.js?v=41';
 import {
-  MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
+  MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=40';
+} from './config.js?v=41';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=40';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=40';
-import { BRAND_PATHS } from './brands.js?v=40';
+} from './levels.js?v=41';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=41';
+import { BRAND_PATHS } from './brands.js?v=41';
 
 // ---------------------------------------------------------------------------
 // État
@@ -890,6 +890,7 @@ function renderAuth(message = '', mode = 'login', error = '') {
     </ul>` : ''}
     ${error ? `<div class="error-box">${esc(error)}</div>` : ''}
     <div class="social-auth">
+      <div id="gis-btn" class="gis-btn"></div>
       <button type="button" class="btn btn-social" id="auth-google">${ICON.google}Continuer avec Google</button>
       <button type="button" class="btn btn-social" id="auth-magic">✉️ Recevoir un lien par e-mail</button>
     </div>
@@ -910,6 +911,7 @@ function renderAuth(message = '', mode = 'login', error = '') {
     try { await api.signInWithGoogle(); } catch (err) { renderAuth(message, mode, err.message); }
   };
   $('#auth-magic').onclick = () => renderMagic(message);
+  mountGoogleButton(message, mode);
   $('#auth-form').onsubmit = async (ev) => {
     ev.preventDefault();
     const f = new FormData(ev.target);
@@ -938,6 +940,54 @@ function renderAuth(message = '', mode = 'login', error = '') {
       renderAuth(message, mode, err.message);
     }
   };
+}
+
+// Bouton officiel Google : la fenêtre Google affiche « Y'a du peuple ? » au lieu de l'adresse technique Supabase.
+// Si le script Google ne se charge pas, on garde notre bouton (connexion par redirection).
+let gisPromise = null;
+function loadGis() {
+  if (window.google?.accounts?.id) return Promise.resolve();
+  gisPromise ||= new Promise((ok, ko) => {
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.onload = ok; s.onerror = ko;
+    document.head.appendChild(s);
+  });
+  return gisPromise;
+}
+async function sha256Hex(txt) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+async function mountGoogleButton(message, mode) {
+  if (DEMO || !GOOGLE_CLIENT_ID) return;
+  const box = document.querySelector('#gis-btn');
+  if (!box) return;
+  try {
+    await loadGis();
+    const raw = crypto.randomUUID() + crypto.randomUUID();
+    const hashed = await sha256Hex(raw);
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      nonce: hashed,
+      use_fedcm_for_button: true,
+      callback: async (resp) => {
+        try { await api.signInWithGoogleToken(resp.credential, raw); }
+        catch (err) { renderAuth(message, mode, err.message); }
+      },
+    });
+    const live = document.querySelector('#gis-btn');
+    if (!live) return;
+    google.accounts.id.renderButton(live, {
+      theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', locale: 'fr',
+      width: Math.min(400, Math.max(220, live.clientWidth || 320)),
+    });
+    document.querySelector('#auth-google')?.setAttribute('hidden', '');
+    live.classList.add('ready');
+  } catch {
+    // script Google bloqué : le bouton de secours reste visible
+  }
 }
 
 function renderMagic(message = '', error = '') {
@@ -1393,4 +1443,4 @@ async function start() {
 start();
 
 // Pour les tests automatiques uniquement.
-window.__ydp = { state, map, openDetail, openReport, openAccount, openSearch, openShare, renderAccount };
+window.__ydp = { state, map, openDetail, openReport, openAccount, openSearch, openShare, renderAccount, renderAuth };
