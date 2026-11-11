@@ -18,7 +18,7 @@ const C = {
 const HIDE = [
   /^natural_earth$/, /^poi_/, /^airport$/, /one_way/, /hatching/, /^road_area_pattern$/,
   /^building-3d$/, /^highway-shield-us/, /^road_shield_us$/, /^label_country/, /^label_state$/,
-  /^boundary/, /^aeroway/,
+  /^boundary_disputed$/, /^aeroway/,
 ];
 
 function setPaint(l, key, value) {
@@ -42,6 +42,13 @@ export function airbnbize(_previous, style) {
     else if (id === 'water') setPaint(l, 'fill-color', C.water);
     else if (l.type === 'line' && /^waterway/.test(id)) setPaint(l, 'line-color', C.water);
     else if (id === 'building') { setPaint(l, 'fill-color', C.building); setPaint(l, 'fill-outline-color', C.casing); }
+    else if (/^boundary_[23]$/.test(id)) {
+      // Frontières (pays, départements, communes) : trait gris foncé en pointillés
+      setPaint(l, 'line-color', id === 'boundary_2' ? '#5B6170' : '#7C8290');
+      setPaint(l, 'line-opacity', 0.9);
+      setPaint(l, 'line-width', id === 'boundary_2' ? ['interpolate', ['linear'], ['zoom'], 5, 1.2, 12, 2.4] : ['interpolate', ['linear'], ['zoom'], 7, 0.8, 13, 1.6]);
+      setPaint(l, 'line-dasharray', [3, 2]);
+    }
     else if (l.type === 'line' && /rail/.test(id)) setPaint(l, 'line-color', C.rail);
     else if (l.type === 'line' && /casing/.test(id)) setPaint(l, 'line-color', C.casing);
     else if (l.type === 'line' && /^(road|tunnel|bridge)_/.test(id)) setPaint(l, 'line-color', C.road);

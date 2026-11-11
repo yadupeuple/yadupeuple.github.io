@@ -1,14 +1,14 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=12';
+import { api, DEMO } from './api.js?v=13';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=12';
+} from './config.js?v=13';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
-} from './levels.js?v=12';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=12';
+} from './levels.js?v=13';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=13';
 
 // ---------------------------------------------------------------------------
 // État
