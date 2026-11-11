@@ -329,3 +329,6 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 .scroll-hint.up { top: 18px; opacity: .85; }
 .scroll-hint[hidden] { display: none; }
 @keyframes bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 5px); } }
+/* Liste du bas cachée pendant l'animation d'entrée, puis fondu */
+.cards { transition: opacity .35s ease, transform .35s ease; }
+body.intro .cards { opacity: 0; transform: translateY(20px); pointer-events: none; }

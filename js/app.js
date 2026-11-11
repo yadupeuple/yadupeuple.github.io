@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=31';
+import { api, DEMO } from './api.js?v=32';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=31';
+} from './config.js?v=32';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=31';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=31';
+} from './levels.js?v=32';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=32';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1158,6 +1158,11 @@ function showWelcome() {
   $('#welcome-login').onclick = () => { welcomeForm(true); openAccount(); };
 }
 
+function showCards() {
+  document.body.classList.remove('intro');
+  renderCards();
+}
+
 // Animation d'entrée : la carte part de loin (vue de la région) et plonge sur la position.
 const FAR_VIEW = { center: [6.35, 49.0], zoom: 6.2 };
 let introDone = false;
@@ -1165,6 +1170,8 @@ function introFly() {
   if (introDone) return;
   introDone = true;
   const go = () => {
+    // La liste du bas n'apparaît qu'une fois l'animation terminée.
+    map.once('moveend', showCards);
     const p = myPosition();
     if (p) {
       firstFix = false;
@@ -1173,6 +1180,8 @@ function introFly() {
       const b = new maplibregl.LngLatBounds();
       state.establishments.forEach((e) => b.extend([e.lng, e.lat]));
       map.fitBounds(b, { padding: { top: 80, bottom: 170, left: 30, right: 30 }, duration: 2400 });
+    } else {
+      showCards();
     }
   };
   // On laisse une seconde au GPS pour répondre avant de plonger.
@@ -1209,6 +1218,7 @@ async function start() {
   api.onAuthChange(onUserChanged);
   const user = await api.getUser().catch(() => null);
   await onUserChanged(user);
+  document.body.classList.add('intro'); // liste du bas cachée jusqu'à la fin de l'animation
   map.jumpTo(FAR_VIEW); // vue lointaine : l'animation d'entrée plonge ensuite sur la position
   if (!user) showWelcome(); // écran d'accueil à chaque ouverture tant qu'on n'est pas connecté
 
@@ -1226,6 +1236,7 @@ async function start() {
     introDone = true;
     $('#welcome').hidden = true;
     map.jumpTo({ center: [state.establishments.get(deep).lng, state.establishments.get(deep).lat], zoom: 15 });
+    showCards();
     openDetail(deep);
   } else if ($('#welcome').hidden) {
     introFly();
