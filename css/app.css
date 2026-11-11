@@ -335,3 +335,11 @@ body.intro .cards { opacity: 0; transform: translateY(20px); pointer-events: non
 /* Accueil : le bleu va jusque sous la barre de navigation du téléphone */
 html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .welcome { bottom: calc(-1 * var(--safe-bottom)); padding-bottom: calc(24px + var(--safe-bottom)); min-height: 100lvh; }
+/* Resto mis en avant (1re carte de la liste) et resto sélectionné : pastille entourée, avec pointe */
+.pill.focus, .pill.selected { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--teal), 0 4px 12px rgba(0,0,0,.25); z-index: 4; }
+.pill.focus::after, .pill.selected::after {
+  content: ''; position: absolute; left: 50%; bottom: -11px; margin-left: -6px;
+  border: 6px solid transparent; border-top-color: var(--teal); border-bottom: 0; border-width: 7px 6px 0;
+}
+.pill.selected { background: var(--navy); color: #fff; z-index: 5; }
+.card.focus { box-shadow: 0 0 0 2.5px var(--teal), var(--shadow); }

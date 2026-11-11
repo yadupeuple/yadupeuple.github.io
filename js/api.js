@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=35';
-import { createDemoApi } from './demo.js?v=35';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=36';
+import { createDemoApi } from './demo.js?v=36';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 

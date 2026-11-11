@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=35';
+import { api, DEMO } from './api.js?v=36';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=35';
+} from './config.js?v=36';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=35';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=35';
+} from './levels.js?v=36';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=36';
 
 // ---------------------------------------------------------------------------
 // État
@@ -128,6 +128,7 @@ function renderMarkers() {
 // ---------------------------------------------------------------------------
 const CLUSTER_PX = 46;
 const clusterMarkers = [];
+let focusId = null; // resto mis en avant par la liste du bas
 function updateClusters() {
   for (const c of clusterMarkers) c.remove();
   clusterMarkers.length = 0;
@@ -155,7 +156,8 @@ function updateClusters() {
     for (const e of members) { const i = describeStatus(mainStatus(e)).info; if (i.rank > worst.rank) worst = i; }
     const el = document.createElement('button');
     el.type = 'button';
-    el.className = 'pill cluster';
+    el.className = 'pill cluster' + (members.some((m) => m.id === focusId) ? ' focus' : '');
+    el.dataset.ids = members.map((m) => m.id).join(',');
     el.setAttribute('aria-label', `${members.length} restaurants`);
     el.innerHTML = `<span class="dot" style="background:${worst.color}"></span>${members.length}`;
     el.addEventListener('click', (ev) => { ev.stopPropagation(); openCluster(members); });
@@ -290,6 +292,7 @@ function renderCards() {
   const visible = [...state.establishments.values()].filter((e) => b.contains([e.lng, e.lat]));
   if (!visible.length) {
     box.innerHTML = '<div class="cards-empty">Aucun restaurant dans cette zone. Dézoome ou déplace la carte.</div>';
+    setFocus(null);
     return;
   }
   const list = visible
@@ -306,13 +309,62 @@ function renderCards() {
         ${e.has_drive ? chipHtml('Drive', e.status_drive) : ''}
       </div>
     </button>`).join('');
+  box.scrollLeft = 0;
+  setFocus(list[0]?.e.id || null);
 }
 $('#cards').addEventListener('click', (ev) => {
   const c = ev.target.closest('.card');
   if (c) openDetail(c.dataset.id);
 });
 let cardsTimer;
-map.on('moveend', () => { clearTimeout(cardsTimer); cardsTimer = setTimeout(renderCards, 150); });
+let cardsMove = false; // déplacement de carte provoqué par la liste : ne pas reconstruire la liste
+map.on('moveend', () => {
+  if (cardsMove) { cardsMove = false; return; }
+  clearTimeout(cardsTimer); cardsTimer = setTimeout(renderCards, 150);
+});
+
+// Resto « en avant » : la 1re carte visible à gauche de la liste. Sa pastille est entourée sur la carte.
+// (focusId déclaré plus haut)
+function setFocus(id) {
+  if (focusId && focusId !== id) state.markers.get(focusId)?.el.classList.remove('focus');
+  focusId = id;
+  if (id) state.markers.get(id)?.el.classList.add('focus');
+  for (const c of clusterMarkers) {
+    const el = c.getElement();
+    el.classList.toggle('focus', !!id && el.dataset.ids.split(',').includes(id));
+  }
+  document.querySelectorAll('#cards .card').forEach((c) => c.classList.toggle('focus', c.dataset.id === id));
+}
+function leftCard() {
+  const box = $('#cards');
+  const left = box.getBoundingClientRect().left;
+  let best = null, bestD = Infinity;
+  box.querySelectorAll('.card').forEach((c) => {
+    const d = Math.abs(c.getBoundingClientRect().left - left);
+    if (d < bestD) { bestD = d; best = c; }
+  });
+  return best;
+}
+// Quand on fait défiler la liste, la carte suit le resto mis en avant.
+let scrollTimer;
+$('#cards').addEventListener('scroll', () => {
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => {
+    const c = leftCard();
+    if (!c || c.dataset.id === focusId) return;
+    setFocus(c.dataset.id);
+    const e = state.establishments.get(c.dataset.id);
+    if (!e) return;
+    cardsMove = true;
+    const hidden = state.markers.get(e.id)?.el.style.display === 'none';
+    map.easeTo({
+      center: [e.lng, e.lat],
+      zoom: hidden ? Math.min(Math.max(map.getZoom() + 1.5, 14), 16) : map.getZoom(),
+      offset: [0, -70],
+      duration: 600,
+    });
+  }, 160);
+}, { passive: true });
 
 // ---------------------------------------------------------------------------
 // Feuille du bas
