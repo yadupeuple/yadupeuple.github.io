@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=33';
+import { api, DEMO } from './api.js?v=34';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=33';
+} from './config.js?v=34';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=33';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=33';
+} from './levels.js?v=34';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=34';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1174,8 +1174,13 @@ function introFly() {
   if (introDone) return;
   introDone = true;
   const go = () => {
-    // La liste du bas n'apparaît qu'une fois l'animation terminée.
-    map.once('moveend', showCards);
+    // La liste du bas n'apparaît qu'une fois l'animation terminée (carte arrivée près du sol).
+    const whenLanded = () => {
+      if (map.isMoving() || map.getZoom() < 8) { map.once('moveend', whenLanded); return; }
+      showCards();
+    };
+    map.once('moveend', whenLanded);
+    setTimeout(showCards, 7000); // filet de sécurité
     const p = myPosition();
     if (p) {
       firstFix = false;
