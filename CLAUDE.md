@@ -84,3 +84,7 @@ Pilier de la communauté) · défis et missions · page partenaire payante · st
 ## Mises à jour
 Après chaque modification du code, augmenter le numéro `?v=N` partout (imports des fichiers `js/`
 et balise script de `index.html` / `demo.html`), sinon les téléphones gardent l'ancienne version en cache.
+
+## Logo (choisi par Alexis, à utiliser tel quel, ne pas redessiner)
+`icons/logo-complet.png` (logo avec texte) et `icons/icon-1024.png` (bulle seule, icône d'appli ;
+déclinée en icon-512 / icon-192).
