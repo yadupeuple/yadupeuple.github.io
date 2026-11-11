@@ -3,7 +3,7 @@
 export const SUPABASE_URL = 'https://ygekcpnsjbbdgtmlxdce.supabase.co';
 export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_jreZhBNIOsn-athEC7nOvw_xMawIRSx';
 
-export const MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
+export const MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
 export const DEFAULT_CENTER = [6.15, 49.30]; // [lng, lat] : entre Thionville et Metz
 export const DEFAULT_ZOOM = 10.2;
 

@@ -20,7 +20,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 ## Technique
 - Site statique sans étape de compilation : `index.html`, `css/`, `js/` (modules ES), `vendor/`.
 - Bibliothèques recopiées dans `vendor/` (pas de CDN) : MapLibre GL 5 (carte), supabase-js 2.
-- Fond de carte : OpenFreeMap « positron » (gratuit, sans clé), pastilles arrondies façon Airbnb.
+- Fond de carte : OpenFreeMap « liberty » (en couleurs) (gratuit, sans clé), pastilles arrondies façon Airbnb.
 - Configuration (URL Supabase + clé publique) : `js/config.js`.
 - Mode démo sans réseau : ajouter `?demo` à l'adresse (données fictives, `js/demo.js`). Sert aux tests.
 - Tester en local : `python3 -m http.server 8080` puis ouvrir http://localhost:8080/?demo
