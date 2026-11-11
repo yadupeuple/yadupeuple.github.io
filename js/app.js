@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=26';
+import { api, DEMO } from './api.js?v=27';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=26';
+} from './config.js?v=27';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=26';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=26';
+} from './levels.js?v=27';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=27';
 
 // ---------------------------------------------------------------------------
 // État
@@ -319,6 +319,7 @@ function openSheet(view, html) {
 }
 function closeSheet() {
   state.sheetView = null;
+  document.body.classList.remove('over-welcome');
   $('#sheet').hidden = true;
   $('#backdrop').hidden = true;
   $('#cards').style.visibility = '';
@@ -1074,7 +1075,10 @@ async function onUserChanged(user) {
   state.user = user;
   $('#btn-account').classList.toggle('logged', !!user);
   if (user && user.id !== was) {
+    const fromWelcome = !$('#welcome').hidden;
     $('#welcome').hidden = true;
+    document.body.classList.remove('over-welcome');
+    if (fromWelcome) introFly();
     store.set('ydp_seen_welcome', '1');
     await Promise.all([refreshProfile(), loadFavorites()]);
     if (wantedPseudo && state.profile && state.profile.pseudo !== wantedPseudo) {
@@ -1113,7 +1117,8 @@ function showWelcome() {
     setTimeout(() => { i = (i + 1) % SLOGANS.length; el.textContent = SLOGANS[i]; el.style.opacity = 1; }, 350);
   }, 3500);
   $('#welcome-skip').onclick = () => { w.hidden = true; store.set('ydp_seen_welcome', '1'); introFly(); };
-  $('#welcome-login').onclick = () => { w.hidden = true; store.set('ydp_seen_welcome', '1'); introFly(); openAccount(); };
+  // Connexion ouverte par-dessus l'écran bleu : la carte n'apparaît qu'une fois connecté.
+  $('#welcome-login').onclick = () => { document.body.classList.add('over-welcome'); openAccount(); };
 }
 
 // Animation d'entrée : la carte part de loin (vue de la région) et plonge sur la position.
