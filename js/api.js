@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=38';
-import { createDemoApi } from './demo.js?v=38';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=39';
+import { createDemoApi } from './demo.js?v=39';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -100,6 +100,7 @@ function createSupabaseApi() {
     myProfile: () => rpc('get_my_profile'),
     badgesProgress: () => rpc('get_badges_progress'),
     changePseudo: (p) => rpc('change_pseudo', { new_pseudo: p }),
+    setReferrer: (code) => rpc('set_referrer', { p_code: code }),
     toggleFavorite: (id) => rpc('toggle_favorite', { est: id }),
     myFavorites: () => rpc('my_favorites'),
     exportMyData: () => rpc('export_my_data'),

@@ -344,3 +344,14 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .pill.selected { background: var(--navy); color: #fff; z-index: 5; }
 .card.focus { box-shadow: 0 0 0 2.5px var(--teal), var(--shadow); }
 .share-ico .brand-ico { width: 24px; height: 24px; }
+/* Parrainage (profil) */
+.referral { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: #F0FDFA; border: 1.5px solid #99F6E4; }
+.referral .t { font-weight: 800; }
+.referral .s { font-size: 12.5px; color: var(--muted); margin-top: 2px; line-height: 1.45; }
+.referral .grow { flex: 1 1 100%; min-width: 0; }
+.referral .ref-btn { width: 100%; padding: 11px 16px; }
+.ref-form { display: flex; gap: 6px; margin-top: 8px; }
+.ref-form input { flex: 1; min-width: 0; border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: 16px; text-transform: uppercase; }
+.ref-form .btn { width: auto; padding: 8px 12px; }
+.invite-note { background: rgba(20,184,166,.15); border: 1px solid rgba(94,234,212,.35); color: #CCFBF1; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin: -14px 0 16px; }
+.welcome.with-form .invite-note { display: none; }

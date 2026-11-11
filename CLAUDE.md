@@ -45,6 +45,7 @@ Fonctions appelées par l'appli (RPC) :
 | get_my_profile(), get_badges_progress(), change_pseudo(new_pseudo) | non | compte |
 | toggle_favorite(est), my_favorites() | non | favoris |
 | export_my_data(), delete_my_account() | non | RGPD |
+| set_referrer(p_code) | non | déclarer son parrain (compte < 7 j, avant 1er signalement) |
 
 Statut renvoyé : `{state, level, uncertain, wait, reliability, last_report_minutes, users_total, ...}`
 - state : `recent` (≤ 30 min) · `a_confirmer` (30-60 min) · `estimation` (habitudes, ≥ 3 jours et 3 personnes)
@@ -65,6 +66,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   (salle + Drive ensemble) ; tout est contrôlé par submit_report.
 - Restos sans Drive (has_drive = false) : rien de ce qui touche au Drive ne s'affiche.
 - Trajet estimé : distance à vol d'oiseau × 1,3 à 46 km/h (calé sur Google Maps).
+- Parrainage : lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
+  filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →

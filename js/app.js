@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=38';
+import { api, DEMO } from './api.js?v=39';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=38';
+} from './config.js?v=39';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=38';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=38';
-import { BRAND_PATHS } from './brands.js?v=38';
+} from './levels.js?v=39';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=39';
+import { BRAND_PATHS } from './brands.js?v=39';
 
 // ---------------------------------------------------------------------------
 // État
@@ -435,7 +435,10 @@ const ICON = {
 // ---------------------------------------------------------------------------
 const APP_URL = 'https://yadupeuple.github.io/';
 function openShare(e = null) {
-  const url = e ? `${APP_URL}?r=${e.id}` : APP_URL;
+  // Lien d'invitation perso : ?p=CODE (parrainage). Sur une fiche : ?r=resto (+ code si connecté).
+  const code = state.profile?.ref_code;
+  const params = [e ? `r=${e.id}` : '', code ? `p=${code}` : ''].filter(Boolean).join('&');
+  const url = params ? `${APP_URL}?${params}` : APP_URL;
   const text = e
     ? `${e.name} : y'a du peuple en ce moment ? Regarde l'affluence en direct 👉`
     : "Y'a du peuple ? L'affluence des fast-foods en direct, salle et Drive 🍔👉";
@@ -983,6 +986,24 @@ function askPseudo() {
   };
 }
 
+// Parrainage : le code ?p=CODE est gardé jusqu'à ce que le filleul ait un compte.
+const REF_KEY = 'ydp_ref';
+{
+  const p = new URLSearchParams(location.search).get('p');
+  if (p && /^[A-Za-z0-9]{4,12}$/.test(p)) store.set(REF_KEY, p.toUpperCase());
+}
+async function applyPendingReferral() {
+  const code = store.get(REF_KEY);
+  if (!code || !state.user) return;
+  if (state.profile?.ref_code === code) { store.set(REF_KEY, null); return; }
+  if (state.profile && !state.profile.can_set_referrer) { store.set(REF_KEY, null); return; }
+  try {
+    const r = await api.setReferrer(code);
+    store.set(REF_KEY, null);
+    if (r?.ok) { toast(`Parrainé par ${r.parrain} 🎉 Ton 1er signalement vous rapporte des points à tous les deux.`, 5000); refreshProfile(); }
+  } catch {}
+}
+
 let wantedPseudo = null;
 
 async function refreshProfile() {
@@ -1023,6 +1044,14 @@ async function renderAccount(tab = 'badges') {
       </div>
       ${p.top_resto ? `<div class="top-resto">⭐ Ton resto le plus signalé : <strong>${esc(p.top_resto)}</strong></div>` : ''}
     </div>
+    <div class="referral">
+      <div class="grow">
+        <div class="t">🤝 Parrainage</div>
+        <div class="s">${p.referrals ?? 0} ami${(p.referrals ?? 0) > 1 ? 's' : ''} parrainé${(p.referrals ?? 0) > 1 ? 's' : ''}${p.referrals_pending ? ` · ${p.referrals_pending} en attente de leur 1er signalement` : ''}<br>+20 pts pour toi, +10 pour ton ami à son 1er signalement.${p.parrain ? `<br>Ton parrain : <strong>${esc(p.parrain)}</strong>` : ''}</div>
+        ${p.can_set_referrer && !p.parrain ? `<form id="ref-form" class="ref-form"><input name="code" placeholder="Code d'un parrain" maxlength="12" autocomplete="off"><button class="btn btn-dark">OK</button></form>` : ''}
+      </div>
+      <button class="btn btn-primary ref-btn" id="btn-refer">Inviter des amis</button>
+    </div>
     <div class="tabs" role="tablist">
       ${[['badges', 'Badges'], ['classement', 'Classement'], ['favoris', 'Favoris'], ['reglages', 'Réglages']]
         .map(([k, l]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`).join('')}
@@ -1031,6 +1060,16 @@ async function renderAccount(tab = 'badges') {
   `);
   $('#btn-close').onclick = closeSheet;
   $('#btn-invite').onclick = () => openShare();
+  $('#btn-refer').onclick = () => openShare();
+  const rf = document.querySelector('#ref-form');
+  if (rf) rf.onsubmit = async (ev) => {
+    ev.preventDefault();
+    const code = String(new FormData(rf).get('code') || '').trim();
+    if (!code) return;
+    const r = await api.setReferrer(code).catch((e) => ({ ok: false, message: e.message }));
+    if (r?.ok) { toast(`Parrainé par ${r.parrain} 🎉`); renderAccount(tab); }
+    else toast(r?.message || 'Code refusé.');
+  };
   $('#sheet-body').querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => renderAccount(b.dataset.tab));
   const body = $('#tab-body');
   try {
@@ -1183,6 +1222,7 @@ async function onUserChanged(user) {
       toast(`Pseudo « ${wantedPseudo} » déjà pris : tu peux le changer dans Réglages.`, 4500);
     }
     wantedPseudo = null;
+    applyPendingReferral();
     if (isAutoPseudo(state.profile?.pseudo)) { setTimeout(askPseudo, 600); return; }
     if (state.sheetView === 'auth') {
       const next = afterLogin;
@@ -1211,6 +1251,9 @@ new MutationObserver(syncWelcomeBg).observe($('#welcome'), { attributes: true, a
 function showWelcome() {
   const w = $('#welcome');
   w.hidden = false;
+  if (store.get(REF_KEY) && !document.querySelector('.invite-note')) {
+    $('.welcome-actions').insertAdjacentHTML('beforebegin', '<p class="invite-note">🎉 Un ami t\'a invité : crée ton compte, ton 1er signalement vous rapporte des points à tous les deux.</p>');
+  }
   let i = 0;
   const el = $('#slogan');
   const timer = setInterval(() => {
