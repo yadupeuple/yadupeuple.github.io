@@ -50,7 +50,7 @@ export function describeStatus(st) {
       line = 'Estimation habituelle à cette heure (non confirmée)';
       break;
     case 'theorique':
-      line = 'Tendance habituelle des fast-foods à cette heure';
+      line = 'Habituel à cette heure (pas de signalement récent)';
       break;
     default:
       line = 'Aucune info pour le moment';
@@ -153,4 +153,45 @@ export function distanceM(lat1, lng1, lat2, lng2) {
 export function fmtDistance(m) {
   if (m == null) return '';
   return m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(m < 10000 ? 1 : 0).replace('.', ',')} km`;
+}
+
+// ---------------------------------------------------------------------------
+// Courbe d'affluence propre au resto (relevée sur Google Maps)
+// profile : 168 valeurs (0-100 % du pic de la semaine), index = jour*24 + heure, jour 0 = dimanche.
+// Comme sur Google, les heures 0-4 h d'un jour sont la fin de soirée de ce jour-là.
+// Mêmes seuils que la fonction popular_level de la base.
+// ---------------------------------------------------------------------------
+export function levelFromPercent(v) {
+  if (v == null || v <= 0) return null;
+  if (v < 25) return 'calme';
+  if (v < 50) return 'modere';
+  if (v < 75) return 'frequente';
+  return 'tres_frequente';
+}
+// isoDow (1 = lundi … 7 = dimanche) -> jour Google (0 = dimanche)
+export const gDay = (isoDow) => isoDow % 7;
+// Heures d'une journée dans l'ordre du graphique : 5 h -> 23 h puis 0 h -> 4 h (fin de soirée)
+export function dayHours(profile, day) {
+  const out = [];
+  for (let k = 5; k < 29; k++) {
+    const h = k % 24;
+    const v = profile[day * 24 + h];
+    out.push({ h, k, v: v == null ? null : Number(v) });
+  }
+  // On coupe les heures sans affluence au début et à la fin
+  let a = 0, b = out.length - 1;
+  while (a <= b && !(out[a].v > 0)) a++;
+  while (b >= a && !(out[b].v > 0)) b--;
+  return a > b ? [] : out.slice(a, b + 1);
+}
+export function bestTimeFromProfile(profile) {
+  const { h, dow } = parisNow();
+  const day = gDay(h < 5 ? (dow === 1 ? 7 : dow - 1) : dow);
+  const nowK = h < 5 ? h + 24 : h;
+  let best = null;
+  for (const x of dayHours(profile, day)) {
+    if (x.k + 1 <= nowK || !(x.v > 0)) continue;
+    if (!best || x.v < best.v) best = { t: x.h, v: x.v, level: levelFromPercent(x.v) };
+  }
+  return best;
 }

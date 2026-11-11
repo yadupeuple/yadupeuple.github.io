@@ -1,14 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=16';
+import { api, DEMO } from './api.js?v=18';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=16';
+} from './config.js?v=18';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
-} from './levels.js?v=16';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=16';
+  levelFromPercent, gDay, dayHours, bestTimeFromProfile,
+} from './levels.js?v=18';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=18';
 
 // ---------------------------------------------------------------------------
 // État
@@ -341,24 +342,76 @@ function serviceBlock(e, service) {
     </div>`;
 }
 
-function curveHtml() {
+const DAY_SHORT = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+let curveDay = null; // jour affiché dans le graphique (0 = dimanche), null = aujourd'hui
+
+function liveStatusOf(e) {
+  const st = mainStatus(e);
+  return st && (st.state === 'recent' || st.state === 'a_confirmer') && !st.uncertain && st.level ? st : null;
+}
+
+function curveHtml(e, profile) {
   const { h, dow } = parisNow();
-  const hours = [];
-  for (let t = 11; t <= 22; t++) hours.push(t);
-  const heights = { calme: 25, modere: 50, frequente: 75, tres_frequente: 100 };
-  const bars = hours.map((t) => {
-    const lvl = theoryLevelAt(t + 0.25, dow);
-    const info = lvl ? LEVEL_INFO[lvl] : NO_INFO;
-    const now = Math.floor(h) === t ? ' now' : '';
-    return `<div class="bar${now}" style="height:${lvl ? heights[lvl] : 6}%;background:${info.color}" title="${t}h : ${info.label}"></div>`;
-  }).join('');
-  const labels = hours.map((t) => `<span>${t % 2 === 1 ? t + 'h' : ''}</span>`).join('');
+  if (!profile) {
+    // Pas de courbe Google pour ce resto : courbe type des fast-foods
+    const hours = [];
+    for (let t = 11; t <= 22; t++) hours.push(t);
+    const heights = { calme: 25, modere: 50, frequente: 75, tres_frequente: 100 };
+    const bars = hours.map((t) => {
+      const lvl = theoryLevelAt(t + 0.25, dow);
+      const info = lvl ? LEVEL_INFO[lvl] : NO_INFO;
+      const now = Math.floor(h) === t ? ' now' : '';
+      return `<div class="bar${now}" style="height:${lvl ? heights[lvl] : 6}%;background:${info.color}" title="${t}h : ${info.label}"></div>`;
+    }).join('');
+    const labels = hours.map((t) => `<span>${t % 2 === 1 ? t + 'h' : ''}</span>`).join('');
+    return `
+      <div class="curve">
+        <h3>Affluence habituelle aujourd'hui</h3>
+        <div class="bars">${bars}</div>
+        <div class="bar-labels">${labels}</div>
+        <div class="curve-note">Courbe type des fast-foods : pas encore de données propres à ce resto.</div>
+      </div>`;
+  }
+  const todayG = gDay(h < 5 ? (dow === 1 ? 7 : dow - 1) : dow);
+  const day = curveDay ?? todayG;
+  const isToday = day === todayG;
+  const nowH = Math.floor(h);
+  const live = isToday ? liveStatusOf(e) : null;
+  const hours = dayHours(profile, day);
+  const tabs = [1, 2, 3, 4, 5, 6, 0].map((d) =>
+    `<button type="button" class="day-tab${d === day ? ' on' : ''}" data-day="${d}">${d === todayG ? 'Auj.' : DAY_SHORT[d]}</button>`).join('');
+  let body;
+  if (!hours.length) {
+    body = '<div class="curve-note">Fermé ou pas assez de passage ce jour-là.</div>';
+  } else {
+    const bars = hours.map((x) => {
+      const isNow = isToday && x.h === nowH;
+      let lvl = levelFromPercent(x.v);
+      let height = Math.max(4, x.v || 0);
+      let cls = isNow ? ' now' : '';
+      let title = `${x.h}h : ${lvl ? LEVEL_INFO[lvl].label : 'calme'} d'habitude`;
+      if (isNow && live) {
+        // Un signalement récent remplace l'habitude pour l'heure actuelle
+        lvl = live.level;
+        height = { calme: 25, modere: 50, frequente: 75, tres_frequente: 100 }[lvl];
+        cls += ' live';
+        title = `Maintenant : ${LEVEL_INFO[lvl].label} (signalé)`;
+      }
+      const info = lvl ? LEVEL_INFO[lvl] : NO_INFO;
+      return `<div class="bar${cls}" style="height:${height}%;background:${info.color}" title="${esc(title)}"></div>`;
+    }).join('');
+    const labels = hours.map((x, i) => `<span>${x.h % 3 === 0 ? x.h + 'h' : ''}</span>`).join('');
+    body = `<div class="bars">${bars}</div><div class="bar-labels">${labels}</div>`;
+  }
+  const note = live
+    ? '<span class="live-dot"></span> Barre de l\'heure actuelle : signalement en direct.'
+    : 'D\'après les heures d\'affluence Google Maps ; vos signalements prennent le dessus et affinent la courbe.';
   return `
     <div class="curve">
-      <h3>Affluence habituelle aujourd'hui</h3>
-      <div class="bars">${bars}</div>
-      <div class="bar-labels">${labels}</div>
-      <div class="curve-note">Courbe type des fast-foods, en attendant assez de vrais signalements.</div>
+      <h3>Affluence habituelle</h3>
+      <div class="day-tabs">${tabs}</div>
+      ${body}
+      <div class="curve-note">${note}</div>
     </div>`;
 }
 
@@ -378,7 +431,8 @@ function routeHtml(e) {
 function renderDetail(id) {
   const e = state.establishments.get(id);
   if (!e) return;
-  const best = bestTimeToday();
+  const profile = detailExtra.get(id)?.profile || null;
+  const best = profile ? bestTimeFromProfile(profile) : bestTimeToday();
   const calmer = detailExtra.get(id)?.calmer;
   const fav = state.favorites.has(id);
   const html = `
@@ -395,12 +449,13 @@ function renderDetail(id) {
     ${e.has_drive ? serviceBlock(e, 'drive') : ''}
     ${calmer ? `<div class="hint">💡 ${esc(calmer)}</div>` : ''}
     ${best ? `<div class="hint">🕐 Meilleur moment pour y aller : <strong>vers ${fmtHour(best.t)}</strong> (${esc(LEVEL_INFO[best.level].label.toLowerCase())} d'habitude)</div>` : ''}
-    ${curveHtml()}
+    ${curveHtml(e, profile)}
     <button class="btn btn-primary" id="btn-report">J'y suis : je signale l'affluence</button>
   `;
   openSheet('detail', html);
   $('#btn-close').onclick = closeSheet;
   $('#btn-report').onclick = () => openReport(id);
+  document.querySelectorAll('#sheet-body .day-tab').forEach((b) => b.onclick = () => { curveDay = Number(b.dataset.day); renderDetail(id); });
   $('#btn-fav').onclick = () => toggleFav(id);
 }
 
@@ -410,19 +465,21 @@ async function openDetail(id) {
   if (state.selectedId && state.selectedId !== id) state.markers.get(state.selectedId)?.el.classList.remove('selected');
   state.selectedId = id;
   state.markers.get(id)?.el.classList.add('selected');
+  curveDay = null;
   renderDetail(id);
   // Données fraîches pour cette fiche
   try {
-    const [salle, drive, hs, hd, calmer] = await Promise.all([
+    const [salle, drive, hs, hd, calmer, profile] = await Promise.all([
       e.has_dine_in ? api.serviceStatus(id, 'salle') : null,
       e.has_drive ? api.serviceStatus(id, 'drive') : null,
       e.has_dine_in ? api.history(id, 'salle') : [],
       e.has_drive ? api.history(id, 'drive') : [],
       e.has_dine_in ? api.calmerNearby(id).catch(() => '') : '',
+      api.popularTimes ? api.popularTimes(id).catch(() => null) : null,
     ]);
     if (e.has_dine_in) e.status_salle = salle;
     if (e.has_drive) e.status_drive = drive;
-    detailExtra.set(id, { history: { salle: hs || [], drive: hd || [] }, calmer });
+    detailExtra.set(id, { history: { salle: hs || [], drive: hd || [] }, calmer, profile });
     renderMarkers();
     if (state.sheetView === 'detail' && state.selectedId === id) renderDetail(id);
   } catch (err) {

@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=16';
-import { createDemoApi } from './demo.js?v=16';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=18';
+import { createDemoApi } from './demo.js?v=18';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -70,6 +70,12 @@ function createSupabaseApi() {
     serviceStatus: (id, service) => rpc('get_service_status', { p_establishment: id, p_service: service }),
     history: (id, service) => rpc('get_history', { p_establishment: id, p_service: service, p_limit: 5 }),
     calmerNearby: (id) => rpc('calmer_nearby', { p_id: id }),
+    // Courbe d'affluence habituelle (Google Maps) : 168 valeurs, jour 0 = dimanche. null si absente.
+    async popularTimes(id) {
+      const { data, error } = await sb.from('popular_times').select('profile').eq('establishment_id', id).maybeSingle();
+      if (error) return null; // table pas encore créée : on garde la courbe type
+      return data?.profile || null;
+    },
     leaderboard: (city = null, days = 7) => rpc('get_leaderboard', { p_city: city, p_days: days }),
     submitReport: (r) => rpc('submit_report', {
       p_establishment: r.establishmentId, p_service: r.service, p_level: r.level,

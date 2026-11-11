@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=16';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=16';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=18';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=18';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -79,6 +79,19 @@ export function createDemoApi() {
       const s = fakeStatus(id, service);
       if (!s.last_report_minutes && s.state !== 'recent') return [];
       return [0, 1, 2].map((i) => ({ level: LEVELS[(hash(id) + i) % 4], minutes_ago: (s.last_report_minutes || 3) + i * 7 }));
+    },
+    async popularTimes(id) {
+      await wait();
+      // Courbe fictive : pics à midi et le soir, plus fort le week-end.
+      const h0 = hash(id);
+      const prof = [];
+      for (let d = 0; d < 7; d++) for (let h = 0; h < 24; h++) {
+        if (h < 10 || h > 22) { prof.push(null); continue; }
+        const we = d === 0 || d === 5 || d === 6 ? 1.25 : 1;
+        const v = (Math.exp(-((h - 12.5) ** 2) / 1.6) * 70 + Math.exp(-((h - 19.5) ** 2) / 1.8) * 80 + 12 + ((h0 + h) % 9)) * we;
+        prof.push(Math.min(100, Math.round(v)));
+      }
+      return prof;
     },
     async calmerNearby(id) {
       await wait();
