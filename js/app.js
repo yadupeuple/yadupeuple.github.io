@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=22';
+import { api, DEMO } from './api.js?v=23';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=22';
+} from './config.js?v=23';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=22';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=22';
+} from './levels.js?v=23';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=23';
 
 // ---------------------------------------------------------------------------
 // État
@@ -32,7 +32,11 @@ const store = {
   set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} },
 };
 
+// Mode test (position fictive) : réservé au compte d'Alexis (pseudo Maylixela).
+const TEST_ACCOUNTS = ['a0c88505-a026-42cd-95e1-cad71c0c196c'];
+const isTester = () => DEMO || TEST_ACCOUNTS.includes(state.user?.id);
 function testPosition() {
+  if (!isTester()) return null;
   const raw = store.get('ydp_test_pos');
   if (!raw) return null;
   const [lat, lng] = raw.split(',').map((x) => Number(x.trim()));
@@ -877,12 +881,12 @@ function settingsHtml() {
     <p class="muted">Vous gérez un restaurant ? Mise en avant, offre du jour, statistiques d'affluence : écrivez-nous.</p>
     <p><a class="link-btn" href="mailto:${CONTACT_EMAIL}?subject=Partenariat%20Y'a%20du%20peuple">${CONTACT_EMAIL}</a></p>
 
-    <div class="section-title">Mode test</div>
+    ${isTester() ? `<div class="section-title">Mode test</div>
     <p class="muted">Position fictive « latitude, longitude » pour tester sans être sur place. Vide = vrai GPS.</p>
     <form id="test-form" style="display:flex;gap:8px">
       <input class="select" style="flex:1;font-size:16px" name="pos" placeholder="49.3581, 6.1378" value="${t ? `${t.lat}, ${t.lng}` : ''}">
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
-    </form>
+    </form>` : ''}
 
     <div class="section-title">Mes données</div>
     <button class="btn btn-ghost" id="btn-export">Voir mes données</button>
@@ -901,7 +905,7 @@ function bindSettings(body) {
     if (r === 'ok') { toast('Pseudo modifié ✅'); renderAccount('reglages'); }
     else toast(r === 'Pseudo deja pris' ? 'Ce pseudo est déjà pris.' : r === 'Le pseudo doit faire 3 a 20 caracteres' ? 'Le pseudo doit faire de 3 à 20 caractères.' : r);
   };
-  $('#test-form', body).onsubmit = (ev) => {
+  if ($('#test-form', body)) $('#test-form', body).onsubmit = (ev) => {
     ev.preventDefault();
     const v = String(new FormData(ev.target).get('pos') || '').trim();
     if (!v) { store.set('ydp_test_pos', null); toast('Position de test désactivée'); }
