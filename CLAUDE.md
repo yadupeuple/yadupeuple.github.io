@@ -80,3 +80,7 @@ Supabase · mentions légales, RGPD, CGU · vérification de la marque · tests 
 ## Plus tard (idées validées, pas encore faites)
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
+
+## Mises à jour
+Après chaque modification du code, augmenter le numéro `?v=N` partout (imports des fichiers `js/`
+et balise script de `index.html` / `demo.html`), sinon les téléphones gardent l'ancienne version en cache.
