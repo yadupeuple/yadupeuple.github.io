@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=19';
+import { api, DEMO } from './api.js?v=20';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=19';
+} from './config.js?v=20';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile,
-} from './levels.js?v=19';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=19';
+} from './levels.js?v=20';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=20';
 
 // ---------------------------------------------------------------------------
 // État
@@ -417,13 +417,18 @@ function curveHtml(e, profile) {
 
 function routeHtml(e) {
   const p = myPosition();
-  if (!p) return '';
+  if (!p) {
+    return `<div class="route"><button type="button" class="chip chip-btn" id="btn-route-gps">📍 Voir le temps de trajet</button></div>`;
+  }
   const d = distanceM(p.lat, p.lng, e.lat, e.lng);
   const min = Math.max(1, Math.round(((d * ROUTE_FACTOR) / 1000 / ROUTE_SPEED_KMH) * 60));
   const parts = [`<span class="chip">📍 ${fmtDistance(d)}</span>`];
   if (d > 150) parts.push(`<span class="chip">🚗 ≈ ${min} min de trajet</span>`);
-  if (e.has_drive && e.status_drive?.wait && WAIT_INFO[e.status_drive.wait]) {
-    parts.push(`<span class="chip">+ file de ${WAIT_INFO[e.status_drive.wait].short} voitures</span>`);
+  if (e.has_drive) {
+    const w = e.status_drive?.wait && WAIT_INFO[e.status_drive.wait];
+    parts.push(w
+      ? `<span class="chip">+ file au Drive : ${w.short} voitures</span>`
+      : `<span class="chip chip-muted">File au Drive : pas d'info récente</span>`);
   }
   return `<div class="route">${parts.join('')}</div>`;
 }
@@ -455,6 +460,8 @@ function renderDetail(id) {
   openSheet('detail', html);
   $('#btn-close').onclick = closeSheet;
   $('#btn-report').onclick = () => openReport(id);
+  const gpsBtn = document.querySelector('#btn-route-gps');
+  if (gpsBtn) gpsBtn.onclick = () => { toast('Autorise la localisation pour voir le trajet.'); watchGps(); };
   document.querySelectorAll('#sheet-body .day-tab').forEach((b) => b.onclick = () => { curveDay = Number(b.dataset.day); renderDetail(id); });
   $('#btn-fav').onclick = () => toggleFav(id);
 }
@@ -953,6 +960,7 @@ function watchGps() {
   navigator.geolocation.watchPosition((p) => {
     state.gps = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
     renderMe();
+    if (firstFix && state.sheetView === 'detail' && state.selectedId) renderDetail(state.selectedId);
     if (firstFix && !testPosition()) {
       firstFix = false;
       map.flyTo({ center: [state.gps.lng, state.gps.lat], zoom: 13 });

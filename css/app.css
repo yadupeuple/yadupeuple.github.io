@@ -258,3 +258,5 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 .bar.live { outline: 2px solid var(--navy); outline-offset: 1px; }
 .bar.live::after { content: ''; position: absolute; top: -9px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--teal); }
 .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); vertical-align: middle; }
+.chip-btn { border: 0; cursor: pointer; font: inherit; }
+.chip-muted { opacity: .7; }
