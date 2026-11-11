@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=27';
+import { api, DEMO } from './api.js?v=28';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=27';
+} from './config.js?v=28';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=27';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=27';
+} from './levels.js?v=28';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=28';
 
 // ---------------------------------------------------------------------------
 // État
@@ -310,7 +310,22 @@ map.on('moveend', () => { clearTimeout(cardsTimer); cardsTimer = setTimeout(rend
 // ---------------------------------------------------------------------------
 // Feuille du bas
 // ---------------------------------------------------------------------------
+// Connexion depuis l'écran d'accueil : le formulaire s'affiche DANS la page bleue.
+let authInWelcome = false;
+function welcomeForm(on) {
+  authInWelcome = on;
+  $('#welcome').classList.toggle('with-form', on);
+  $('#welcome-form').hidden = !on;
+  if (!on) $('#welcome-form').innerHTML = '';
+}
 function openSheet(view, html) {
+  if (authInWelcome && view === 'auth' && !$('#welcome').hidden) {
+    state.sheetView = view;
+    $('#sheet-body').innerHTML = '';
+    $('#welcome-form').innerHTML = html;
+    $('#welcome').scrollTop = 0;
+    return;
+  }
   state.sheetView = view;
   $('#sheet-body').innerHTML = html;
   $('#sheet').hidden = false;
@@ -318,8 +333,8 @@ function openSheet(view, html) {
   $('#cards').style.visibility = 'hidden';
 }
 function closeSheet() {
+  if (authInWelcome) { welcomeForm(false); state.sheetView = null; return; }
   state.sheetView = null;
-  document.body.classList.remove('over-welcome');
   $('#sheet').hidden = true;
   $('#backdrop').hidden = true;
   $('#cards').style.visibility = '';
@@ -1077,7 +1092,7 @@ async function onUserChanged(user) {
   if (user && user.id !== was) {
     const fromWelcome = !$('#welcome').hidden;
     $('#welcome').hidden = true;
-    document.body.classList.remove('over-welcome');
+    if (authInWelcome) welcomeForm(false);
     if (fromWelcome) introFly();
     store.set('ydp_seen_welcome', '1');
     await Promise.all([refreshProfile(), loadFavorites()]);
@@ -1118,7 +1133,7 @@ function showWelcome() {
   }, 3500);
   $('#welcome-skip').onclick = () => { w.hidden = true; store.set('ydp_seen_welcome', '1'); introFly(); };
   // Connexion ouverte par-dessus l'écran bleu : la carte n'apparaît qu'une fois connecté.
-  $('#welcome-login').onclick = () => { document.body.classList.add('over-welcome'); openAccount(); };
+  $('#welcome-login').onclick = () => { welcomeForm(true); openAccount(); };
 }
 
 // Animation d'entrée : la carte part de loin (vue de la région) et plonge sur la position.
