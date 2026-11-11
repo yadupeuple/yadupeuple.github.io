@@ -18,7 +18,7 @@ const C = {
 const HIDE = [
   /^natural_earth$/, /^poi_/, /^airport$/, /one_way/, /hatching/, /^road_area_pattern$/,
   /^building-3d$/, /^highway-shield-us/, /^road_shield_us$/, /^label_country/, /^label_state$/,
-  /^boundary_disputed$/, /^aeroway/,
+  /^boundary_disputed$/, /^boundary_3$/, /^aeroway/,
 ];
 
 function setPaint(l, key, value) {
@@ -43,13 +43,11 @@ export function airbnbize(_previous, style) {
     else if (l.type === 'line' && /^waterway/.test(id)) setPaint(l, 'line-color', C.water);
     else if (id === 'building') { setPaint(l, 'fill-color', C.building); setPaint(l, 'fill-outline-color', C.casing); }
     else if (/^boundary_[23]$/.test(id)) {
-      // Frontières (pays, départements, communes) : trait gris foncé en pointillés
+      // Frontières des pays uniquement (choix d'Alexis) : trait gris foncé en pointillés
       setPaint(l, 'line-color', id === 'boundary_2' ? '#5B6170' : '#7C8290');
       setPaint(l, 'line-opacity', 0.9);
       setPaint(l, 'line-width', id === 'boundary_2' ? ['interpolate', ['linear'], ['zoom'], 5, 1.2, 12, 2.4] : ['interpolate', ['linear'], ['zoom'], 7, 0.8, 13, 1.6]);
       setPaint(l, 'line-dasharray', [3, 2]);
-      // Inclure aussi les limites des communes (niveaux 7-8), en plus des départements
-      if (id === 'boundary_3') l.filter = JSON.parse(JSON.stringify(l.filter).replace('["<=",["get","admin_level"],6]', '["<=",["get","admin_level"],8]'));
     }
     else if (l.type === 'line' && /rail/.test(id)) setPaint(l, 'line-color', C.rail);
     else if (l.type === 'line' && /casing/.test(id)) setPaint(l, 'line-color', C.casing);
