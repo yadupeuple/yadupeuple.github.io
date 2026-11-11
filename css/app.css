@@ -343,3 +343,4 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 }
 .pill.selected { background: var(--navy); color: #fff; z-index: 5; }
 .card.focus { box-shadow: 0 0 0 2.5px var(--teal), var(--shadow); }
+.share-ico .brand-ico { width: 24px; height: 24px; }

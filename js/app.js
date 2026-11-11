@@ -1,15 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=37';
+import { api, DEMO } from './api.js?v=38';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=37';
+} from './config.js?v=38';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=37';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=37';
+} from './levels.js?v=38';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=38';
+import { BRAND_PATHS } from './brands.js?v=38';
 
 // ---------------------------------------------------------------------------
 // État
@@ -440,25 +441,29 @@ function openShare(e = null) {
     : "Y'a du peuple ? L'affluence des fast-foods en direct, salle et Drive 🍔👉";
   const full = `${text} ${url}`;
   const u = encodeURIComponent(url), t = encodeURIComponent(full);
+  // [nom, fond, lien, logo officiel]
   const links = [
-    ['WhatsApp', '#25D366', `https://wa.me/?text=${t}`],
-    ['Instagram', 'linear-gradient(45deg,#F58529,#DD2A7B 50%,#8134AF 75%,#515BD4)', 'instagram'],
-    ['Snapchat', '#FFFC00', `https://www.snapchat.com/scan?attachmentUrl=${u}`],
-    ['Facebook', '#1877F2', `https://www.facebook.com/sharer/sharer.php?u=${u}`],
-    ['Messenger', '#0084FF', `fb-messenger://share/?link=${u}`],
-    ['X', '#000000', `https://twitter.com/intent/tweet?text=${t}`],
-    ['Telegram', '#229ED9', `https://t.me/share/url?url=${u}&text=${encodeURIComponent(text)}`],
-    ['SMS', '#14B8A6', `sms:?&body=${t}`],
-    ['E-mail', '#0B1F3A', `mailto:?subject=${encodeURIComponent("Y'a du peuple ?")}&body=${t}`],
+    ['WhatsApp', '#25D366', `https://wa.me/?text=${t}`, 'whatsapp'],
+    ['Instagram', 'linear-gradient(45deg,#F58529,#DD2A7B 50%,#8134AF 75%,#515BD4)', 'instagram', 'instagram'],
+    ['Snapchat', '#FFFC00', `https://www.snapchat.com/scan?attachmentUrl=${u}`, 'snapchat'],
+    ['Facebook', '#0866FF', `https://www.facebook.com/sharer/sharer.php?u=${u}`, 'facebook'],
+    ['Messenger', '#0084FF', `fb-messenger://share/?link=${u}`, 'messenger'],
+    ['X', '#000000', `https://twitter.com/intent/tweet?text=${t}`, 'x'],
+    ['Telegram', '#26A5E4', `https://t.me/share/url?url=${u}&text=${encodeURIComponent(text)}`, 'telegram'],
+    ['SMS', '#14B8A6', `sms:?&body=${t}`, null],
+    ['E-mail', '#0B1F3A', `mailto:?subject=${encodeURIComponent("Y'a du peuple ?")}&body=${t}`, null],
   ];
+  const logo = (n, key, c) => key
+    ? `<svg viewBox="0 0 24 24" class="brand-ico"><path fill="${c === '#FFFC00' ? '#000' : '#fff'}" d="${BRAND_PATHS[key]}"/></svg>`
+    : (n === 'SMS' ? '💬' : '✉️');
   openSheet('share', `
     <div class="sheet-head">
       <div class="grow"><h2>${e ? 'Partager ce resto' : 'Inviter des amis'}</h2><div class="sub">Plus on est nombreux à signaler, plus l'info est fiable.</div></div>
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
     ${navigator.share ? `<button class="btn btn-primary" id="share-native">${ICON.share}Partager</button>` : ''}
-    <div class="share-grid">${links.map(([n, c, href]) => `
-      <a class="share-item" href="${href === 'instagram' ? 'https://www.instagram.com/direct/inbox/' : href}" ${href === 'instagram' ? 'data-insta="1"' : ''} target="_blank" rel="noopener"><span class="share-ico" style="background:${c};color:${c === '#FFFC00' ? '#000' : '#fff'}">${n[0]}</span>${n}</a>`).join('')}
+    <div class="share-grid">${links.map(([n, c, href, key]) => `
+      <a class="share-item" href="${href === 'instagram' ? 'https://www.instagram.com/direct/inbox/' : href}" ${href === 'instagram' ? 'data-insta="1"' : ''} target="_blank" rel="noopener"><span class="share-ico" style="background:${c}">${logo(n, key, c)}</span>${n}</a>`).join('')}
       <button type="button" class="share-item" id="share-copy"><span class="share-ico" style="background:#E5E7EB;color:#0B1F3A">🔗</span>Copier le lien</button>
     </div>
     <p class="muted" style="font-size:12.5px;margin-top:10px">Instagram : le lien est copié automatiquement, il suffit de le coller dans un message ou une story.</p>`);
@@ -658,6 +663,7 @@ async function openDetail(id) {
   state.selectedId = id;
   state.markers.get(id)?.el.classList.add('selected');
   curveDay = null;
+  setFocus(id); // un seul resto entouré : celui de la fiche
   focusResto(e);
   renderDetail(id);
   // Données fraîches pour cette fiche
