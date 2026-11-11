@@ -1,14 +1,14 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=4';
+import { api, DEMO } from './api.js?v=5';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=4';
+} from './config.js?v=5';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
-} from './levels.js?v=4';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=4';
+} from './levels.js?v=5';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=5';
 
 // ---------------------------------------------------------------------------
 // État
@@ -81,13 +81,10 @@ map.on('error', (e) => {
 });
 
 function pillHtml(e) {
-  const st = mainStatus(e);
-  const d = describeStatus(st);
+  // Une seule pastille : la couleur du service le plus chargé (salle ou Drive), détail dans la fiche.
+  const d = describeStatus(mainStatus(e));
   const live = d.isLive ? ' live' : '';
-  const drive = e.has_drive && e.status_drive && !e.status_drive.uncertain && e.status_drive.level
-    ? `<span class="dot" style="background:${levelInfo(e.status_drive.level).color};width:8px;height:8px" title="Drive"></span>`
-    : '';
-  return `<span class="dot${live}" style="background:${d.info.color};color:${d.info.color}"></span>${esc(brandShort(e))}${e.has_drive && e.has_dine_in ? drive : ''}`;
+  return `<span class="dot${live}" style="background:${d.info.color};color:${d.info.color}"></span>${esc(brandShort(e))}`;
 }
 
 function renderMarkers() {
