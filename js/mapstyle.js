@@ -40,7 +40,7 @@ export function airbnbize(_previous, style) {
       setPaint(l, 'fill-color', C.town);
     }
     else if (id === 'water') setPaint(l, 'fill-color', C.water);
-    else if (/^waterway/.test(id)) setPaint(l, 'line-color', C.water);
+    else if (l.type === 'line' && /^waterway/.test(id)) setPaint(l, 'line-color', C.water);
     else if (id === 'building') { setPaint(l, 'fill-color', C.building); setPaint(l, 'fill-outline-color', C.casing); }
     else if (l.type === 'line' && /rail/.test(id)) setPaint(l, 'line-color', C.rail);
     else if (l.type === 'line' && /casing/.test(id)) setPaint(l, 'line-color', C.casing);
