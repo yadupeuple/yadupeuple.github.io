@@ -1,14 +1,14 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=8';
+import { api, DEMO } from './api.js?v=9';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=8';
+} from './config.js?v=9';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
-} from './levels.js?v=8';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=8';
+} from './levels.js?v=9';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=9';
 
 // ---------------------------------------------------------------------------
 // État
@@ -762,7 +762,7 @@ function bindSettings(body) {
     $('#export-box').innerHTML = `<pre class="export">${esc(json)}</pre><button class="btn btn-ghost" id="btn-copy">Copier</button>`;
     $('#btn-copy').onclick = async () => { try { await navigator.clipboard.writeText(json); toast('Copié'); } catch { toast('Copie impossible'); } };
   };
-  $('#btn-logout', body).onclick = async () => { await api.signOut(); closeSheet(); toast('Déconnecté'); };
+  $('#btn-logout', body).onclick = async () => { await api.signOut(); closeSheet(); toast('Déconnecté'); showWelcome(); };
   $('#btn-delete', body).onclick = () => {
     $('#delete-box').innerHTML = `<div class="error-box" style="margin-top:10px">Supprimer définitivement ton compte, tes points et tes badges ? Tes signalements restent, de façon anonyme.</div>
       <button class="btn btn-danger" id="btn-delete-yes">Oui, supprimer définitivement</button>`;
@@ -849,7 +849,7 @@ async function start() {
   api.onAuthChange(onUserChanged);
   const user = await api.getUser().catch(() => null);
   await onUserChanged(user);
-  if (!user && !store.get('ydp_seen_welcome')) showWelcome();
+  if (!user) showWelcome(); // écran d'accueil à chaque ouverture tant qu'on n'est pas connecté
 
   try {
     await loadEstablishments();
