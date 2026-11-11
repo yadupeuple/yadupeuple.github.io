@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=24';
-import { createDemoApi } from './demo.js?v=24';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=25';
+import { createDemoApi } from './demo.js?v=25';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -55,6 +55,16 @@ function createSupabaseApi() {
       return { user: data.user, needsConfirmation: false };
     },
     async signOut() { await sb.auth.signOut(); },
+    // Retour sur la même page après Google ou le lien reçu par e-mail.
+    redirectUrl() { return location.origin + location.pathname; },
+    async signInWithGoogle() {
+      const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: this.redirectUrl() } });
+      if (error) throw new ApiError(error.message?.toLowerCase().includes('provider') ? 'La connexion Google n\'est pas encore activée.' : frenchAuthError(error));
+    },
+    async sendMagicLink(email) {
+      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: this.redirectUrl(), shouldCreateUser: true } });
+      if (error) throw new ApiError(frenchAuthError(error));
+    },
 
     async listEstablishments() {
       const { data, error } = await sb.from('establishments')

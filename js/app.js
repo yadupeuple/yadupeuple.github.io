@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=24';
+import { api, DEMO } from './api.js?v=25';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=24';
+} from './config.js?v=25';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=24';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=24';
+} from './levels.js?v=25';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=25';
 
 // ---------------------------------------------------------------------------
 // État
@@ -281,12 +281,16 @@ function renderCards() {
   const ref = refPoint();
   const b = map.getBounds();
   const visible = [...state.establishments.values()].filter((e) => b.contains([e.lng, e.lat]));
-  const list = (visible.length ? visible : [...state.establishments.values()])
+  if (!visible.length) {
+    box.innerHTML = '<div class="cards-empty">Aucun restaurant dans cette zone. Dézoome ou déplace la carte.</div>';
+    return;
+  }
+  const list = visible
     .map((e) => ({ e, d: distanceM(ref.lat, ref.lng, e.lat, e.lng) }))
     .sort((a, b2) => a.d - b2.d)
-    .slice(0, 15);
+    .slice(0, 60);
   const fromMe = !!myPosition();
-  box.innerHTML = list.map(({ e, d }) => `
+  box.innerHTML = `<div class="cards-count">${visible.length}<small>resto${visible.length > 1 ? 's' : ''}<br>ici</small></div>` + list.map(({ e, d }) => `
     <button class="card" data-id="${e.id}" type="button">
       <p class="card-title">${esc(e.name)}</p>
       <div class="card-sub">${esc(e.city)}${fromMe ? ` · ${fmtDistance(d)}` : ''}${openLabelHtml(e)}</div>
@@ -331,7 +335,50 @@ const ICON = {
   close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   star: '<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2-5.5-2.9-5.5 2.9 1-6.2L3 9.6l6.2-.9z"/></svg>',
   back: '<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>',
+  share: '<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4"/></svg>',
+  google: '<svg class="g-ico" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>',
 };
+
+// ---------------------------------------------------------------------------
+// Partage (WhatsApp, Snapchat, Facebook, Instagram via le menu du téléphone…)
+// ---------------------------------------------------------------------------
+const APP_URL = 'https://maylixela.github.io/yadupeuple/';
+function openShare(e = null) {
+  const url = e ? `${APP_URL}?r=${e.id}` : APP_URL;
+  const text = e
+    ? `${e.name} : y'a du peuple en ce moment ? Regarde l'affluence en direct 👉`
+    : "Y'a du peuple ? L'affluence des fast-foods en direct, salle et Drive 🍔👉";
+  const full = `${text} ${url}`;
+  const u = encodeURIComponent(url), t = encodeURIComponent(full);
+  const links = [
+    ['WhatsApp', '#25D366', `https://wa.me/?text=${t}`],
+    ['Snapchat', '#FFFC00', `https://www.snapchat.com/scan?attachmentUrl=${u}`],
+    ['Facebook', '#1877F2', `https://www.facebook.com/sharer/sharer.php?u=${u}`],
+    ['Messenger', '#0084FF', `fb-messenger://share/?link=${u}`],
+    ['X', '#000000', `https://twitter.com/intent/tweet?text=${t}`],
+    ['Telegram', '#229ED9', `https://t.me/share/url?url=${u}&text=${encodeURIComponent(text)}`],
+    ['SMS', '#14B8A6', `sms:?&body=${t}`],
+    ['E-mail', '#0B1F3A', `mailto:?subject=${encodeURIComponent("Y'a du peuple ?")}&body=${t}`],
+  ];
+  openSheet('share', `
+    <div class="sheet-head">
+      <div class="grow"><h2>${e ? 'Partager ce resto' : 'Inviter des amis'}</h2><div class="sub">Plus on est nombreux à signaler, plus l'info est fiable.</div></div>
+      <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+    </div>
+    ${navigator.share ? `<button class="btn btn-primary" id="share-native">${ICON.share}Partager… (Instagram, WhatsApp, Snap…)</button>` : ''}
+    <div class="share-grid">${links.map(([n, c, href]) => `
+      <a class="share-item" href="${href}" target="_blank" rel="noopener"><span class="share-ico" style="background:${c};color:${c === '#FFFC00' ? '#000' : '#fff'}">${n[0]}</span>${n}</a>`).join('')}
+      <button type="button" class="share-item" id="share-copy"><span class="share-ico" style="background:#E5E7EB;color:#0B1F3A">🔗</span>Copier le lien</button>
+    </div>
+    <p class="muted" style="font-size:12.5px;margin-top:10px">Instagram : utilise « Partager… » ou copie le lien pour le coller en story ou en message.</p>`);
+  $('#btn-close').onclick = () => (e ? renderDetail(e.id) : closeSheet());
+  const nat = document.querySelector('#share-native');
+  if (nat) nat.onclick = () => navigator.share({ title: "Y'a du peuple ?", text, url }).catch(() => {});
+  $('#share-copy').onclick = async () => {
+    try { await navigator.clipboard.writeText(full); toast('Lien copié ✅'); }
+    catch { toast(url, 5000); }
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Fiche restaurant
@@ -477,6 +524,7 @@ function renderDetail(id) {
         <div class="sub">${esc((e.address || '').replace(/\n/g, ', '))}</div>
         ${hoursHtml(e)}
       </div>
+      <button class="round-btn" id="btn-share" aria-label="Partager">${ICON.share}</button>
       <button class="round-btn ${fav ? 'fav-on' : ''}" id="btn-fav" aria-label="${fav ? 'Retirer des favoris' : 'Ajouter aux favoris'}">${ICON.star}</button>
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
@@ -495,6 +543,19 @@ function renderDetail(id) {
   if (gpsBtn) gpsBtn.onclick = () => { toast('Autorise la localisation pour voir le trajet.'); watchGps(); };
   document.querySelectorAll('#sheet-body .day-tab').forEach((b) => b.onclick = () => { curveDay = Number(b.dataset.day); renderDetail(id); });
   $('#btn-fav').onclick = () => toggleFav(id);
+  $('#btn-share').onclick = () => openShare(e);
+}
+
+// Centre le resto dans la partie de carte visible au-dessus de la fiche.
+function focusResto(e) {
+  const sheetH = Math.min(window.innerHeight * 0.62, 640);
+  map.flyTo({
+    center: [e.lng, e.lat],
+    zoom: Math.max(map.getZoom(), 15),
+    offset: [0, -sheetH / 2],
+    duration: 900,
+    essential: true,
+  });
 }
 
 async function openDetail(id) {
@@ -504,6 +565,7 @@ async function openDetail(id) {
   state.selectedId = id;
   state.markers.get(id)?.el.classList.add('selected');
   curveDay = null;
+  focusResto(e);
   renderDetail(id);
   // Données fraîches pour cette fiche
   try {
@@ -691,8 +753,6 @@ function openSearch() {
           </li>`;
         }).join('');
         ul.querySelectorAll('li[data-id]').forEach((li) => li.onclick = () => {
-          const e = state.establishments.get(li.dataset.id);
-          if (e) map.flyTo({ center: [e.lng, e.lat], zoom: 15 });
           openDetail(li.dataset.id);
         });
       } catch (err) { ul.innerHTML = `<li class="muted">${esc(err.message)}</li>`; }
@@ -727,6 +787,11 @@ function renderAuth(message = '', mode = 'login', error = '') {
       <li>🏆 Grimpe au classement de ta ville</li>
     </ul>` : ''}
     ${error ? `<div class="error-box">${esc(error)}</div>` : ''}
+    <div class="social-auth">
+      <button type="button" class="btn btn-social" id="auth-google">${ICON.google}Continuer avec Google</button>
+      <button type="button" class="btn btn-social" id="auth-magic">✉️ Recevoir un lien par e-mail</button>
+    </div>
+    <div class="or-sep"><span>ou avec un mot de passe</span></div>
     <form id="auth-form" novalidate>
       ${mode === 'signup' ? `<label class="field"><span>Pseudo (visible par les autres)</span><input name="pseudo" minlength="3" maxlength="20" autocomplete="nickname" required></label>` : ''}
       <label class="field"><span>E-mail</span><input name="email" type="email" autocomplete="email" required></label>
@@ -739,6 +804,10 @@ function renderAuth(message = '', mode = 'login', error = '') {
   `);
   $('#btn-close').onclick = () => { afterLogin = null; closeSheet(); };
   $('#auth-switch').onclick = () => renderAuth(message, mode === 'login' ? 'signup' : 'login');
+  $('#auth-google').onclick = async () => {
+    try { await api.signInWithGoogle(); } catch (err) { renderAuth(message, mode, err.message); }
+  };
+  $('#auth-magic').onclick = () => renderMagic(message);
   $('#auth-form').onsubmit = async (ev) => {
     ev.preventDefault();
     const f = new FormData(ev.target);
@@ -769,6 +838,52 @@ function renderAuth(message = '', mode = 'login', error = '') {
   };
 }
 
+function renderMagic(message = '', error = '') {
+  openSheet('auth', `
+    <div class="sheet-head">
+      <button class="round-btn" id="btn-back" aria-label="Retour">${ICON.back}</button>
+      <div class="grow"><h2>Lien de connexion</h2><div class="sub">Pas de mot de passe : tu reçois un lien par e-mail, tu cliques, c'est fait. Marche aussi pour créer un compte.</div></div>
+    </div>
+    ${error ? `<div class="error-box">${esc(error)}</div>` : ''}
+    <form id="magic-form" novalidate>
+      <label class="field"><span>E-mail</span><input name="email" type="email" autocomplete="email" required></label>
+      <button class="btn btn-primary" type="submit" id="magic-submit">Envoyer le lien</button>
+    </form>`);
+  $('#btn-back').onclick = () => renderAuth(message);
+  $('#magic-form').onsubmit = async (ev) => {
+    ev.preventDefault();
+    const email = String(new FormData(ev.target).get('email') || '').trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { renderMagic(message, 'Adresse e-mail invalide.'); return; }
+    const btn = $('#magic-submit');
+    btn.disabled = true; btn.textContent = 'Envoi…';
+    try {
+      await api.sendMagicLink(email);
+      openSheet('auth', `<div class="result"><div style="font-size:40px">📬</div><h2>Regarde tes e-mails</h2><p>Un lien de connexion a été envoyé à <strong>${esc(email)}</strong>. Ouvre-le sur ce téléphone.</p></div><button class="btn btn-dark" id="btn-ok">OK</button>`);
+      $('#btn-ok').onclick = closeSheet;
+    } catch (err) { renderMagic(message, err.message); }
+  };
+}
+
+// Compte créé via Google ou le lien e-mail : pseudo automatique « Membre… » à personnaliser.
+const isAutoPseudo = (p) => /^Membre[0-9A-F]{6,}$/i.test(p || '');
+function askPseudo() {
+  openSheet('pseudo', `
+    <div class="sheet-head"><div class="grow"><h2>Choisis ton pseudo</h2><div class="sub">Il s'affiche dans le classement. Tu pourras le changer plus tard.</div></div></div>
+    <form id="first-pseudo" novalidate>
+      <label class="field"><span>Pseudo (3 à 20 caractères)</span><input name="pseudo" minlength="3" maxlength="20" autocomplete="nickname" required></label>
+      <button class="btn btn-primary" type="submit">Valider</button>
+    </form>
+    <p style="text-align:center;margin:12px 0 0"><button class="link-btn" id="pseudo-later">Plus tard</button></p>`);
+  $('#pseudo-later').onclick = closeSheet;
+  $('#first-pseudo').onsubmit = async (ev) => {
+    ev.preventDefault();
+    const v = String(new FormData(ev.target).get('pseudo') || '').trim();
+    const r = await api.changePseudo(v).catch((e) => e.message);
+    if (r === 'ok') { await refreshProfile(); closeSheet(); toast(`Bienvenue ${v} 👋`); }
+    else toast(r === 'Pseudo deja pris' ? 'Ce pseudo est déjà pris.' : r === 'Le pseudo doit faire 3 a 20 caracteres' ? 'Le pseudo doit faire de 3 à 20 caractères.' : r);
+  };
+}
+
 let wantedPseudo = null;
 
 async function refreshProfile() {
@@ -792,10 +907,22 @@ async function renderAccount(tab = 'badges') {
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
     <div class="profile-card">
-      <div class="pseudo">${esc(p.pseudo)}</div>
-      <div class="lvl">Niveau ${p.level ?? 1} · ${esc(p.level_name)}</div>
+      <div class="profile-top">
+        <div class="avatar">${esc((p.pseudo || '?').slice(0, 1).toUpperCase())}</div>
+        <div class="grow">
+          <div class="pseudo">${esc(p.pseudo)}</div>
+          <div class="lvl">Niveau ${p.level ?? 1} · ${esc(p.level_name)}${p.member_since ? ` · membre depuis ${new Date(p.member_since).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}` : ''}</div>
+        </div>
+        <button class="round-btn light" id="btn-invite" aria-label="Inviter des amis">${ICON.share}</button>
+      </div>
       <div class="progress"><div style="width:${pct}%"></div></div>
-      <small>${p.points} points${p.next_level_at ? ` · prochain niveau à ${p.next_level_at}` : ' · niveau maximum'}</small>
+      <small>${p.points} points${p.next_level_at ? ` · encore ${p.next_level_at - p.points} pour le niveau suivant` : ' · niveau maximum 🎉'}</small>
+      <div class="stats">
+        <div><strong>${p.reports_total ?? 0}</strong><span>signalements</span></div>
+        <div><strong>${p.restos_total ?? 0}</strong><span>restos</span></div>
+        <div><strong>${(p.badges || []).length}</strong><span>badges</span></div>
+      </div>
+      ${p.top_resto ? `<div class="top-resto">⭐ Ton resto le plus signalé : <strong>${esc(p.top_resto)}</strong></div>` : ''}
     </div>
     <div class="tabs" role="tablist">
       ${[['badges', 'Badges'], ['classement', 'Classement'], ['favoris', 'Favoris'], ['reglages', 'Réglages']]
@@ -804,6 +931,7 @@ async function renderAccount(tab = 'badges') {
     <div id="tab-body"><div class="spinner"></div></div>
   `);
   $('#btn-close').onclick = closeSheet;
+  $('#btn-invite').onclick = () => openShare();
   $('#sheet-body').querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => renderAccount(b.dataset.tab));
   const body = $('#tab-body');
   try {
@@ -862,8 +990,6 @@ async function favoritesHtml() {
 }
 function bindFavList(body) {
   body.querySelectorAll('li[data-id]').forEach((li) => li.onclick = () => {
-    const e = state.establishments.get(li.dataset.id);
-    if (e) map.flyTo({ center: [e.lng, e.lat], zoom: 15 });
     openDetail(li.dataset.id);
   });
 }
@@ -955,6 +1081,7 @@ async function onUserChanged(user) {
       toast(`Pseudo « ${wantedPseudo} » déjà pris : tu peux le changer dans Réglages.`, 4500);
     }
     wantedPseudo = null;
+    if (isAutoPseudo(state.profile?.pseudo)) { setTimeout(askPseudo, 600); return; }
     if (state.sheetView === 'auth') {
       const next = afterLogin;
       afterLogin = null;
@@ -985,8 +1112,29 @@ function showWelcome() {
     el.style.opacity = 0;
     setTimeout(() => { i = (i + 1) % SLOGANS.length; el.textContent = SLOGANS[i]; el.style.opacity = 1; }, 350);
   }, 3500);
-  $('#welcome-skip').onclick = () => { w.hidden = true; store.set('ydp_seen_welcome', '1'); };
-  $('#welcome-login').onclick = () => { w.hidden = true; store.set('ydp_seen_welcome', '1'); openAccount(); };
+  $('#welcome-skip').onclick = () => { w.hidden = true; store.set('ydp_seen_welcome', '1'); introFly(); };
+  $('#welcome-login').onclick = () => { w.hidden = true; store.set('ydp_seen_welcome', '1'); introFly(); openAccount(); };
+}
+
+// Animation d'entrée : la carte part de loin (vue de la région) et plonge sur la position.
+const FAR_VIEW = { center: [6.35, 49.0], zoom: 6.2 };
+let introDone = false;
+function introFly() {
+  if (introDone) return;
+  introDone = true;
+  const go = () => {
+    const p = myPosition();
+    if (p) {
+      firstFix = false;
+      map.flyTo({ center: [p.lng, p.lat], zoom: 13.5, duration: 2600, curve: 1.6, essential: true });
+    } else if (state.establishments.size) {
+      const b = new maplibregl.LngLatBounds();
+      state.establishments.forEach((e) => b.extend([e.lng, e.lat]));
+      map.fitBounds(b, { padding: { top: 80, bottom: 170, left: 30, right: 30 }, duration: 2400 });
+    }
+  };
+  // On laisse une seconde au GPS pour répondre avant de plonger.
+  if (myPosition()) go(); else setTimeout(go, 900);
 }
 
 // ---------------------------------------------------------------------------
@@ -999,7 +1147,7 @@ function watchGps() {
     state.gps = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
     renderMe();
     if (firstFix && state.sheetView === 'detail' && state.selectedId) renderDetail(state.selectedId);
-    if (firstFix && !testPosition()) {
+    if (firstFix && !testPosition() && introDone) {
       firstFix = false;
       map.flyTo({ center: [state.gps.lng, state.gps.lat], zoom: 13 });
     }
@@ -1019,6 +1167,7 @@ async function start() {
   api.onAuthChange(onUserChanged);
   const user = await api.getUser().catch(() => null);
   await onUserChanged(user);
+  map.jumpTo(FAR_VIEW); // vue lointaine : l'animation d'entrée plonge ensuite sur la position
   if (!user) showWelcome(); // écran d'accueil à chaque ouverture tant qu'on n'est pas connecté
 
   try {
@@ -1027,16 +1176,18 @@ async function start() {
     toast(err.message || 'Impossible de charger les restaurants.', 5000);
     return;
   }
-  const t = testPosition();
-  if (t) {
-    map.jumpTo({ center: [t.lng, t.lat], zoom: 13 });
-    renderMe();
-  } else if (state.establishments.size) {
-    const b = new maplibregl.LngLatBounds();
-    state.establishments.forEach((e) => b.extend([e.lng, e.lat]));
-    map.fitBounds(b, { padding: { top: 80, bottom: 170, left: 30, right: 30 }, duration: 0 });
-  }
+  renderMe();
   watchGps();
+  const deep = new URLSearchParams(location.search).get('r');
+  if (deep && state.establishments.has(deep)) {
+    // Lien partagé vers un resto : on ouvre directement sa fiche.
+    introDone = true;
+    $('#welcome').hidden = true;
+    map.jumpTo({ center: [state.establishments.get(deep).lng, state.establishments.get(deep).lat], zoom: 15 });
+    openDetail(deep);
+  } else if ($('#welcome').hidden) {
+    introFly();
+  }
   await refreshStatuses();
   setInterval(() => { if (!document.hidden) refreshStatuses(); }, REFRESH_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStatuses(); });
@@ -1045,4 +1196,4 @@ async function start() {
 start();
 
 // Pour les tests automatiques uniquement.
-window.__ydp = { state, map, openDetail, openReport, openAccount, openSearch };
+window.__ydp = { state, map, openDetail, openReport, openAccount, openSearch, openShare, renderAccount };

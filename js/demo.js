@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=24';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=24';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=25';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=25';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -42,7 +42,7 @@ function withStatus(e, lat, lng) {
 export function createDemoApi() {
   let user = null;
   const listeners = [];
-  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'] };
+  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis' };
   const favorites = new Set(['1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42']);
   try { if (localStorage.getItem('ydp_demo_user')) user = { id: 'demo', email: 'demo@exemple.fr' }; } catch {}
   const setUser = (u) => {
@@ -58,6 +58,8 @@ export function createDemoApi() {
     async signIn(email) { await wait(); setUser({ id: 'demo', email }); return user; },
     async signUp(email, _pw, pseudo) { await wait(); if (pseudo) profile.pseudo = pseudo; setUser({ id: 'demo', email }); return { user, needsConfirmation: false }; },
     async signOut() { setUser(null); },
+    async signInWithGoogle() { await wait(); setUser({ id: 'demo', email: 'demo@gmail.com' }); },
+    async sendMagicLink() { await wait(); },
 
     async listEstablishments() { await wait(); return DEMO_ESTABLISHMENTS.map((e) => ({ ...e })); },
     async nearby(lat, lng, radius = 5000, limit = 50) {

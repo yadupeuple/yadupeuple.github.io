@@ -10,8 +10,9 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Ne jamais présenter quelque chose comme « testé » sans l'avoir réellement exécuté.
 
 ## Interdits
-- **Ne jamais modifier la base Supabase (tables, fonctions, données) sans l'accord explicite d'Alexis.**
-  Toute modification passe par un fichier SQL dans `supabase/` qu'Alexis valide avant exécution.
+- Base Supabase : Alexis autorise les modifications sans lui demander à chaque fois (11/11/2026).
+  Toujours garder une trace dans un fichier SQL de `supabase/`. **Exception : toute suppression de
+  données, de tables ou de comptes reste soumise à son accord explicite.**
 - **Jamais de clé `service_role` dans l'appli.** Seule la clé publique (publishable / anon) est autorisée.
 - Ne pas réinventer côté appli une règle qui existe déjà dans la base : la base décide (points,
   distance, fiabilité, statuts). L'appli affiche et envoie, c'est tout.
