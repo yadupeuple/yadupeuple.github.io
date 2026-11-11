@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=36';
+import { api, DEMO } from './api.js?v=37';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=36';
+} from './config.js?v=37';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=36';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=36';
+} from './levels.js?v=37';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=37';
 
 // ---------------------------------------------------------------------------
 // État
@@ -442,6 +442,7 @@ function openShare(e = null) {
   const u = encodeURIComponent(url), t = encodeURIComponent(full);
   const links = [
     ['WhatsApp', '#25D366', `https://wa.me/?text=${t}`],
+    ['Instagram', 'linear-gradient(45deg,#F58529,#DD2A7B 50%,#8134AF 75%,#515BD4)', 'instagram'],
     ['Snapchat', '#FFFC00', `https://www.snapchat.com/scan?attachmentUrl=${u}`],
     ['Facebook', '#1877F2', `https://www.facebook.com/sharer/sharer.php?u=${u}`],
     ['Messenger', '#0084FF', `fb-messenger://share/?link=${u}`],
@@ -455,12 +456,14 @@ function openShare(e = null) {
       <div class="grow"><h2>${e ? 'Partager ce resto' : 'Inviter des amis'}</h2><div class="sub">Plus on est nombreux à signaler, plus l'info est fiable.</div></div>
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
-    ${navigator.share ? `<button class="btn btn-primary" id="share-native">${ICON.share}Partager… (Instagram, WhatsApp, Snap…)</button>` : ''}
+    ${navigator.share ? `<button class="btn btn-primary" id="share-native">${ICON.share}Partager</button>` : ''}
     <div class="share-grid">${links.map(([n, c, href]) => `
-      <a class="share-item" href="${href}" target="_blank" rel="noopener"><span class="share-ico" style="background:${c};color:${c === '#FFFC00' ? '#000' : '#fff'}">${n[0]}</span>${n}</a>`).join('')}
+      <a class="share-item" href="${href === 'instagram' ? 'https://www.instagram.com/direct/inbox/' : href}" ${href === 'instagram' ? 'data-insta="1"' : ''} target="_blank" rel="noopener"><span class="share-ico" style="background:${c};color:${c === '#FFFC00' ? '#000' : '#fff'}">${n[0]}</span>${n}</a>`).join('')}
       <button type="button" class="share-item" id="share-copy"><span class="share-ico" style="background:#E5E7EB;color:#0B1F3A">🔗</span>Copier le lien</button>
     </div>
-    <p class="muted" style="font-size:12.5px;margin-top:10px">Instagram : utilise « Partager… » ou copie le lien pour le coller en story ou en message.</p>`);
+    <p class="muted" style="font-size:12.5px;margin-top:10px">Instagram : le lien est copié automatiquement, il suffit de le coller dans un message ou une story.</p>`);
+  const insta = document.querySelector('[data-insta]');
+  if (insta) insta.addEventListener('click', () => { navigator.clipboard?.writeText(full).then(() => toast('Lien copié : colle-le dans Instagram'), () => {}); });
   $('#btn-close').onclick = () => (e ? renderDetail(e.id) : closeSheet());
   const nat = document.querySelector('#share-native');
   if (nat) nat.onclick = () => navigator.share({ title: "Y'a du peuple ?", text, url }).catch(() => {});
