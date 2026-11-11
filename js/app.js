@@ -1,15 +1,15 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=29';
+import { api, DEMO } from './api.js?v=30';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=29';
+} from './config.js?v=30';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=29';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=29';
+} from './levels.js?v=30';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=30';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1042,6 +1042,7 @@ function settingsHtml() {
     <div class="section-title">Confidentialité</div>
     <p class="muted">Tu peux récupérer une copie de tes données (pseudo, signalements, badges, favoris) ou supprimer ton compte à tout moment.</p>
     <button type="button" class="link-btn" id="btn-export">Télécharger mes données</button>
+    <a class="link-btn" href="confidentialite.html" style="display:block">Règles de confidentialité</a>
     <button class="btn btn-danger" id="btn-delete">Supprimer mon compte</button>
     <div id="delete-box"></div>
   `;
