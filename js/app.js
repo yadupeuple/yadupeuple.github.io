@@ -1,13 +1,14 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=2';
+import { api, DEMO } from './api.js?v=3';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=2';
+} from './config.js?v=3';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
-} from './levels.js?v=2';
+} from './levels.js?v=3';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=3';
 
 // ---------------------------------------------------------------------------
 // État
@@ -57,7 +58,7 @@ const FALLBACK_STYLE = {
 
 const map = new maplibregl.Map({
   container: 'map',
-  style: DEMO && new URLSearchParams(location.search).has('nomap') ? FALLBACK_STYLE : MAP_STYLE_URL,
+  style: FALLBACK_STYLE,
   center: DEFAULT_CENTER,
   zoom: DEFAULT_ZOOM,
   attributionControl: { compact: true },
@@ -65,6 +66,10 @@ const map = new maplibregl.Map({
   pitchWithRotate: false,
 });
 map.touchZoomRotate.disableRotation();
+map.on('styleimagemissing', (e) => { if (e.id === 'ydp-shield') addShieldImage(map); });
+if (!(DEMO && new URLSearchParams(location.search).has('nomap'))) {
+  map.setStyle(MAP_STYLE_URL, { transformStyle: airbnbize });
+}
 let styleFailed = false;
 map.on('error', (e) => {
   // Fond de carte injoignable : on garde l'appli utilisable sur un fond uni.
