@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=70';
+import { api, DEMO } from './api.js?v=71';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=70';
+} from './config.js?v=71';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=70';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=70';
-import { BRAND_PATHS } from './brands.js?v=70';
+} from './levels.js?v=71';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=71';
+import { BRAND_PATHS } from './brands.js?v=71';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1177,8 +1177,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=70" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=70) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=71" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=71) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1262,7 +1262,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg (dessinés) ; les autres viennent de la planche ChatGPT d'Alexis (.webp, outils/badges_sheet.py).
 const BADGE_SVG = new Set(['v10', 'drive10', 'explorer10', 'ref1']);
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=70" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=71" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1342,9 +1342,16 @@ function settingsHtml() {
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>
 
-    <div class="section-title">Espace partenaire</div>
-    <p class="muted">Vous gérez un restaurant ? Mise en avant, offre du jour, statistiques d'affluence : écrivez-nous.</p>
-    <p><a class="link-btn" href="mailto:${CONTACT_EMAIL}?subject=Partenariat%20Y'a%20du%20peuple">${CONTACT_EMAIL}</a></p>
+    <div class="partner-card">
+      <div class="pc-head"><span class="pc-ico">🍔</span><div><div class="pc-title">Vous êtes restaurateur ?</div><div class="pc-sub">Devenez partenaire de Y'a du peuple ?</div></div></div>
+      <ul class="pc-list">
+        <li>⭐ Mise en avant de votre restaurant sur la carte</li>
+        <li>🎁 Offre du jour visible par les clients autour</li>
+        <li>📊 Statistiques d'affluence de votre établissement</li>
+      </ul>
+      <a class="btn btn-primary" href="mailto:${CONTACT_EMAIL}?subject=Partenariat%20Y'a%20du%20peuple">✉️ Nous contacter</a>
+      <div class="pc-note">Les statuts d'affluence restent toujours neutres : un partenariat ne les modifie jamais.</div>
+    </div>
 
     ${isTester() ? `<div class="section-title">Mode test</div>
     <p class="muted">Position fictive « latitude, longitude » pour tester sans être sur place. Vide = vrai GPS.</p>
@@ -1353,13 +1360,16 @@ function settingsHtml() {
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>` : ''}
 
-    <div class="section-title">Confidentialité</div>
-    <p class="muted">Tu peux récupérer une copie de tes données (pseudo, signalements, badges, favoris) ou supprimer ton compte à tout moment.</p>
-    <button type="button" class="link-btn" id="btn-export">Télécharger mes données</button>
-    <a class="link-btn" href="confidentialite.html" style="display:block">Règles de confidentialité</a>
+    <div class="section-title">Compte</div>
     <button class="btn btn-ghost" id="btn-logout">Se déconnecter</button>
     <button class="btn btn-danger" id="btn-delete">Supprimer mon compte</button>
     <div id="delete-box"></div>
+    <div class="legal-foot">
+      <button type="button" class="link-btn" id="btn-export">Télécharger mes données</button>
+      <span>·</span>
+      <a class="link-btn" href="confidentialite.html">Règles de confidentialité</a>
+      <div class="legal-small">Tes données (pseudo, signalements, badges, favoris) t'appartiennent : tu peux les récupérer ou supprimer ton compte à tout moment.</div>
+    </div>
   `;
 }
 
