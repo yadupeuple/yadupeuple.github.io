@@ -93,6 +93,8 @@ export function brandShort(e) {
   if (b.startsWith('subway')) return 'Subway';
   if (b.startsWith('buffalo')) return 'Buffalo';
   if (b.startsWith("o'tacos") || b.startsWith('otacos')) return "O'Tacos";
+  if (b.startsWith('starbucks')) return 'Starbucks';
+  if (b.startsWith('flunch')) return 'Flunch';
   return (e.brand || e.name || '').slice(0, 8);
 }
 

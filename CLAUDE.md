@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (42, lecture publique), reports, profiles, favorites, badges (18),
+Tables : establishments (54, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (18),
 user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
