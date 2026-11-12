@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=58';
+import { api, DEMO } from './api.js?v=59';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=58';
+} from './config.js?v=59';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=58';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=58';
-import { BRAND_PATHS } from './brands.js?v=58';
+} from './levels.js?v=59';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=59';
+import { BRAND_PATHS } from './brands.js?v=59';
 
 // ---------------------------------------------------------------------------
 // État
@@ -347,6 +347,30 @@ function leftCard() {
   });
   return best;
 }
+// PC : la molette fait défiler la liste horizontalement, et on peut la faire glisser à la souris.
+{
+  const box = $('#cards');
+  box.addEventListener('wheel', (ev) => {
+    if (Math.abs(ev.deltaY) <= Math.abs(ev.deltaX)) return;
+    ev.preventDefault();
+    box.scrollBy({ left: ev.deltaY, behavior: 'auto' });
+  }, { passive: false });
+  let drag = null;
+  box.addEventListener('mousedown', (ev) => { if (ev.button === 0) drag = { x: ev.clientX, left: box.scrollLeft, moved: false }; });
+  window.addEventListener('mousemove', (ev) => {
+    if (!drag) return;
+    const dx = ev.clientX - drag.x;
+    if (Math.abs(dx) > 4) { drag.moved = true; box.style.scrollSnapType = 'none'; box.classList.add('dragging'); }
+    if (drag.moved) box.scrollLeft = drag.left - dx;
+  });
+  window.addEventListener('mouseup', () => {
+    if (!drag) return;
+    const moved = drag.moved; drag = null;
+    box.style.scrollSnapType = ''; box.classList.remove('dragging');
+    if (moved) box.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); }, { capture: true, once: true });
+  });
+}
+
 // Quand on fait défiler la liste, la carte suit le resto mis en avant.
 let scrollTimer;
 $('#cards').addEventListener('scroll', () => {
@@ -389,6 +413,8 @@ function openSheet(view, html) {
   }
   state.sheetView = view;
   $('#sheet-body').innerHTML = html;
+  // Profil (compte, personnalisation, profil public) : plein écran sur téléphone, toute la hauteur sur PC.
+  $('#sheet').classList.toggle('full', ['account', 'custom', 'public'].includes(view));
   $('#sheet').hidden = false;
   $('#backdrop').hidden = false;
   $('#sheet-body').scrollTop = 0;
@@ -1142,8 +1168,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=58" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=58) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=59" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=59) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1225,7 +1251,7 @@ const BADGE_ICONS = {
 // Illustrations des badges (icons/badges/*.svg, dessinées pour l'appli) ; emoji en secours pour un badge sans image.
 const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10', 'explorer', 'tour_zone', 'ref1', 'ref10', 'ref30', 'coup_de_feu', 'regulier', 'fiable', 'oeil_lynx']);
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.svg?v=58" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.svg?v=59" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];

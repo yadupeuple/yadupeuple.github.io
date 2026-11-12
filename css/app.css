@@ -424,3 +424,12 @@ input, textarea, select, [contenteditable="true"] { caret-color: auto; }
 .badge-emoji { font-size: 26px; }
 .pub-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 4px; }
 .pub-badge .badge-img { width: 30px; height: 30px; }
+/* Profil en plein écran (téléphone) / sur toute la hauteur (PC) */
+.sheet.full { top: 0; max-height: none; border-radius: 0; padding-top: var(--safe-top); }
+.sheet.full .sheet-grip { display: none; }
+@media (min-width: 640px) { .sheet.full { border-radius: 0; box-shadow: 0 0 40px rgba(0,0,0,.25); } }
+.sheet.full .scroll-hint.up { top: calc(18px + var(--safe-top)); }
+/* Liste du bas : glisser à la souris sur PC */
+.cards { cursor: grab; }
+.cards.dragging { cursor: grabbing; user-select: none; }
+.cards.dragging .card { pointer-events: none; }
