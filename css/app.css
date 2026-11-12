@@ -536,3 +536,8 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .hours li > span { padding: 2px 0; }
 .hours li > span:last-child { font-variant-numeric: tabular-nums; }
 .hours li > span:first-child::first-letter { text-transform: uppercase; }
+/* Pied des Réglages : 2 lignes de liens, les points « · » alignés l'un sous l'autre */
+.legal-grid { display: grid; grid-template-columns: 1fr auto 1fr; column-gap: 8px; row-gap: 4px; align-items: center; }
+.legal-grid > :nth-child(3n+1) { justify-self: end; text-align: right; }
+.legal-grid > :nth-child(3n) { justify-self: start; text-align: left; }
+.legal-grid > span { margin: 0; }
