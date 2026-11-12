@@ -50,11 +50,11 @@ B['v1'] = wrap(f'''
 {shine(78, 62, 12, 7)}''')
 # 2 Main levée
 B['v10'] = wrap(f'''
-<path d="M62 106 V70 a9 9 0 0 1 18 0 V96 V52 a9 9 0 0 1 18 0 V94 V48 a9 9 0 0 1 18 0 V96 V60 a9 9 0 0 1 18 0 V120
+<path d="M62 106 V58 a9 9 0 0 1 18 0 V96 V46 a9 9 0 0 1 18 0 V94 V52 a9 9 0 0 1 18 0 V96 V68 a9 9 0 0 1 18 0 V120
  C134 150 118 168 96 168 C76 168 64 156 54 138 L40 112 a9 9 0 0 1 15 -10 Z" fill="#FBBF7C" {O(5)}/>
 <path d="M80 96 V82 M98 94 V80 M116 96 V82" stroke="#E08A3C" stroke-width="3" stroke-linecap="round"/>
 <path d="M70 150 C86 160 110 160 124 146" fill="none" stroke="#E08A3C" stroke-width="3" stroke-linecap="round"/>
-{shine(70, 66, 4, 9, 0, .7)}{shine(88, 48, 4, 9, 0, .7)}''')
+{shine(70, 56, 4, 9, 0, .7)}{shine(88, 44, 4, 9, 0, .7)}''')
 # 3-6 Médailles
 B['v50'] = wrap(medal('url(#bronze)', '#2563EB', '#3B82F6', star(100, 124, 22, '#FDE68A')))
 B['v100'] = wrap(medal('url(#silver)', '#DC2626', '#EF4444', star(100, 124, 22, '#fff')))
@@ -157,7 +157,7 @@ B['oeil_lynx'] = wrap(f'''
 <circle cx="78" cy="98" r="6" fill="{K}"/><circle cx="122" cy="98" r="6" fill="{K}"/>
 <circle cx="81" cy="94" r="2.5" fill="#fff"/><circle cx="125" cy="94" r="2.5" fill="#fff"/>
 <path d="M92 112 L108 112 L100 124 Z" fill="#F97316" {O(3)}/>''')
-B.pop('ref1', None); B.pop('v10', None)  # ref1 = poignée de main Fluent Emoji (MIT), voir icons/badges/licences/
+B.pop('ref1', None)  # ref1 = poignée de main Fluent Emoji (MIT), voir icons/badges/licences/
 for k, v in B.items():
     open(f'/home/claude/yadupeuple/icons/badges/{k}.svg', 'w').write(v)
 print(len(B))
