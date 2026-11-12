@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=71';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=71';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=72';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=72';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -44,6 +44,9 @@ export function createDemoApi() {
   const listeners = [];
   const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'nuit' };
   const favorites = new Set(['1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42']);
+  const demoPartner = { id: '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42', founder: true, tagline: 'Restaurant de démonstration', link_url: 'https://exemple.fr', link_label: 'Voir le menu', phone: '03 82 00 00 00',
+    offer: { title: '-10 % sur le menu', details: 'Sur présentation de l\'appli en caisse.', only_when_calm: true, ends_at: new Date(Date.now() + 5 * 3600e3).toISOString() } };
+  const demoStats = { views: 214, clicks: 31 };
   try { if (localStorage.getItem('ydp_demo_user')) user = { id: 'demo', email: 'demo@exemple.fr' }; } catch {}
   const setUser = (u) => {
     user = u;
@@ -228,6 +231,23 @@ export function createDemoApi() {
       if (!user) return 'Connexion requise';
       if (favorites.has(id)) { favorites.delete(id); return 'Retire des favoris'; }
       favorites.add(id); return 'Ajoute aux favoris';
+    },
+    // Partenaire fictif (démo) ; ajouter &resto à l'adresse pour voir l'espace du restaurateur.
+    async partners() { await wait(50); return [demoPartner]; },
+    async partnerTrack(_id, kind) { kind === 'view' ? demoStats.views++ : demoStats.clicks++; },
+    async myRestaurant() {
+      await wait();
+      if (!user || !new URLSearchParams(location.search).has('resto')) return null;
+      const e = DEMO_ESTABLISHMENTS.find((x) => x.id === demoPartner.id);
+      return { ...demoPartner, name: e?.name || 'Mon restaurant', offer: demoPartner.offer ? { ...demoPartner.offer, visible: true } : null,
+        views_30d: demoStats.views, clicks_30d: demoStats.clicks, reports_30d: 37, contributors_30d: 12, favorites: 9, busiest: [12, 19, 20] };
+    },
+    async setPartnerOffer(o) {
+      await wait();
+      if (!o.title) { demoPartner.offer = null; return { ok: true, message: 'Offre retirée.' }; }
+      if (o.title.length < 3) return { ok: false, message: 'Le titre doit faire de 3 à 60 caractères.' };
+      demoPartner.offer = { title: o.title, details: o.details || null, only_when_calm: !!o.onlyWhenCalm, ends_at: new Date(Date.now() + (o.hours || 24) * 3600e3).toISOString() };
+      return { ok: true, message: 'Offre publiée.' };
     },
     async myFavorites() { await wait(); return user ? DEMO_ESTABLISHMENTS.filter((e) => favorites.has(e.id)) : []; },
     async exportMyData() { await wait(); return { profil: { pseudo: profile.pseudo, points: profile.points }, signalements: [] }; },

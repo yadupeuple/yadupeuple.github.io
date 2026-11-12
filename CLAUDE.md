@@ -30,7 +30,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
 Tables : establishments (42, lecture publique), reports, profiles, favorites, badges (18),
-user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis),
+user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 
 Fonctions appelées par l'appli (RPC) :
@@ -49,6 +49,10 @@ Fonctions appelées par l'appli (RPC) :
 | export_my_data(), delete_my_account() | non | RGPD |
 | set_customization(p_kind 'avatar'|'banner', p_code) | non | choisir son avatar / sa bannière (niveau contrôlé) |
 | set_referrer(p_code) | non | déclarer son parrain (compte < 7 j, avant 1er signalement) |
+| get_partners() | oui | partenaires actifs + offre visible en ce moment |
+| partner_track(p_establishment, p_kind 'view'|'click') | oui | compteur anonyme (vues de fiche, clics lien / tél.) |
+| get_my_restaurant() | non | espace du restaurateur : chiffres 30 j + son offre |
+| set_partner_offer(p_title, p_details, p_hours ≤ 168, p_only_when_calm) | non | publier / retirer (titre vide) son offre du jour |
 
 Statut renvoyé : `{state, level, uncertain, wait, reliability, last_report_minutes, users_total, ...}`
 - state : `recent` (≤ 30 min) · `a_confirmer` (30-60 min) · `estimation` (habitudes, ≥ 3 jours et 3 personnes)
@@ -77,6 +81,11 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Table customizations (is_active) ; paliers 1, 5, 10 … 50, 60 … 100 ; bannière en bandeau entier en haut du profil (pas en fond : trop flou), thèmes alternés d'un palier à l'autre.
 - Points des badges (ajoutés aux points normaux) : +1 par badge, +10 quand une catégorie (badges actifs) est complète
   (trigger sur user_badges, table badge_family_bonus, réglages badge_points / badge_family_bonus).
+- Partenaires (12/11/2026) : tables partners (owner_id = compte du restaurateur, founder, tagline, lien https, téléphone),
+  partner_offers (une offre à la fois, option « heures creuses » = salle calme ou un peu de monde, décidé par la base),
+  partner_stats (compteurs anonymes par jour). Sur l'appli : ⭐ + 🎁 sur la liste et la pastille, encadré sur la fiche,
+  « Mon restaurant » dans Réglages pour le propriétaire. Inscription d'un partenaire à la main (voir supabase/2026-11-12_partenaires.sql).
+  Pas de paiement dans l'appli pour l'instant ; pas de classement sponsorisé. Démo de l'espace restaurateur : `?demo&resto`.
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →

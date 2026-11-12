@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=71';
+import { api, DEMO } from './api.js?v=72';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=71';
+} from './config.js?v=72';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=71';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=71';
-import { BRAND_PATHS } from './brands.js?v=71';
+} from './levels.js?v=72';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=72';
+import { BRAND_PATHS } from './brands.js?v=72';
 
 // ---------------------------------------------------------------------------
 // État
@@ -93,13 +93,43 @@ map.on('error', (e) => {
   }
 });
 
+// Partenaires : fiche Pro + offre du jour. Ne touche jamais aux statuts d'affluence (la base décide de tout).
+const partners = new Map();
+const partnerOf = (id) => partners.get(id) || null;
+async function loadPartners() {
+  try {
+    const rows = await api.partners();
+    partners.clear();
+    for (const r of rows || []) partners.set(r.id, r);
+  } catch { /* la carte marche sans les partenaires */ }
+}
+function offerEnd(iso) {
+  const d = new Date(iso), n = new Date();
+  const hm = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', ' h ');
+  if (d.toDateString() === n.toDateString()) return `jusqu'à ${hm}`;
+  return `jusqu'au ${d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}`;
+}
+function partnerHtml(e) {
+  const p = partnerOf(e.id);
+  if (!p) return '';
+  const o = p.offer;
+  return `<div class="partner-box">
+    <div class="pb-head"><span class="pb-badge">⭐ Partenaire${p.founder ? ' fondateur' : ''}</span>${p.tagline ? `<span class="pb-tag">${esc(p.tagline)}</span>` : ''}</div>
+    ${o ? `<div class="offer"><div class="offer-t">🎁 ${esc(o.title)}</div>${o.details ? `<div class="offer-d">${esc(o.details)}</div>` : ''}<div class="offer-e">${o.only_when_calm ? 'Offre heures creuses · ' : ''}${offerEnd(o.ends_at)}</div></div>` : ''}
+    ${p.link_url || p.phone ? `<div class="pb-actions">
+      ${p.link_url ? `<a class="btn btn-dark" data-ptrack href="${esc(p.link_url)}" target="_blank" rel="noopener">${esc(p.link_label || 'Voir le site')}</a>` : ''}
+      ${p.phone ? `<a class="btn btn-ghost" data-ptrack href="tel:${esc(p.phone.replace(/\s/g, ''))}">📞 Appeler</a>` : ''}
+    </div>` : ''}
+  </div>`;
+}
+
 function pillHtml(e) {
   // Une seule pastille : la couleur du service le plus chargé (salle ou Drive), détail dans la fiche.
   const os = openState(state.hours?.[e.id]);
   if (os && !os.open) return `<span class="dot" style="background:#9CA3AF"></span>${esc(brandShort(e))}`;
   const d = describeStatus(mainStatus(e));
   const live = d.isLive ? ' live' : '';
-  return `<span class="dot${live}" style="background:${d.info.color};color:${d.info.color}"></span>${esc(brandShort(e))}`;
+  return `<span class="dot${live}" style="background:${d.info.color};color:${d.info.color}"></span>${esc(brandShort(e))}${partnerOf(e.id)?.offer ? '<span class="gift" title="Offre du jour">🎁</span>' : ''}`;
 }
 
 function renderMarkers() {
@@ -250,7 +280,7 @@ async function refreshStatuses() {
   if (refreshing || !state.establishments.size) return;
   refreshing = true;
   try {
-    const results = await Promise.allSettled(coverPoints().map((p) => api.nearby(p.lat, p.lng, 5000, 50)));
+    const [results] = await Promise.all([Promise.allSettled(coverPoints().map((p) => api.nearby(p.lat, p.lng, 5000, 50))), loadPartners()]);
     for (const r of results) {
       if (r.status !== 'fulfilled' || !r.value) continue;
       for (const row of r.value) {
@@ -304,12 +334,13 @@ function renderCards() {
   const fromMe = !!myPosition();
   box.innerHTML = `<div class="cards-count">${visible.length}<small>resto${visible.length > 1 ? 's' : ''}<br>ici</small></div>` + list.map(({ e, d }) => `
     <button class="card" data-id="${e.id}" type="button">
-      <p class="card-title">${esc(e.name)}</p>
+      <p class="card-title">${partnerOf(e.id) ? '<span class="card-star" title="Partenaire">⭐</span> ' : ''}${esc(e.name)}</p>
       <div class="card-sub">${esc(e.city)}${fromMe ? ` · ${fmtDistance(d)}` : ''}${openLabelHtml(e)}</div>
       <div class="card-row">
         ${e.has_dine_in ? chipHtml('Salle', e.status_salle) : ''}
         ${e.has_drive ? chipHtml('Drive', e.status_drive) : ''}
       </div>
+      ${partnerOf(e.id)?.offer ? `<div class="card-offer">🎁 ${esc(partnerOf(e.id).offer.title)}</div>` : ''}
     </button>`).join('');
   box.scrollLeft = 0;
   setFocus(list[0]?.e.id || null);
@@ -660,6 +691,7 @@ function renderDetail(id) {
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
     ${routeHtml(e)}
+    ${partnerHtml(e)}
     ${e.has_dine_in ? serviceBlock(e, 'salle') : ''}
     ${e.has_drive ? serviceBlock(e, 'drive') : ''}
     ${calmer ? `<div class="hint">💡 ${esc(calmer)}</div>` : ''}
@@ -675,6 +707,7 @@ function renderDetail(id) {
   document.querySelectorAll('#sheet-body .day-tab').forEach((b) => b.onclick = () => { curveDay = Number(b.dataset.day); renderDetail(id); });
   $('#btn-fav').onclick = () => toggleFav(id);
   $('#btn-share').onclick = () => openShare(e);
+  document.querySelectorAll('#sheet-body [data-ptrack]').forEach((a) => a.addEventListener('click', () => api.partnerTrack(id, 'click')));
 }
 
 // Centre le resto dans la partie de carte visible au-dessus de la fiche.
@@ -697,6 +730,7 @@ async function openDetail(id) {
   state.selectedId = id;
   state.markers.get(id)?.el.classList.add('selected');
   curveDay = null;
+  if (partnerOf(id)) api.partnerTrack(id, 'view');
   setFocus(id); // un seul resto entouré : celui de la fiche
   focusResto(e);
   renderDetail(id);
@@ -1165,7 +1199,7 @@ async function renderAccount(tab = 'profil') {
     if (tab === 'badges') body.innerHTML = await badgesHtml();
     if (tab === 'classement') { await renderLeaderboard(body); return; }
     if (tab === 'favoris') { body.innerHTML = await favoritesHtml(); bindFavList(body); }
-    if (tab === 'reglages') { body.innerHTML = settingsHtml(); bindSettings(body); }
+    if (tab === 'reglages') { const resto = await api.myRestaurant().catch(() => null); body.innerHTML = settingsHtml(resto); bindSettings(body, resto); }
   } catch (err) {
     body.innerHTML = `<p class="muted">${esc(err.message)}</p>`;
   }
@@ -1177,8 +1211,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=71" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=71) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=72" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=72) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1262,7 +1296,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg (dessinés) ; les autres viennent de la planche ChatGPT d'Alexis (.webp, outils/badges_sheet.py).
 const BADGE_SVG = new Set(['v10', 'drive10', 'explorer10', 'ref1']);
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=71" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=72" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1333,7 +1367,42 @@ function bindFavList(body) {
   });
 }
 
-function settingsHtml() {
+// Espace du restaurateur partenaire : ses chiffres (30 jours) et son offre du jour.
+function myRestoHtml(r) {
+  const o = r.offer;
+  const hours = (r.busiest || []).map((h) => `${h} h`).join(', ');
+  return `
+    <div class="partner-card mine">
+      <div class="pc-head"><span class="pc-ico">🏪</span><div><div class="pc-title">${esc(r.name)}</div><div class="pc-sub">⭐ Partenaire${r.founder ? ' fondateur' : ''}</div></div></div>
+      <div class="pc-stats">
+        <div><strong>${r.views_30d ?? 0}</strong><span>vues de la fiche</span></div>
+        <div><strong>${r.clicks_30d ?? 0}</strong><span>clics lien / tél.</span></div>
+        <div><strong>${r.reports_30d ?? 0}</strong><span>signalements</span></div>
+        <div><strong>${r.favorites ?? 0}</strong><span>en favori</span></div>
+      </div>
+      <div class="pc-note" style="text-align:left">Sur 30 jours${hours ? ` · heures les plus chargées : <strong>${hours}</strong>` : ''}</div>
+      <div class="pc-offer">
+        <div class="pc-offer-t">🎁 Offre du jour</div>
+        ${o ? `<div class="pc-current"><strong>${esc(o.title)}</strong>${o.details ? `<br>${esc(o.details)}` : ''}<br><small>${o.visible ? '🟢 Visible en ce moment' : '⏸️ En pause : visible seulement quand c\'est calme'} · ${offerEnd(o.ends_at)}</small></div>` : '<div class="pc-current"><small>Aucune offre en cours.</small></div>'}
+        <form id="offer-form">
+          <input class="select" name="title" placeholder="Ex. : -10 % sur le menu" maxlength="60" required minlength="3">
+          <input class="select" name="details" placeholder="Détail (facultatif)" maxlength="140">
+          <select class="select" name="hours">
+            <option value="3">Pendant 3 heures</option>
+            <option value="24" selected>Pendant 24 heures</option>
+            <option value="72">Pendant 3 jours</option>
+            <option value="168">Pendant 7 jours</option>
+          </select>
+          <label class="pc-check"><input type="checkbox" name="calm"> Afficher seulement quand c'est calme chez moi</label>
+          <button class="btn btn-primary">Publier l'offre</button>
+        </form>
+        ${o ? '<button type="button" class="link-btn" id="offer-clear" style="color:#fff">Retirer l\'offre en cours</button>' : ''}
+      </div>
+      <div class="pc-note">Les statuts d'affluence restent toujours neutres : un partenariat ne les modifie jamais.</div>
+    </div>`;
+}
+
+function settingsHtml(resto = null) {
   const t = testPosition();
   return `
     <div class="section-title">Pseudo</div>
@@ -1342,16 +1411,16 @@ function settingsHtml() {
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>
 
-    <div class="partner-card">
+    ${resto ? myRestoHtml(resto) : `<div class="partner-card">
       <div class="pc-head"><span class="pc-ico">🍔</span><div><div class="pc-title">Vous êtes restaurateur ?</div><div class="pc-sub">Devenez partenaire de Y'a du peuple ?</div></div></div>
       <ul class="pc-list">
-        <li>⭐ Mise en avant de votre restaurant sur la carte</li>
-        <li>🎁 Offre du jour visible par les clients autour</li>
-        <li>📊 Statistiques d'affluence de votre établissement</li>
+        <li>⭐ Fiche Pro : badge Partenaire, lien vers votre menu, téléphone</li>
+        <li>🎁 Offre du jour sur la carte, même réservée à vos heures creuses</li>
+        <li>📊 Vos chiffres : vues, clics, heures de pointe</li>
       </ul>
       <a class="btn btn-primary" href="mailto:${CONTACT_EMAIL}?subject=Partenariat%20Y'a%20du%20peuple">✉️ Nous contacter</a>
       <div class="pc-note">Les statuts d'affluence restent toujours neutres : un partenariat ne les modifie jamais.</div>
-    </div>
+    </div>`}
 
     ${isTester() ? `<div class="section-title">Mode test</div>
     <p class="muted">Position fictive « latitude, longitude » pour tester sans être sur place. Vide = vrai GPS.</p>
@@ -1373,7 +1442,22 @@ function settingsHtml() {
   `;
 }
 
-function bindSettings(body) {
+function bindSettings(body, resto = null) {
+  const of = $('#offer-form', body);
+  if (of) {
+    const send = async (o) => {
+      const r = await api.setPartnerOffer(o).catch((e) => ({ ok: false, message: e.message }));
+      toast(r?.message || 'Impossible pour le moment.');
+      if (r?.ok) { await loadPartners(); renderMarkers(); renderCards(); renderAccount('reglages'); }
+    };
+    of.onsubmit = (ev) => {
+      ev.preventDefault();
+      const f = new FormData(of);
+      send({ title: String(f.get('title') || ''), details: String(f.get('details') || ''), hours: Number(f.get('hours')), onlyWhenCalm: f.get('calm') === 'on' });
+    };
+    const clr = $('#offer-clear', body);
+    if (clr) clr.onclick = () => send({ title: '' });
+  }
   $('#pseudo-form', body).onsubmit = async (ev) => {
     ev.preventDefault();
     const v = String(new FormData(ev.target).get('pseudo') || '').trim();
