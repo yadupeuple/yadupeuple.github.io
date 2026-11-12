@@ -497,3 +497,11 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .pc-launch { background: rgba(245,165,36,.16); border: 1px solid rgba(245,165,36,.5); color: #FDE68A; border-radius: 12px; padding: 9px 11px; font-size: 13px; margin-bottom: 12px; }
 .pc-launch strong { color: #F5A524; }
 .partner-card .pc-poster { margin: 10px 0 0; background: rgba(255,255,255,.12); color: #fff; text-decoration: none; display: flex; justify-content: center; }
+/* Carte partenaire repliée par défaut (la plupart des gens ne sont pas restaurateurs) */
+.pc-fold > summary { list-style: none; cursor: pointer; margin-bottom: 0; }
+.pc-fold > summary::-webkit-details-marker { display: none; }
+.pc-fold[open] > summary { margin-bottom: 12px; }
+.pc-fold .grow { flex: 1; min-width: 0; }
+.pc-chev { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.12); display: grid; place-items: center; flex: none; transition: transform .25s ease; }
+.pc-chev svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.pc-fold[open] .pc-chev { transform: rotate(180deg); }
