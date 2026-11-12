@@ -16,11 +16,17 @@
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--ink);
   -webkit-tap-highlight-color: transparent;
+  /* Texte net partout (même police, rendu plus propre sur iPhone / Mac) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #EEF1F4; }
 button { font: inherit; color: inherit; cursor: pointer; }
-input { font: inherit; }
+input, select, textarea { font: inherit; }
 [hidden] { display: none !important; }
 
 #map { position: fixed; inset: 0; }
@@ -255,7 +261,7 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 .pill.cluster .dot { box-shadow: 0 0 0 2px #fff; }
 /* Graphique d'affluence : onglets des jours */
 .day-tabs { display: flex; gap: 4px; margin: 2px 0 10px; overflow-x: auto; }
-.day-tab { flex: 1; min-width: 38px; border: 0; border-radius: 999px; padding: 5px 0; font: 600 12px/1 inherit; background: #F1F5F9; color: var(--ink); cursor: pointer; }
+.day-tab { flex: 1; min-width: 38px; border: 0; border-radius: 999px; padding: 5px 0; font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1; background: #F1F5F9; color: var(--ink); cursor: pointer; }
 .day-tab.on { background: var(--navy); color: #fff; }
 .bar.live { outline: 2px solid var(--navy); outline-offset: 1px; }
 .bar.live::after { content: ''; position: absolute; top: -9px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--teal); }
@@ -364,7 +370,7 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .badge-ico { font-size: 20px; }
 /* Classements */
 .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #F1F5F9; border-radius: 12px; margin-bottom: 8px; }
-.seg button { border: 0; border-radius: 9px; padding: 9px 0; font: 700 14px/1 inherit; background: transparent; color: var(--ink); cursor: pointer; }
+.seg button { border: 0; border-radius: 9px; padding: 9px 0; font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1; background: transparent; color: var(--ink); cursor: pointer; }
 .seg button.on { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
 .gis-btn { display: none; min-height: 44px; justify-content: center; }
 .gis-btn.ready { display: flex; }
@@ -506,3 +512,11 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .pc-chev svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 .pc-fold[open] .pc-chev { transform: rotate(180deg); }
 .legal-foot a.link-btn, .legal-foot .link-btn { text-decoration: none; }
+/* Liste du bas : contenu en haut de la carte (un bouton centre par défaut), bulles empilées.
+   Resto sans Drive : la bulle Salle prend la place des 2 bulles. */
+.card { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
+.card-row { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; min-height: 52px; }
+.card-row .chip:only-child { flex: 1; align-self: stretch; justify-content: center; font-size: 14px; gap: 7px; border-radius: 14px; }
+.card-row .chip:only-child .dot { width: 11px; height: 11px; }
+/* La carte (MapLibre) impose « Helvetica Neue » : les pastilles reprennent la police de l'appli */
+.maplibregl-map, .pill { font-family: inherit; }
