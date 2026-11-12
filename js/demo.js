@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=44';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=44';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=45';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=45';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -117,20 +117,21 @@ export function createDemoApi() {
         ['avatar', 'couronne', 'icons/avatars/couronne.webp', 90],
         ['avatar', 'fusee', 'icons/avatars/fusee.webp', 100],
         ['banner', 'nuit', 'icons/banners/nuit.webp', 1],
-        ['banner', 'sunset', 'icons/banners/sunset.webp', 5],
-        ['banner', 'plage', 'icons/banners/plage.webp', 10],
+        ['banner', 'ciel', 'icons/banners/ciel.webp', 1],
+        ['banner', 'plage', 'icons/banners/plage.webp', 5],
+        ['banner', 'ville', 'icons/banners/ville.webp', 10],
         ['banner', 'foret', 'icons/banners/foret.webp', 15],
-        ['banner', 'montagne', 'icons/banners/montagne.webp', 20],
+        ['banner', 'confettis', 'icons/banners/confettis.webp', 20],
         ['banner', 'hiver', 'icons/banners/hiver.webp', 25],
-        ['banner', 'printemps', 'icons/banners/printemps.webp', 30],
+        ['banner', 'geometrique', 'icons/banners/geometrique.webp', 30],
         ['banner', 'automne', 'icons/banners/automne.webp', 35],
-        ['banner', 'ville', 'icons/banners/ville.webp', 40],
-        ['banner', 'vagues', 'icons/banners/vagues.webp', 45],
-        ['banner', 'tropical', 'icons/banners/tropical.webp', 50],
-        ['banner', 'phare', 'icons/banners/phare.webp', 60],
-        ['banner', 'geometrique', 'icons/banners/geometrique.webp', 70],
-        ['banner', 'confettis', 'icons/banners/confettis.webp', 80],
-        ['banner', 'retro', 'icons/banners/retro.webp', 90],
+        ['banner', 'sunset', 'icons/banners/sunset.webp', 40],
+        ['banner', 'montagne', 'icons/banners/montagne.webp', 45],
+        ['banner', 'vagues', 'icons/banners/vagues.webp', 50],
+        ['banner', 'printemps', 'icons/banners/printemps.webp', 60],
+        ['banner', 'retro', 'icons/banners/retro.webp', 70],
+        ['banner', 'tropical', 'icons/banners/tropical.webp', 80],
+        ['banner', 'phare', 'icons/banners/phare.webp', 90],
         ['banner', 'espace', 'icons/banners/espace.webp', 100],
       ].map(([kind, code, value, min_level]) => ({ kind, code, value, min_level }));
     },

@@ -27,10 +27,11 @@ AV = [
  ('couronne',2,948,227,96,96,90),('fusee',2,1078,227,93,95,100),
 ]
 BN = [
- ('nuit',2,36,612,372,83,1),('sunset',2,421,612,371,83,5),('plage',2,805,612,373,84,10),('foret',2,37,730,372,91,15),
- ('montagne',2,422,730,371,91,20),('hiver',2,423,979,370,91,25),('printemps',2,806,979,373,91,30),('automne',2,37,979,373,91,35),
- ('ville',2,806,730,373,91,40),('vagues',2,37,1108,373,91,45),('tropical',2,806,855,373,91,50),('phare',1,521,1255,482,102,60),
- ('geometrique',2,806,1108,373,91,70),('confettis',2,423,1110,371,88,80),('retro',2,422,855,371,91,90),('espace',2,37,855,373,91,100),
+ ('nuit',2,36,612,372,83,1),('ciel',1,521,806,483,96,1),('plage',2,805,612,373,84,5),('ville',2,806,730,373,91,10),
+ ('foret',2,37,730,372,91,15),('confettis',2,423,1110,371,88,20),('hiver',2,423,979,370,91,25),('geometrique',2,806,1108,373,91,30),
+ ('automne',2,37,979,373,91,35),('sunset',2,421,612,371,83,40),('montagne',2,422,730,371,91,45),('vagues',2,37,1108,373,91,50),
+ ('printemps',2,806,979,373,91,60),('retro',2,422,855,371,91,70),('tropical',2,806,855,373,91,80),('phare',1,521,1255,482,102,90),
+ ('espace',2,37,855,373,91,100),
 ]
 man = []
 for i, (code, p, x, y, w, h, lvl) in enumerate(AV):
@@ -52,7 +53,7 @@ for i, (code, p, x, y, w, h, lvl) in enumerate(AV):
 for i, (code, p, x, y, w, h, lvl) in enumerate(BN):
     man.append(dict(kind='banner', code=code, level=lvl, order=i))
     if only and only != code: continue
-    if code == 'phare':                                  # planche 1 : partie droite, sans l'étiquette de texte incrustée
+    if code in ('phare', 'ciel'):                                  # planche 1 : partie droite, sans l'étiquette de texte incrustée
         x, w = x + 132, w - 132
         cut = round(h - w / 4.1); y, h = y + cut // 2, h - cut
     ins = 5                                              # rogne les coins arrondis de la planche

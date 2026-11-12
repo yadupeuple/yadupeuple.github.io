@@ -71,9 +71,9 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Parrainage : lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
   filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
 - Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.
-  Avatars (30) et bannières (16) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
+  Avatars (30) et bannières (17, dont 2 au niveau 1) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
   et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
-  Table customizations (is_active) ; paliers 1, 5, 10 … 50, 60 … 100 ; bannière affichée en bandeau entier (4,1:1).
+  Table customizations (is_active) ; paliers 1, 5, 10 … 50, 60 … 100 ; bannière en fond de toute la carte de profil (voile sombre), thèmes alternés d'un palier à l'autre.
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →
