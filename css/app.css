@@ -530,3 +530,9 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .mc-note { font-size: 12.5px; margin: 6px 0 0; }
 /* Fiche resto : toute la hauteur, coins arrondis, la carte reste visible autour (sur les côtés sur PC, en haut sur téléphone) */
 .sheet.tall { top: calc(10px + var(--safe-top)); max-height: none; }
+/* Horaires : jours dans une colonne, heures alignées les unes sous les autres */
+.hours ul { display: grid; grid-template-columns: max-content max-content; column-gap: 18px; max-width: none; }
+.hours li { display: contents; }
+.hours li > span { padding: 2px 0; }
+.hours li > span:last-child { font-variant-numeric: tabular-nums; }
+.hours li > span:first-child::first-letter { text-transform: uppercase; }
