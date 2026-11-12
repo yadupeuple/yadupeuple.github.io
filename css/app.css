@@ -433,3 +433,9 @@ input, textarea, select, [contenteditable="true"] { caret-color: auto; }
 .cards { cursor: grab; }
 .cards.dragging { cursor: grabbing; user-select: none; }
 .cards.dragging .card { pointer-events: none; }
+/* Profil plein écran : couvre aussi la zone qui apparaît quand la barre du navigateur se replie ;
+   bas de l'écran (barre du téléphone) en bleu nuit comme le haut */
+.sheet.full { bottom: auto; height: 100vh; height: 100lvh; }
+.sheet.full .sheet-body { padding-bottom: calc(40px + var(--safe-bottom)); }
+html.sheet-full, html.sheet-full body { background: #0B1F3A; }
+html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibility: hidden; }
