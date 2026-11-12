@@ -379,9 +379,18 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .cz.locked { cursor: not-allowed; }
 .cz.locked > :first-child { filter: grayscale(1); opacity: .35; }
 .cz-emoji { font-size: 32px; }
-.cz-banner { display: block; width: 100%; height: 44px; border-radius: 10px; }
-.cz-lock { position: absolute; inset: auto 4px 4px; font-size: 11px; font-weight: 700; color: var(--ink); text-align: center; }
-.profile-card .avatar { background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
-.avatar-img { width: 80%; height: 80%; display: block; }
-.cz-img { width: 40px; height: 40px; display: block; }
 .cz-emoji { display: grid; place-items: center; }
+/* Profil : bannière en bandeau (image entière, non rognée) et image de profil ronde par-dessus */
+.profile-card { padding-top: 12px; }
+.profile-banner { aspect-ratio: 4.1 / 1; border-radius: 12px; background-color: var(--navy-2); margin: 0 -4px; }
+.profile-card .profile-top { margin-top: -26px; padding-left: 8px; align-items: flex-end; }
+.profile-card .avatar { width: 72px; height: 72px; background: var(--navy); box-shadow: 0 0 0 3px var(--navy); }
+.profile-card .profile-top .grow { padding-top: 30px; }
+.profile-card .profile-top .round-btn { margin-bottom: 2px; }
+.avatar-img { width: 100%; height: 100%; display: block; border-radius: 50%; }
+.cz { padding: 8px 6px 4px; gap: 2px; }
+.cz-img { width: 56px; height: 56px; display: block; }
+.cz-banner { display: block; width: 100%; aspect-ratio: 4.1 / 1; border-radius: 8px; }
+.cz-lock { font-size: 11px; font-weight: 700; color: var(--muted); text-align: center; }
+.avatar { padding: 0; }
+.cz.locked > :first-child { filter: grayscale(.55); opacity: .6; }

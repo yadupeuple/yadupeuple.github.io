@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=43';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=43';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=44';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=44';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -86,10 +86,52 @@ export function createDemoApi() {
     async customizations() {
       await wait();
       return [
-        ['avatar', 'burger', 'icons/avatars/burger.svg', 1], ['avatar', 'frites', 'icons/avatars/frites.svg', 1], ['avatar', 'tacos', 'icons/avatars/tacos.svg', 1], ['avatar', 'pizza', 'icons/avatars/pizza.svg', 1],
-        ['avatar', 'soda', 'icons/avatars/soda.svg', 5], ['avatar', 'hotdog', 'icons/avatars/hotdog.svg', 10], ['avatar', 'renard', 'icons/avatars/renard.svg', 30], ['avatar', 'fusee', 'icons/avatars/fusee.svg', 100],
-        ['banner', 'nuit', 'icons/banners/nuit.svg', 1], ['banner', 'lagon', 'icons/banners/lagon.svg', 1],
-        ['banner', 'sunset', 'icons/banners/sunset.svg', 10], ['banner', 'or', 'icons/banners/or.svg', 50],
+        ['avatar', 'burger', 'icons/avatars/burger.webp', 1],
+        ['avatar', 'frites', 'icons/avatars/frites.webp', 1],
+        ['avatar', 'pizza', 'icons/avatars/pizza.webp', 1],
+        ['avatar', 'soda', 'icons/avatars/soda.webp', 1],
+        ['avatar', 'hotdog', 'icons/avatars/hotdog.webp', 1],
+        ['avatar', 'tacos', 'icons/avatars/tacos.webp', 1],
+        ['avatar', 'popcorn', 'icons/avatars/popcorn.webp', 5],
+        ['avatar', 'donut', 'icons/avatars/donut.webp', 5],
+        ['avatar', 'cupcake', 'icons/avatars/cupcake.webp', 10],
+        ['avatar', 'coeur', 'icons/avatars/coeur.webp', 10],
+        ['avatar', 'etoile', 'icons/avatars/etoile.webp', 15],
+        ['avatar', 'voiture', 'icons/avatars/voiture.webp', 15],
+        ['avatar', 'chat', 'icons/avatars/chat.webp', 20],
+        ['avatar', 'chien', 'icons/avatars/chien.webp', 20],
+        ['avatar', 'panda', 'icons/avatars/panda.webp', 25],
+        ['avatar', 'renard', 'icons/avatars/renard.webp', 25],
+        ['avatar', 'chouette', 'icons/avatars/chouette.webp', 30],
+        ['avatar', 'ours', 'icons/avatars/ours.webp', 30],
+        ['avatar', 'trefle', 'icons/avatars/trefle.webp', 35],
+        ['avatar', 'eclair', 'icons/avatars/eclair.webp', 35],
+        ['avatar', 'flamme', 'icons/avatars/flamme.webp', 40],
+        ['avatar', 'lunettes', 'icons/avatars/lunettes.webp', 40],
+        ['avatar', 'lion', 'icons/avatars/lion.webp', 45],
+        ['avatar', 'medaille', 'icons/avatars/medaille.webp', 45],
+        ['avatar', 'trophee', 'icons/avatars/trophee.webp', 50],
+        ['avatar', 'licorne', 'icons/avatars/licorne.webp', 60],
+        ['avatar', 'dragon', 'icons/avatars/dragon.webp', 70],
+        ['avatar', 'diamant', 'icons/avatars/diamant.webp', 80],
+        ['avatar', 'couronne', 'icons/avatars/couronne.webp', 90],
+        ['avatar', 'fusee', 'icons/avatars/fusee.webp', 100],
+        ['banner', 'nuit', 'icons/banners/nuit.webp', 1],
+        ['banner', 'sunset', 'icons/banners/sunset.webp', 5],
+        ['banner', 'plage', 'icons/banners/plage.webp', 10],
+        ['banner', 'foret', 'icons/banners/foret.webp', 15],
+        ['banner', 'montagne', 'icons/banners/montagne.webp', 20],
+        ['banner', 'hiver', 'icons/banners/hiver.webp', 25],
+        ['banner', 'printemps', 'icons/banners/printemps.webp', 30],
+        ['banner', 'automne', 'icons/banners/automne.webp', 35],
+        ['banner', 'ville', 'icons/banners/ville.webp', 40],
+        ['banner', 'vagues', 'icons/banners/vagues.webp', 45],
+        ['banner', 'tropical', 'icons/banners/tropical.webp', 50],
+        ['banner', 'phare', 'icons/banners/phare.webp', 60],
+        ['banner', 'geometrique', 'icons/banners/geometrique.webp', 70],
+        ['banner', 'confettis', 'icons/banners/confettis.webp', 80],
+        ['banner', 'retro', 'icons/banners/retro.webp', 90],
+        ['banner', 'espace', 'icons/banners/espace.webp', 100],
       ].map(([kind, code, value, min_level]) => ({ kind, code, value, min_level }));
     },
     async setCustomization(kind, code) {

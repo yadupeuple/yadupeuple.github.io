@@ -71,8 +71,9 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Parrainage : lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
   filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
 - Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.
-  Avatars et bannières : illustrations de l'appli (icons/avatars/*.svg, icons/banners/*.svg, dessinées pour le projet),
-  choisies seulement dans la table customizations, débloquées par niveau.
+  Avatars (30) et bannières (16) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
+  et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
+  Table customizations (is_active) ; paliers 1, 5, 10 … 50, 60 … 100 ; bannière affichée en bandeau entier (4,1:1).
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →
@@ -90,7 +91,7 @@ Supabase · mentions légales, RGPD, CGU · vérification de la marque · tests 
 ## Plus tard (idées validées, pas encore faites)
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
-Profil : illustrations des badges à créer (avatars et bannières faits le 12/11) ;
+Profil : illustrations des badges à créer ;
 nouvelle disposition de la page Profil.
 
 ## Mises à jour
