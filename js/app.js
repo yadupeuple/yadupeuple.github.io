@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=91';
+import { api, DEMO } from './api.js?v=92';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=91';
+} from './config.js?v=92';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=91';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=91';
-import { BRAND_PATHS } from './brands.js?v=91';
+} from './levels.js?v=92';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=92';
+import { BRAND_PATHS } from './brands.js?v=92';
 
 // ---------------------------------------------------------------------------
 // État
@@ -123,6 +123,79 @@ function partnerHtml(e) {
   </div>`;
 }
 
+// ---------------------------------------------------------------------------
+// Filtres (bouton entre la loupe et le profil) : enseignes, affluence, Drive. Gardés sur le téléphone.
+// ---------------------------------------------------------------------------
+const BRANDS = ["McDonald's", 'Burger King', 'KFC', 'Quick', 'Subway', 'Buffalo Grill', "O'Tacos", 'Starbucks', 'Flunch'];
+const FILTER_LEVELS = [
+  ['calme', LEVEL_INFO.calme], ['modere', LEVEL_INFO.modere], ['frequente', LEVEL_INFO.frequente],
+  ['tres_frequente', LEVEL_INFO.tres_frequente], ['aucune', { label: 'Aucune info / fermé', color: NO_INFO.color }],
+];
+const filters = (() => {
+  try {
+    const f = JSON.parse(store.get('ydp_filters') || '{}');
+    return { brands: new Set(f.brands || []), levels: new Set(f.levels || []), drive: !!f.drive };
+  } catch { return { brands: new Set(), levels: new Set(), drive: false }; }
+})();
+const filtersActive = () => filters.brands.size > 0 || filters.levels.size > 0 || filters.drive;
+function saveFilters() {
+  store.set('ydp_filters', JSON.stringify({ brands: [...filters.brands], levels: [...filters.levels], drive: filters.drive }));
+  const n = filters.brands.size + filters.levels.size + (filters.drive ? 1 : 0);
+  const badge = $('#filter-badge');
+  if (badge) { badge.hidden = !n; badge.textContent = n; }
+  $('#btn-filter')?.classList.toggle('on', n > 0);
+}
+// Niveau affiché pour le resto (même règle que la pastille : fermé ou sans info = « aucune »).
+function levelKey(e) {
+  const os = openState(state.hours?.[e.id]);
+  if (os && !os.open) return 'aucune';
+  return describeStatus(mainStatus(e)).level || 'aucune';
+}
+function passesFilter(e) {
+  if (filters.brands.size && !filters.brands.has(e.brand)) return false;
+  if (filters.drive && !e.has_drive) return false;
+  if (filters.levels.size && !filters.levels.has(levelKey(e))) return false;
+  return true;
+}
+function openFilters() {
+  const brands = [...new Set([...BRANDS, ...[...state.establishments.values()].map((e) => e.brand).filter(Boolean)])];
+  const count = () => [...state.establishments.values()].filter(passesFilter).length;
+  const draw = () => {
+    openSheet('filters', `
+      <div class="sheet-head">
+        <div class="grow"><h2>Filtrer</h2><div class="sub">Choisis ce que tu veux voir sur la carte</div></div>
+        <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+      </div>
+      <div class="section-title">Affluence</div>
+      <div class="fchips">${FILTER_LEVELS.map(([k, i]) => `<button type="button" class="fchip ${filters.levels.has(k) ? 'on' : ''}" data-level="${k}"><span class="dot" style="background:${i.color}"></span>${esc(i.label)}</button>`).join('')}</div>
+      <div class="section-title">Enseignes</div>
+      <div class="fchips">${brands.map((b) => `<button type="button" class="fchip ${filters.brands.has(b) ? 'on' : ''}" data-brand="${esc(b)}">${esc(b)}</button>`).join('')}</div>
+      <div class="section-title">Service</div>
+      <div class="fchips"><button type="button" class="fchip ${filters.drive ? 'on' : ''}" data-drive="1">🚗 Avec Drive seulement</button></div>
+      <div class="filter-actions">
+        <button type="button" class="btn btn-ghost" id="btn-freset">Tout afficher</button>
+        <button type="button" class="btn btn-primary" id="btn-fok">Voir ${count()} resto${count() > 1 ? 's' : ''}</button>
+      </div>`);
+    const keep = $('#sheet-body').scrollTop;
+    $('#btn-close').onclick = closeSheet;
+    $('#btn-fok').onclick = closeSheet;
+    $('#btn-freset').onclick = () => { filters.brands.clear(); filters.levels.clear(); filters.drive = false; apply(); };
+    document.querySelectorAll('#sheet-body .fchip').forEach((b) => b.onclick = () => {
+      if (b.dataset.level) filters.levels.has(b.dataset.level) ? filters.levels.delete(b.dataset.level) : filters.levels.add(b.dataset.level);
+      else if (b.dataset.brand) filters.brands.has(b.dataset.brand) ? filters.brands.delete(b.dataset.brand) : filters.brands.add(b.dataset.brand);
+      else filters.drive = !filters.drive;
+      apply();
+    });
+    return keep;
+  };
+  const apply = () => {
+    const y = $('#sheet-body').scrollTop;
+    saveFilters(); renderMarkers(); renderCards(); draw();
+    $('#sheet-body').scrollTop = y;
+  };
+  draw();
+}
+
 function pillHtml(e) {
   // Une seule pastille : la couleur du service le plus chargé (salle ou Drive), détail dans la fiche.
   const os = openState(state.hours?.[e.id]);
@@ -149,6 +222,7 @@ function renderMarkers() {
     const os = openState(state.hours?.[e.id]);
     m.el.classList.toggle('closed', !!(os && !os.open));
     m.el.classList.toggle('selected', state.selectedId === e.id);
+    m.hidden = !passesFilter(e);
   }
   applyZoomClass();
   updateClusters();
@@ -167,6 +241,7 @@ function updateClusters() {
   for (const e of state.establishments.values()) {
     const m = state.markers.get(e.id);
     if (!m) continue;
+    if (m.hidden) { m.el.style.display = 'none'; continue; }
     const p = map.project([e.lng, e.lat]);
     pts.push({ e, m, x: p.x, y: p.y, used: false });
   }
@@ -321,9 +396,13 @@ function renderCards() {
   if (!state.establishments.size) { box.innerHTML = ''; return; }
   const ref = refPoint();
   const b = map.getBounds();
-  const visible = [...state.establishments.values()].filter((e) => b.contains([e.lng, e.lat]));
+  const visible = [...state.establishments.values()].filter((e) => b.contains([e.lng, e.lat]) && passesFilter(e));
   if (!visible.length) {
-    box.innerHTML = '<div class="cards-empty">Aucun restaurant dans cette zone. Dézoome ou déplace la carte.</div>';
+    box.innerHTML = filtersActive()
+      ? '<div class="cards-empty">Aucun restaurant ne correspond à tes filtres ici. <button type="button" class="link-btn" id="btn-funset">Retirer les filtres</button></div>'
+      : '<div class="cards-empty">Aucun restaurant dans cette zone. Dézoome ou déplace la carte.</div>';
+    const un = $('#btn-funset');
+    if (un) un.onclick = () => { filters.brands.clear(); filters.levels.clear(); filters.drive = false; saveFilters(); renderMarkers(); renderCards(); };
     setFocus(null);
     return;
   }
@@ -936,6 +1015,8 @@ function openSearch() {
   });
 }
 $('#btn-search').addEventListener('click', openSearch);
+$('#btn-filter').addEventListener('click', openFilters);
+saveFilters(); // badge au démarrage
 
 // ---------------------------------------------------------------------------
 // Compte
@@ -1220,8 +1301,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=91" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=91) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=92" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=92) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1305,7 +1386,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=91" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=92" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];

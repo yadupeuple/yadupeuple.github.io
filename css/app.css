@@ -541,3 +541,14 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .legal-grid > :nth-child(3n+1) { justify-self: end; text-align: right; }
 .legal-grid > :nth-child(3n) { justify-self: start; text-align: left; }
 .legal-grid > span { margin: 0; }
+/* Filtres */
+#btn-filter { position: relative; }
+#btn-filter.on { background: var(--teal, #14B8A6); }
+#btn-filter.on svg { stroke: #fff; }
+.filter-badge { position: absolute; top: -3px; right: -3px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #F5A524; color: #0B1F3A; font-size: 11px; font-weight: 800; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff; }
+.fchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.fchip { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid #E5E7EB; background: #fff; color: var(--ink); border-radius: 999px; padding: 8px 13px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.fchip .dot { width: 10px; height: 10px; border-radius: 50%; }
+.fchip.on { border-color: var(--navy); background: var(--navy); color: #fff; }
+.filter-actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; margin-top: 20px; }
+.filter-actions .btn { margin: 0; }
