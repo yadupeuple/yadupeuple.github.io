@@ -573,3 +573,5 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 /* Liste du bas : cartes sans ombre (demande d'Alexis), juste un fin liseré pour les détacher de la carte */
 .card, .cards-count { box-shadow: 0 0 0 1px rgba(11,31,58,.08) !important; }
 .card.focus { box-shadow: 0 0 0 2.5px var(--teal) !important; }
+/* Carte calée sur la gauche : garder un petit espace pour voir la bulle (et son contour) en entier */
+.cards { scroll-padding-inline: 12px; }
