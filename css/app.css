@@ -487,3 +487,12 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .pc-check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
 .pc-check input { width: 18px; height: 18px; accent-color: #14B8A6; }
 .partner-card.mine .link-btn { display: block; margin: 10px auto 0; }
+/* Lot du mois + offre de lancement */
+.prize { display: flex; gap: 10px; align-items: center; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 1.5px solid #F5A524; border-radius: 14px; padding: 10px 12px; margin-bottom: 10px; }
+.prize-ico { font-size: 28px; }
+.prize-t { font-weight: 800; color: var(--navy); }
+.prize-s { font-size: 12.5px; color: #78350F; }
+.prize-s .link-btn { display: inline; font-size: 12.5px; padding: 0; }
+.pc-launch { background: rgba(245,165,36,.16); border: 1px solid rgba(245,165,36,.5); color: #FDE68A; border-radius: 12px; padding: 9px 11px; font-size: 13px; margin-bottom: 12px; }
+.pc-launch strong { color: #F5A524; }
+.partner-card .pc-poster { margin: 10px 0 0; background: rgba(255,255,255,.12); color: #fff; text-decoration: none; display: flex; justify-content: center; }

@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=72';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=72';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=73';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=73';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -233,6 +233,8 @@ export function createDemoApi() {
       favorites.add(id); return 'Ajoute aux favoris';
     },
     // Partenaire fictif (démo) ; ajouter &resto à l'adresse pour voir l'espace du restaurateur.
+    // Lot du mois fictif en démo.
+    async monthlyPrize() { await wait(50); return { title: 'Un menu offert', sponsor_name: 'McDonald\'s Linkling', establishment_id: demoPartner.id, winners: 1 }; },
     async partners() { await wait(50); return [demoPartner]; },
     async partnerTrack(_id, kind) { kind === 'view' ? demoStats.views++ : demoStats.clicks++; },
     async myRestaurant() {

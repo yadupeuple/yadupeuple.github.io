@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=72';
+import { api, DEMO } from './api.js?v=73';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=72';
+} from './config.js?v=73';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=72';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=72';
-import { BRAND_PATHS } from './brands.js?v=72';
+} from './levels.js?v=73';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=73';
+import { BRAND_PATHS } from './brands.js?v=73';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1211,8 +1211,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=72" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=72) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=73" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=73) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1296,7 +1296,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg (dessinés) ; les autres viennent de la planche ChatGPT d'Alexis (.webp, outils/badges_sheet.py).
 const BADGE_SVG = new Set(['v10', 'drive10', 'explorer10', 'ref1']);
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=72" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=73" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1336,7 +1336,18 @@ async function renderLeaderboard(body, city = null, scope = 'month') {
     <p class="muted" style="font-size:12.5px;margin:2px 0 8px">${scope === 'month'
       ? `Points gagnés en ${month}. Le classement repart de zéro le 1er de chaque mois.`
       : 'Tous les points gagnés depuis l\'inscription.'}</p>
+    <div id="lb-prize"></div>
     <div id="lb-list"><div class="spinner"></div></div>`;
+  // Lot du mois offert par un partenaire (rien ne s'affiche s'il n'y en a pas).
+  if (scope === 'month') api.monthlyPrize().then((pz) => {
+    const box = document.querySelector('#lb-prize');
+    if (!pz || !box) return;
+    const e = pz.establishment_id ? state.establishments.get(pz.establishment_id) : null;
+    box.innerHTML = `<div class="prize"><span class="prize-ico">🏆</span><div><div class="prize-t">Lot du mois : ${esc(pz.title)}</div>
+      <div class="prize-s">Pour ${pz.winners > 1 ? `les ${pz.winners} premiers` : 'le n°1'} du classement de ${month}${pz.sponsor_name ? `, offert par <strong>${esc(pz.sponsor_name)}</strong>` : ''}${e ? ' · <button type="button" class="link-btn" id="prize-resto">voir le resto</button>' : ''}</div></div></div>`;
+    const b = document.querySelector('#prize-resto');
+    if (b) b.onclick = () => { closeSheet(); openDetail(e.id); };
+  }).catch(() => {});
   // Classement général uniquement (plus de filtre par ville) ; par région plus tard si l'appli s'étend.
   body.querySelectorAll('[data-scope]').forEach((b) => b.onclick = () => renderLeaderboard(body, null, b.dataset.scope));
   const rows = await api.ranking(scope, city) || [];
@@ -1381,6 +1392,7 @@ function myRestoHtml(r) {
         <div><strong>${r.favorites ?? 0}</strong><span>en favori</span></div>
       </div>
       <div class="pc-note" style="text-align:left">Sur 30 jours${hours ? ` · heures les plus chargées : <strong>${hours}</strong>` : ''}</div>
+      <a class="btn btn-ghost pc-poster" href="affiche.html?r=${encodeURIComponent(r.id)}" target="_blank" rel="noopener">🖨️ Mon affiche QR code à poser en caisse</a>
       <div class="pc-offer">
         <div class="pc-offer-t">🎁 Offre du jour</div>
         ${o ? `<div class="pc-current"><strong>${esc(o.title)}</strong>${o.details ? `<br>${esc(o.details)}` : ''}<br><small>${o.visible ? '🟢 Visible en ce moment' : '⏸️ En pause : visible seulement quand c\'est calme'} · ${offerEnd(o.ends_at)}</small></div>` : '<div class="pc-current"><small>Aucune offre en cours.</small></div>'}
@@ -1417,7 +1429,9 @@ function settingsHtml(resto = null) {
         <li>⭐ Fiche Pro : badge Partenaire, lien vers votre menu, téléphone</li>
         <li>🎁 Offre du jour sur la carte, même réservée à vos heures creuses</li>
         <li>📊 Vos chiffres : vues, clics, heures de pointe</li>
+        <li>🖨️ Une affiche QR code pour votre caisse ou votre Drive</li>
       </ul>
+      <div class="pc-launch">🚀 <strong>Offre de lancement</strong> : 3 mois offerts aux 10 premiers partenaires, avec le badge « Partenaire fondateur » à vie.</div>
       <a class="btn btn-primary" href="mailto:${CONTACT_EMAIL}?subject=Partenariat%20Y'a%20du%20peuple">✉️ Nous contacter</a>
       <div class="pc-note">Les statuts d'affluence restent toujours neutres : un partenariat ne les modifie jamais.</div>
     </div>`}
@@ -1427,7 +1441,8 @@ function settingsHtml(resto = null) {
     <form id="test-form" style="display:flex;gap:8px">
       <input class="select" style="flex:1;font-size:16px" name="pos" placeholder="49.3581, 6.1378" value="${t ? `${t.lat}, ${t.lng}` : ''}">
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
-    </form>` : ''}
+    </form>
+    <p><a class="link-btn" href="affiche.html" target="_blank" rel="noopener">🖨️ Affiches QR code des restaurants</a></p>` : ''}
 
     <div class="section-title">Compte</div>
     <button class="btn btn-ghost" id="btn-logout">Se déconnecter</button>

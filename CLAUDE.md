@@ -49,6 +49,7 @@ Fonctions appelées par l'appli (RPC) :
 | export_my_data(), delete_my_account() | non | RGPD |
 | set_customization(p_kind 'avatar'|'banner', p_code) | non | choisir son avatar / sa bannière (niveau contrôlé) |
 | set_referrer(p_code) | non | déclarer son parrain (compte < 7 j, avant 1er signalement) |
+| get_monthly_prize() | oui | lot du mois (table monthly_prizes, saisi à la main) ; rien affiché s'il n'y en a pas |
 | get_partners() | oui | partenaires actifs + offre visible en ce moment |
 | partner_track(p_establishment, p_kind 'view'|'click') | oui | compteur anonyme (vues de fiche, clics lien / tél.) |
 | get_my_restaurant() | non | espace du restaurateur : chiffres 30 j + son offre |
@@ -86,6 +87,11 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   partner_stats (compteurs anonymes par jour). Sur l'appli : ⭐ + 🎁 sur la liste et la pastille, encadré sur la fiche,
   « Mon restaurant » dans Réglages pour le propriétaire. Inscription d'un partenaire à la main (voir supabase/2026-11-12_partenaires.sql).
   Pas de paiement dans l'appli pour l'instant ; pas de classement sponsorisé. Démo de l'espace restaurateur : `?demo&resto`.
+- Offre de lancement affichée : 3 mois offerts aux 10 premiers partenaires + badge « Partenaire fondateur » à vie.
+- Lot du mois : bandeau 🏆 dans « Classement > Ce mois-ci » quand un lot existe pour le mois en cours.
+- Affiche QR code : `affiche.html?r=ID` (A4, imprimable / PDF) ; QR → `?r=ID&src=affiche`. Bibliothèque vendor/qrcode.js (qrcode-generator, MIT).
+  Lien dans « Mon restaurant » et dans le Mode test.
+- Alerte « c'est calme + offre » aux favoris : à faire avec les notifications.
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →
