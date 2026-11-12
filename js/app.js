@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=46';
+import { api, DEMO } from './api.js?v=47';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=46';
+} from './config.js?v=47';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=46';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=46';
-import { BRAND_PATHS } from './brands.js?v=46';
+} from './levels.js?v=47';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=47';
+import { BRAND_PATHS } from './brands.js?v=47';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1083,7 +1083,8 @@ async function renderAccount(tab = 'badges') {
         <button class="avatar" id="btn-custom" aria-label="Personnaliser mon profil">${custom.avatar(p.avatar) || esc((p.pseudo || '?').slice(0, 1).toUpperCase())}<span class="avatar-edit">✏️</span></button>
         <div class="grow">
           <div class="pseudo">${esc(p.pseudo)}</div>
-          <div class="lvl">Niveau ${p.level ?? 1} · ${esc(p.level_name)}${p.member_since ? ` · membre depuis ${new Date(p.member_since).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}` : ''}</div>
+          <div class="lvl">Niveau ${p.level ?? 1} · ${esc(p.level_name)}</div>
+          ${p.member_since ? `<div class="since">Membre depuis ${memberSince(p.member_since)}</div>` : ''}
         </div>
         <button class="round-btn light" id="btn-invite" aria-label="Inviter des amis">${ICON.share}</button>
       </div>
@@ -1141,8 +1142,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=46" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=46) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=47" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=47) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1174,6 +1175,40 @@ async function openCustomize() {
     await refreshProfile();
     openCustomize();
   });
+}
+
+const memberSince = (d) => new Date(d).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+
+// Profil public d'un autre joueur (depuis le classement) : aucune info de contact, aucun lieu.
+async function openPublicProfile(pseudo, back) {
+  await custom.load();
+  openSheet('public', '<div class="spinner"></div>');
+  const p = await api.publicProfile(pseudo).catch(() => null);
+  if (!p) { toast('Profil introuvable.'); back(); return; }
+  openSheet('public', `
+    <div class="sheet-head">
+      <button class="round-btn" id="btn-back" aria-label="Retour">${ICON.back}</button>
+      <div class="grow"><h2>Profil</h2></div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-banner" style="${custom.banner(p.banner)}"></div>
+      <div class="profile-top">
+        <span class="avatar">${custom.avatar(p.avatar)}</span>
+        <div class="grow">
+          <div class="pseudo">${esc(p.pseudo)}</div>
+          <div class="lvl">Niveau ${p.level} · ${esc(p.level_name)}</div>
+          <div class="since">Membre depuis ${memberSince(p.member_since)}</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div><strong>${p.points}</strong><span>points</span></div>
+        <div><strong>${p.reports_total}</strong><span>signalements</span></div>
+        <div><strong>${p.restos_total}</strong><span>restos</span></div>
+      </div>
+    </div>
+    <div class="section-title">Badges (${p.badges.length})</div>
+    ${p.badges.length ? `<div class="pub-badges">${p.badges.map((b) => `<span class="pub-badge">${BADGE_ICONS[b.code] || '🏅'} ${esc(b.name)}</span>`).join('')}</div>` : '<p class="muted">Pas encore de badge.</p>'}`);
+  $('#btn-back').onclick = back;
 }
 
 // Badges rangés par catégorie ; les badges pas encore disponibles tout en bas.
@@ -1233,9 +1268,12 @@ async function renderLeaderboard(body, city = null, scope = 'month') {
   $('#lb-city').onchange = () => renderLeaderboard(body, $('#lb-city').value || null, scope);
   const rows = await api.ranking(scope, city) || [];
   $('#lb-list').innerHTML = rows.length ? `<ul class="list">${rows.map((r) => `
-    <li class="${r.is_me ? 'me-row' : ''}"><span class="rank">${r.rang <= 3 ? ['🥇', '🥈', '🥉'][r.rang - 1] : r.rang}</span>
+    <li class="${r.is_me ? 'me-row' : ''} lb-row" data-pseudo="${esc(r.pseudo)}" role="button" tabindex="0">
+    <span class="rank">${r.rang <= 3 ? ['🥇', '🥈', '🥉'][r.rang - 1] : r.rang}</span>
+    <span class="lb-av">${custom.avatar(r.avatar)}</span>
     <div class="grow"><div class="t">${esc(r.pseudo)}${r.is_me ? ' (moi)' : ''}</div></div><strong>${r.points} pts</strong></li>`).join('')}</ul>`
     : '<p class="muted">Personne n\'a encore gagné de points sur cette période. À toi de jouer !</p>';
+  $('#lb-list').querySelectorAll('.lb-row').forEach((li) => li.onclick = () => openPublicProfile(li.dataset.pseudo, () => renderAccount('classement')));
 }
 
 async function favoritesHtml() {

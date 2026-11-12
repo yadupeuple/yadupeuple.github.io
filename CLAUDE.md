@@ -40,7 +40,8 @@ Fonctions appelées par l'appli (RPC) :
 | search_establishments(p_query ≥ 2 car., p_lat, p_lng, p_limit) | oui | recherche + statuts |
 | get_service_status(p_establishment, p_service) | oui | statut d'un service |
 | get_history(p_establishment, p_service, p_limit ≤ 5) | oui | 5 derniers signalements anonymes |
-| get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 10 + moi) |
+| get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 10 + moi, avec avatar) |
+| get_public_profile(p_pseudo) | oui | profil public d'un joueur : jamais d'e-mail, de contact ni de lieu |
 | calmer_nearby(p_id) | oui | « Plus calme à côté : … » |
 | submit_report(p_establishment, p_service, p_level, p_wait, p_lat, p_lng, p_accuracy_m) | non | envoyer un signalement |
 | get_my_profile(), get_badges_progress(), change_pseudo(new_pseudo) | non | compte |

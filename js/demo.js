@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=46';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=46';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=47';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=47';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -180,10 +180,16 @@ export function createDemoApi() {
       await wait();
       const k = scope === 'all' ? 3 : 1;
       return [
-        { rang: 1, pseudo: 'BurgerHunter', points: 120 * k, is_me: false },
-        { rang: 2, pseudo: 'Testeur57', points: 85 * k, is_me: !!user },
-        { rang: 3, pseudo: 'DriveMaster', points: 40 * k, is_me: false },
+        { rang: 1, pseudo: 'BurgerHunter', points: 120 * k, is_me: false, avatar: 'dragon' },
+        { rang: 2, pseudo: 'Testeur57', points: 85 * k, is_me: !!user, avatar: profile.avatar },
+        { rang: 3, pseudo: 'DriveMaster', points: 40 * k, is_me: false, avatar: 'voiture' },
       ];
+    },
+    async publicProfile(pseudo) {
+      await wait();
+      return { pseudo, avatar: 'dragon', banner: 'espace', points: 1840, level: 32, level_name: 'Expert local',
+        member_since: '2026-11-02T10:00:00Z', reports_total: 190, restos_total: 14,
+        badges: [{ code: 'v1', name: 'Premier signalement' }, { code: 'v10', name: '5 signalements' }, { code: 'drive10', name: 'Éclaireur du Drive' }, { code: 'ref1', name: 'Parrain' }] };
     },
     async submitReport(r) {
       await wait(400);
