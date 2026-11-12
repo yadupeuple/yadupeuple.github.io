@@ -412,3 +412,7 @@ html, body { background: #E4EED3; }
 /* Carte jusqu'en bas de l'écran (sous la barre de navigation du téléphone) */
 #map { bottom: calc(-1 * var(--safe-bottom)); min-height: 100lvh; }
 .cards-empty { box-shadow: none !important; }
+/* Pas de curseur de saisie clignotant en dehors des vrais champs (PC) */
+body { caret-color: transparent; }
+input, textarea, select, [contenteditable="true"] { caret-color: auto; }
+.welcome, .welcome h1, .slogan, .welcome-note, .btn { -webkit-user-select: none; user-select: none; }
