@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (42, lecture publique), reports, profiles, favorites, badges (13),
+Tables : establishments (42, lecture publique), reports, profiles, favorites, badges (18),
 user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis),
 popular_times, opening_hours. Sécurité (RLS) active partout.
 
