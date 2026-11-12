@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (75 : 54 en Moselle + 21 autour de Mulhouse, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (18),
+Tables : establishments (81 : 60 en Moselle / Meurthe-et-Moselle + 21 autour de Mulhouse, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (18),
 user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
@@ -104,6 +104,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 
 - Zone de Mulhouse (12/11/2026, supabase/2026-11-12_zone_mulhouse.sql) : 21 restos (Mulhouse, Kingersheim, Illzach, Wittenheim,
   Sausheim, Rixheim, Lutterbach, Morschwiller-le-Bas), horaires + courbes + Drive relevés sur Google Maps.
+- Ajouts du 13/11/2026 (supabase/2026-11-13_jarny_woippy.sql) : McDonald's Conflans-en-Jarnisy, Woippy et aire A4 Saint-Privat,
+  KFC Semécourt, Subway Metz Muse, Burger King Clouange.
 - Zones (v95) : sans GPS, la carte s'ouvre sur la dernière zone regardée (localStorage ydp_zone), sinon Moselle
   + bulle « Ta zone : Moselle / Mulhouse » ; « Aller à » dans les Filtres. Bandeau « Pas de connexion » + Réessayer.
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.

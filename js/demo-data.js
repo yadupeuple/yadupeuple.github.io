@@ -1,4 +1,4 @@
-// Copie des restaurants (12/11/2026, 75 restos dont la zone de Mulhouse) pour le mode démo uniquement.
+// Copie des restaurants (13/11/2026, 81 restos) pour le mode démo uniquement.
 export const DEMO_ESTABLISHMENTS = [
 {
 "id": "67772eb6-b950-4c0b-a791-c5a365127424",
@@ -30,6 +30,28 @@ export const DEMO_ESTABLISHMENTS = [
 "name": "McDonald's Augny",
 "brand": "McDonald's",
 "address": "Route Nationale, Les Gravières, 57685 Augny",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "87b252e0-899d-4ffd-8f6d-763b9632d1e2",
+"lat": 49.2582657,
+"lng": 6.0852415,
+"city": "Clouange",
+"name": "Burger King Clouange",
+"brand": "Burger King",
+"address": "ZAC de la Bellefontaine, 57185 Clouange",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "49c3f6c1-3d85-471a-be3e-480ff96af8b5",
+"lat": 49.165186,
+"lng": 5.844772,
+"city": "Conflans-en-Jarnisy",
+"name": "McDonald's Conflans-en-Jarnisy",
+"brand": "McDonald's",
+"address": "ZI du Val de l'Orne, RN 3, 54800 Conflans-en-Jarnisy",
 "has_dine_in": true,
 "has_drive": true
 },
@@ -375,6 +397,17 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": false
 },
 {
+"id": "c4195ec9-dad4-4b56-a74c-21e9d7a76c1e",
+"lat": 49.107261,
+"lng": 6.181068,
+"city": "Metz",
+"name": "Subway Metz Muse",
+"brand": "Subway",
+"address": "Centre commercial Muse, 1 Rue des Messageries, 57000 Metz",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "15dfde4d-b2bc-4eec-aa04-6637a574c494",
 "lat": 49.118967,
 "lng": 6.173862,
@@ -595,6 +628,17 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "c8bd2461-6506-4a45-8e09-7ec8063b8715",
+"lat": 49.1791745,
+"lng": 6.0542172,
+"city": "Saint-Privat-la-Montagne",
+"name": "McDonald's Aire de Saint-Privat (A4)",
+"brand": "McDonald's",
+"address": "Aire de Metz Saint-Privat, A4, 57855 Saint-Privat-la-Montagne",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "4d31cb65-0e92-4dfd-a0f0-1fee712ef421",
 "lat": 47.7747309,
 "lng": 7.3931695,
@@ -648,6 +692,17 @@ export const DEMO_ESTABLISHMENTS = [
 "address": "Centre commercial Auchan, Voie Romaine, 57280 Semécourt",
 "has_dine_in": true,
 "has_drive": false
+},
+{
+"id": "6848ae19-65ec-4df1-ab94-e8aa79934483",
+"lat": 49.1927456,
+"lng": 6.1466962,
+"city": "Semécourt",
+"name": "KFC Semécourt",
+"brand": "KFC",
+"address": "Centre commercial Auchan, Voie Romaine, 57280 Semécourt",
+"has_dine_in": true,
+"has_drive": true
 },
 {
 "id": "ac47a6b2-28d7-42cd-8c47-9665fb176556",
@@ -811,6 +866,17 @@ export const DEMO_ESTABLISHMENTS = [
 "name": "McDonald's Wittenheim",
 "brand": "McDonald's",
 "address": "Centre commercial Cora, Rue de Soultz, 68260 Wittenheim",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "dadcb9aa-0b08-4a29-bc74-a6237c61411f",
+"lat": 49.1488051,
+"lng": 6.1608358,
+"city": "Woippy",
+"name": "McDonald's Woippy",
+"brand": "McDonald's",
+"address": "53 Avenue de Thionville, 57140 Woippy",
 "has_dine_in": true,
 "has_drive": true
 },
