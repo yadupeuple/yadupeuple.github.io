@@ -104,7 +104,10 @@ Affluence : calme `#22C55E`, modéré `#EAB308`, animé `#F97316`, max `#EF4444`
 
 ## Avant le lancement public (à ne pas oublier)
 Nettoyer les données de test (avec l'accord d'Alexis) · réactiver la confirmation des e-mails dans
-Supabase · mentions légales, RGPD, CGU · vérification de la marque · tests terrain.
+Supabase · vérification de la marque · tests terrain.
+Fait le 12/11/2026 : mentions-legales.html (éditeur particulier anonyme, hébergeur GitHub), cgu.html, confidentialite.html mis à jour ;
+liens sur l'accueil et en bas des Réglages. À refaire en version « professionnelle » (nom, adresse, SIRET) dès que les
+partenaires paient ou qu'Alexis crée une micro-entreprise.
 
 ## Plus tard (idées validées, pas encore faites)
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →

@@ -520,3 +520,6 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .card-row .chip:only-child .dot { width: 11px; height: 11px; }
 /* La carte (MapLibre) impose « Helvetica Neue » : les pastilles reprennent la police de l'appli */
 .maplibregl-map, .pill { font-family: inherit; }
+.legal-links { margin-top: 2px; }
+.legal-links .link-btn { font-weight: 600; color: var(--muted); }
+.legal-links > span { margin: 0 6px; }
