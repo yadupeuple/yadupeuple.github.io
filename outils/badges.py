@@ -157,7 +157,7 @@ B['oeil_lynx'] = wrap(f'''
 <circle cx="78" cy="98" r="6" fill="{K}"/><circle cx="122" cy="98" r="6" fill="{K}"/>
 <circle cx="81" cy="94" r="2.5" fill="#fff"/><circle cx="125" cy="94" r="2.5" fill="#fff"/>
 <path d="M92 112 L108 112 L100 124 Z" fill="#F97316" {O(3)}/>''')
-B.pop('ref1', None)  # ref1 = poignée de main Fluent Emoji (MIT), voir icons/badges/licences/
+B.pop('ref1', None); B.pop('v10', None)  # ref1 = poignée de main Fluent Emoji (MIT), voir icons/badges/licences/
 for k, v in B.items():
     open(f'/home/claude/yadupeuple/icons/badges/{k}.svg', 'w').write(v)
 print(len(B))
