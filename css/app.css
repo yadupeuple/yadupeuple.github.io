@@ -405,3 +405,6 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .profile-card .profile-top .grow { min-width: 0; }
 .profile-card { position: relative; }
 .profile-card #btn-invite { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: rgba(11,31,58,.55); backdrop-filter: blur(4px); }
+/* Carte jusqu'en bas de l'écran (sous la barre de navigation du téléphone) */
+html, body { background: #E4EED3; }
+#map { bottom: calc(-1 * var(--safe-bottom)); min-height: 100lvh; }
