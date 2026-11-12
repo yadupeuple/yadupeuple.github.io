@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=94';
+import { api, DEMO } from './api.js?v=95';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=94';
+} from './config.js?v=95';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=94';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=94';
-import { BRAND_PATHS } from './brands.js?v=94';
+} from './levels.js?v=95';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=95';
+import { BRAND_PATHS } from './brands.js?v=95';
 
 // ---------------------------------------------------------------------------
 // État
@@ -157,6 +157,47 @@ function passesFilter(e) {
   if (filters.levels.size && !filters.levels.has(levelKey(e))) return false;
   return true;
 }
+// Zones couvertes : sert à poser la carte au bon endroit quand le GPS n'est pas disponible.
+const ZONES = [
+  { key: 'moselle', label: 'Moselle', test: (e) => e.lat >= 48 },
+  { key: 'mulhouse', label: 'Mulhouse', test: (e) => e.lat < 48 },
+];
+function savedZone() { try { return localStorage.getItem('ydp_zone'); } catch { return null; } }
+function saveZone(k) { try { localStorage.setItem('ydp_zone', k); } catch {} }
+function zoneBounds(key) {
+  const z = ZONES.find((x) => x.key === key) || ZONES[0];
+  const b = new maplibregl.LngLatBounds();
+  let n = 0;
+  state.establishments.forEach((e) => { if (z.test(e)) { b.extend([e.lng, e.lat]); n++; } });
+  return n ? b : null;
+}
+function goZone(key, duration = 1600) {
+  const b = zoneBounds(key);
+  if (!b) return;
+  saveZone(key);
+  map.fitBounds(b, { padding: { top: 80, bottom: 170, left: 30, right: 30 }, duration, maxZoom: 13 });
+}
+// Mémorise la zone regardée (la plus proche du centre de la carte) pour la prochaine ouverture.
+function rememberZone() {
+  if (map.getZoom() < 9 || !state.establishments.size) return;
+  const c = map.getCenter();
+  let best = null, bestD = Infinity;
+  state.establishments.forEach((e) => {
+    const d = distanceM(c.lat, c.lng, e.lat, e.lng);
+    if (d < bestD) { bestD = d; best = e; }
+  });
+  const z = best && ZONES.find((x) => x.test(best));
+  if (z && bestD < 60000) saveZone(z.key);
+}
+function zonePicker() {
+  const el = $('#zone-pick');
+  el.innerHTML = `<span>Ta zone :</span>${ZONES.map((z) => `<button type="button" data-zone="${z.key}">${esc(z.label)}</button>`).join('')}<button type="button" class="zp-x" aria-label="Fermer">✕</button>`;
+  el.hidden = false;
+  el.querySelectorAll('[data-zone]').forEach((b) => b.onclick = () => { goZone(b.dataset.zone); el.hidden = true; });
+  el.querySelector('.zp-x').onclick = () => { el.hidden = true; };
+  setTimeout(() => { el.hidden = true; }, 12000);
+}
+
 function openFilters() {
   const brands = [...new Set([...BRANDS, ...[...state.establishments.values()].map((e) => e.brand).filter(Boolean)])];
   const count = () => [...state.establishments.values()].filter(passesFilter).length;
@@ -170,6 +211,8 @@ function openFilters() {
       <div class="fchips">${FILTER_LEVELS.map(([k, i]) => `<button type="button" class="fchip ${filters.levels.has(k) ? 'on' : ''}" data-level="${k}"><span class="dot" style="background:${i.color}"></span>${esc(i.label)}</button>`).join('')}</div>
       <div class="section-title">Enseignes</div>
       <div class="fchips">${brands.map((b) => `<button type="button" class="fchip ${filters.brands.has(b) ? 'on' : ''}" data-brand="${esc(b)}">${esc(b)}</button>`).join('')}</div>
+      <div class="section-title">Aller à</div>
+      <div class="fchips">${ZONES.map((z) => `<button type="button" class="fchip" data-zone="${z.key}">📍 ${esc(z.label)}</button>`).join('')}</div>
       <div class="section-title">Service</div>
       <div class="fchips"><button type="button" class="fchip ${filters.drive ? 'on' : ''}" data-drive="1">🚗 Avec Drive</button></div>
       <div class="filter-actions ${filtersActive() ? '' : 'single'}">
@@ -181,6 +224,7 @@ function openFilters() {
     $('#btn-fok').onclick = closeSheet;
     if ($('#btn-freset')) $('#btn-freset').onclick = () => { filters.brands.clear(); filters.levels.clear(); filters.drive = false; apply(); };
     document.querySelectorAll('#sheet-body .fchip').forEach((b) => b.onclick = () => {
+      if (b.dataset.zone) { closeSheet(); goZone(b.dataset.zone); return; }
       if (b.dataset.level) filters.levels.has(b.dataset.level) ? filters.levels.delete(b.dataset.level) : filters.levels.add(b.dataset.level);
       else if (b.dataset.brand) filters.brands.has(b.dataset.brand) ? filters.brands.delete(b.dataset.brand) : filters.brands.add(b.dataset.brand);
       else filters.drive = !filters.drive;
@@ -270,7 +314,7 @@ function updateClusters() {
     clusterMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).addTo(map));
   }
 }
-map.on('moveend', updateClusters);
+map.on('moveend', () => { updateClusters(); rememberZone(); });
 
 function openCluster(members) {
   const b = new maplibregl.LngLatBounds();
@@ -1301,8 +1345,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=94" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=94) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=95" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=95) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1386,7 +1430,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=94" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=95" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1689,7 +1733,7 @@ function showCards() {
 }
 
 // Animation d'entrée : la carte part de loin (vue de la région) et plonge sur la position.
-const FAR_VIEW = { center: [6.35, 49.0], zoom: 6.2 };
+const FAR_VIEW = { center: [6.75, 48.55], zoom: 6 };
 let introDone = false;
 function introFly() {
   if (introDone) return;
@@ -1708,9 +1752,10 @@ function introFly() {
       firstFix = false;
       map.flyTo({ center: [p.lng, p.lat], zoom: 13.5, duration: 2600, curve: 1.6, essential: true });
     } else if (state.establishments.size) {
-      const b = new maplibregl.LngLatBounds();
-      state.establishments.forEach((e) => b.extend([e.lng, e.lat]));
-      map.fitBounds(b, { padding: { top: 80, bottom: 170, left: 30, right: 30 }, duration: 2400 });
+      // Sans GPS : dernière zone regardée, sinon la Moselle + petit choix de zone.
+      const z = savedZone();
+      goZone(z || 'moselle', 2400);
+      if (!z) setTimeout(zonePicker, 2600);
     } else {
       showCards();
     }
@@ -1744,6 +1789,19 @@ $('#btn-locate').addEventListener('click', () => {
 // ---------------------------------------------------------------------------
 // Démarrage
 // ---------------------------------------------------------------------------
+// Bandeau « pas de connexion » avec un bouton pour réessayer.
+function showOffline(msg) {
+  const el = $('#offline');
+  el.innerHTML = `<span>📡 ${esc(msg)}</span><button type="button">Réessayer</button>`;
+  el.hidden = false;
+  el.querySelector('button').onclick = () => location.reload();
+}
+window.addEventListener('offline', () => showOffline('Pas de connexion internet.'));
+window.addEventListener('online', () => {
+  if (!state.establishments.size) location.reload();
+  else { $('#offline').hidden = true; refreshStatuses(); }
+});
+
 async function start() {
   if (DEMO) $('#demo-banner').hidden = false;
   api.onAuthChange(onUserChanged);
@@ -1756,9 +1814,10 @@ async function start() {
   try {
     await loadEstablishments();
   } catch (err) {
-    toast(err.message || 'Impossible de charger les restaurants.', 5000);
+    showOffline(navigator.onLine === false ? 'Pas de connexion internet.' : (err.message || 'Impossible de charger les restaurants.'));
     return;
   }
+  $('#offline').hidden = true;
   renderMe();
   watchGps();
   const deep = new URLSearchParams(location.search).get('r');

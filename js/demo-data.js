@@ -1,4 +1,4 @@
-// Copie des restaurants (11/11/2026) pour le mode démo uniquement.
+// Copie des restaurants (12/11/2026, 75 restos dont la zone de Mulhouse) pour le mode démo uniquement.
 export const DEMO_ESTABLISHMENTS = [
 {
 "id": "67772eb6-b950-4c0b-a791-c5a365127424",
@@ -45,6 +45,17 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "c09851c9-720a-4674-ad77-2de1362da5a0",
+"lat": 49.306588,
+"lng": 6.1197011,
+"city": "Fameck",
+"name": "Flunch Fameck",
+"brand": "Flunch",
+"address": "1 Avenue François Mitterrand, 57290 Fameck",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "2bde8184-9737-4fc6-809c-4ef785ca59b3",
 "lat": 49.3054109,
 "lng": 6.1211578,
@@ -67,6 +78,28 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "d1f50159-cb26-409d-a930-de91c059db31",
+"lat": 47.772159,
+"lng": 7.3837722,
+"city": "Illzach",
+"name": "Burger King Illzach",
+"brand": "Burger King",
+"address": "Centre commercial Carrefour Île Napoléon, Rue de Berne, 68110 Illzach",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "cf48f45f-c0d0-4499-b752-4bc002fc5305",
+"lat": 47.7708557,
+"lng": 7.3804455,
+"city": "Illzach",
+"name": "KFC Illzach",
+"brand": "KFC",
+"address": "4 Rue d'Annecy, 68110 Illzach",
+"has_dine_in": true,
+"has_drive": true
+},
+{
 "id": "788c3b98-2f2e-49ab-92c7-9e9a3c38a5e4",
 "lat": 49.0786461,
 "lng": 6.1018016,
@@ -78,6 +111,50 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "eae2cda1-c2db-4718-b305-aad9ad8ae564",
+"lat": 47.7888922,
+"lng": 7.3170226,
+"city": "Kingersheim",
+"name": "Buffalo Grill Kingersheim",
+"brand": "Buffalo Grill",
+"address": "Rue de Richwiller, 68260 Kingersheim",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "ecf41655-3b3c-47e9-878b-c977dedd825d",
+"lat": 47.7899926,
+"lng": 7.3138127,
+"city": "Kingersheim",
+"name": "Burger King Kingersheim",
+"brand": "Burger King",
+"address": "2 Rue de Montmorency, 68260 Kingersheim",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "aaf9637f-e2c0-4414-ac28-906b1f877540",
+"lat": 47.7893115,
+"lng": 7.316217,
+"city": "Kingersheim",
+"name": "McDonald's Kingersheim",
+"brand": "McDonald's",
+"address": "161 Rue de Richwiller, 68260 Kingersheim",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "59822674-3813-4590-bc88-14f4ef2e6934",
+"lat": 47.7923456,
+"lng": 7.3158223,
+"city": "Kingersheim",
+"name": "Starbucks Kingersheim",
+"brand": "Starbucks",
+"address": "90 Rue de Guebwiller, 68260 Kingersheim",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "21aa546a-36d9-476a-9daf-f4280f3d2b6b",
 "lat": 49.1127822,
 "lng": 6.1590027,
@@ -85,6 +162,17 @@ export const DEMO_ESTABLISHMENTS = [
 "name": "McDonald's Longeville-lès-Metz",
 "brand": "McDonald's",
 "address": "16a Bd Saint-Symphorien, 57050 Longeville-lès-Metz",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "2adae372-0511-4a33-9cbc-6375cd076775",
+"lat": 47.75822,
+"lng": 7.294513,
+"city": "Lutterbach",
+"name": "McDonald's Lutterbach",
+"brand": "McDonald's",
+"address": "Parking Intermarché, 12 Rue de Pfastatt, 68460 Lutterbach",
 "has_dine_in": true,
 "has_drive": true
 },
@@ -210,6 +298,28 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "50ea6435-3e12-4340-951e-225dc39f93d8",
+"lat": 49.1064781,
+"lng": 6.1822616,
+"city": "Metz",
+"name": "O'Tacos Metz Muse",
+"brand": "O'Tacos",
+"address": "Centre commercial Muse, 2 Rue des Messageries, 57000 Metz",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "c4366230-47de-42ce-aece-013b00523bbd",
+"lat": 49.1181169,
+"lng": 6.1762619,
+"city": "Metz",
+"name": "O'Tacos Metz Saint-Jacques",
+"brand": "O'Tacos",
+"address": "19 Rue de Ladoucette, 57000 Metz",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "e2316e5a-f4bc-4f97-bb77-911378b90341",
 "lat": 49.1498162,
 "lng": 6.177526,
@@ -230,6 +340,39 @@ export const DEMO_ESTABLISHMENTS = [
 "address": "2 Rue de Sarre, 57070 Metz",
 "has_dine_in": true,
 "has_drive": true
+},
+{
+"id": "9bf8d16e-70f5-4a78-bb71-a397f71aead2",
+"lat": 49.1096438,
+"lng": 6.1771948,
+"city": "Metz",
+"name": "Starbucks Metz Gare",
+"brand": "Starbucks",
+"address": "1 Place du Général de Gaulle, 57000 Metz",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "1d7dff99-cf99-4031-b5f3-e76fe5c79582",
+"lat": 49.1065934,
+"lng": 6.1821104,
+"city": "Metz",
+"name": "Starbucks Metz Muse",
+"brand": "Starbucks",
+"address": "Centre commercial Muse, 2 Rue des Messageries, 57000 Metz",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "c19fba99-2a4d-4de4-9d8c-6b84c4cd5213",
+"lat": 49.1181632,
+"lng": 6.1754068,
+"city": "Metz",
+"name": "Starbucks Metz Petit Paris",
+"brand": "Starbucks",
+"address": "9 Rue du Petit Paris, 57000 Metz",
+"has_dine_in": true,
+"has_drive": false
 },
 {
 "id": "15dfde4d-b2bc-4eec-aa04-6637a574c494",
@@ -276,6 +419,17 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "902be98e-b476-4412-9cdf-eb84d0f2c61a",
+"lat": 47.736547,
+"lng": 7.2869879,
+"city": "Morschwiller-le-Bas",
+"name": "KFC Morschwiller-le-Bas",
+"brand": "KFC",
+"address": "71 Rue de Mulhouse, 68790 Morschwiller-le-Bas",
+"has_dine_in": true,
+"has_drive": true
+},
+{
 "id": "a9ecc4c7-16bf-42b6-a05a-0081953b826a",
 "lat": 49.082356,
 "lng": 6.107538,
@@ -298,6 +452,17 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "cfa704e3-10d1-41ab-accf-3fce4ffcbc30",
+"lat": 49.0809855,
+"lng": 6.104641,
+"city": "Moulins-lès-Metz",
+"name": "Starbucks Moulins-lès-Metz",
+"brand": "Starbucks",
+"address": "1 Chemin de la Pie Grièche, 57160 Moulins-lès-Metz",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "d373a8df-49fa-4f02-9981-46f280723977",
 "lat": 49.0807432,
 "lng": 6.1020611,
@@ -307,6 +472,149 @@ export const DEMO_ESTABLISHMENTS = [
 "address": "CC Waves Actisud, 57160 Moulins-lès-Metz",
 "has_dine_in": true,
 "has_drive": false
+},
+{
+"id": "d3735495-bf37-445e-920a-4040166419c9",
+"lat": 47.7477485,
+"lng": 7.339797,
+"city": "Mulhouse",
+"name": "Burger King Mulhouse Sauvage",
+"brand": "Burger King",
+"address": "36 Rue du Sauvage, 68100 Mulhouse",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "44272409-c3f1-48ff-9bd1-d029b70d2022",
+"lat": 47.7499521,
+"lng": 7.338988,
+"city": "Mulhouse",
+"name": "KFC Mulhouse Porte Jeune",
+"brand": "KFC",
+"address": "1 Boulevard de l'Europe, 68100 Mulhouse",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "4cf27e63-065d-4280-a5af-63d0d5a9eb05",
+"lat": 47.7334387,
+"lng": 7.3177153,
+"city": "Mulhouse",
+"name": "McDonald's Mulhouse Piscine",
+"brand": "McDonald's",
+"address": "1 Rue Léo Lagrange, 68200 Mulhouse",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "8a5c7fdc-b244-4924-bd63-babe09172b48",
+"lat": 47.7483106,
+"lng": 7.3391788,
+"city": "Mulhouse",
+"name": "McDonald's Mulhouse Sauvage",
+"brand": "McDonald's",
+"address": "54-56 Rue du Sauvage, 68100 Mulhouse",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "409838f6-4746-4b3b-b78c-84972fe2c589",
+"lat": 47.7500047,
+"lng": 7.3385564,
+"city": "Mulhouse",
+"name": "O'Tacos Mulhouse",
+"brand": "O'Tacos",
+"address": "1 Avenue de Colmar, 68100 Mulhouse",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "9372ded0-1848-4dd7-b641-d47957b3707a",
+"lat": 47.7387537,
+"lng": 7.2946083,
+"city": "Mulhouse",
+"name": "Quick Mulhouse Dornach",
+"brand": "Quick",
+"address": "236 Rue de Belfort, 68200 Mulhouse",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "df3dbb8f-0d73-4a03-9bf5-ac69651a7c48",
+"lat": 47.747887,
+"lng": 7.3396887,
+"city": "Mulhouse",
+"name": "Starbucks Mulhouse",
+"brand": "Starbucks",
+"address": "40 Rue du Sauvage, 68100 Mulhouse",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "cb882abf-4ec4-4b4e-bd24-6d0342436bde",
+"lat": 47.736601,
+"lng": 7.291136,
+"city": "Mulhouse",
+"name": "Subway Mulhouse Dornach",
+"brand": "Subway",
+"address": "251 Rue de Belfort, 68200 Mulhouse",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "8e05ccc5-ca0a-44c0-b0d2-6f7b46fd4476",
+"lat": 47.7503031,
+"lng": 7.340522,
+"city": "Mulhouse",
+"name": "Subway Mulhouse Porte Jeune",
+"brand": "Subway",
+"address": "1 Boulevard de l'Europe, 68100 Mulhouse",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "f4f5b507-3aff-4d07-91d5-3c211ca165fd",
+"lat": 47.743282,
+"lng": 7.416317,
+"city": "Rixheim",
+"name": "McDonald's Rixheim",
+"brand": "McDonald's",
+"address": "Zac du Petit Prince, 44 Rue de l'Aérodrome, 68170 Rixheim",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "aed6cf17-3732-443f-9245-d1230a859cea",
+"lat": 49.1340566,
+"lng": 6.1990263,
+"city": "Saint-Julien-lès-Metz",
+"name": "McDonald's Saint-Julien-lès-Metz",
+"brand": "McDonald's",
+"address": "12 bis Avenue Paul Langevin, 57070 Saint-Julien-lès-Metz",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "4d31cb65-0e92-4dfd-a0f0-1fee712ef421",
+"lat": 47.7747309,
+"lng": 7.3931695,
+"city": "Sausheim",
+"name": "Buffalo Grill Sausheim",
+"brand": "Buffalo Grill",
+"address": "3 Rue d'Alsace Lorraine, 68390 Sausheim",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "208ff031-9575-48b8-93f5-14785378a7d8",
+"lat": 47.774673,
+"lng": 7.390977,
+"city": "Sausheim",
+"name": "McDonald's Sausheim",
+"brand": "McDonald's",
+"address": "Centre commercial Île Napoléon, RD 201, 68390 Sausheim",
+"has_dine_in": true,
+"has_drive": true
 },
 {
 "id": "6e934ac3-9848-45b8-be77-1b675529f2be",
@@ -331,6 +639,17 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "3487194b-5a90-4317-b768-c35c9ad7681d",
+"lat": 49.19384,
+"lng": 6.145508,
+"city": "Semécourt",
+"name": "Flunch Semécourt",
+"brand": "Flunch",
+"address": "Centre commercial Auchan, Voie Romaine, 57280 Semécourt",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "ac47a6b2-28d7-42cd-8c47-9665fb176556",
 "lat": 49.192044,
 "lng": 6.146921,
@@ -342,6 +661,17 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "0cd54f42-dc00-4936-9419-d17312311c38",
+"lat": 49.1950366,
+"lng": 6.1460141,
+"city": "Semécourt",
+"name": "O'Tacos Semécourt",
+"brand": "O'Tacos",
+"address": "Centre commercial Auchan, Voie Romaine, 57280 Semécourt",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "afe1c3cf-6c8f-4d16-bcdb-6346f62da5bb",
 "lat": 49.3492031,
 "lng": 6.1584363,
@@ -351,6 +681,17 @@ export const DEMO_ESTABLISHMENTS = [
 "address": "1A Chemin du Leidt, 57100 Thionville",
 "has_dine_in": true,
 "has_drive": true
+},
+{
+"id": "213f0b50-3cfa-46ec-a888-4e3e123a4aaf",
+"lat": 49.3559005,
+"lng": 6.1413675,
+"city": "Thionville",
+"name": "Flunch Thionville",
+"brand": "Flunch",
+"address": "Centre commercial Carrefour Geric, 4 Rue du Maillet, 57100 Thionville",
+"has_dine_in": true,
+"has_drive": false
 },
 {
 "id": "5989b4f7-6d99-40d3-bbc6-ea4badb52745",
@@ -408,6 +749,17 @@ export const DEMO_ESTABLISHMENTS = [
 "has_drive": true
 },
 {
+"id": "49041367-7815-4651-aea6-7b8f32ce76d4",
+"lat": 49.3574096,
+"lng": 6.1663766,
+"city": "Thionville",
+"name": "Starbucks Thionville",
+"brand": "Starbucks",
+"address": "17 Rue de Paris, 57100 Thionville",
+"has_dine_in": true,
+"has_drive": false
+},
+{
 "id": "02536270-9a7b-454f-8747-345d42de4966",
 "lat": 49.35824,
 "lng": 6.166456,
@@ -448,6 +800,17 @@ export const DEMO_ESTABLISHMENTS = [
 "name": "McDonald's Briey",
 "brand": "McDonald's",
 "address": "Av. Marguerite Puhl Démange, 54150 Val de Briey",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "fc1fbeff-d78d-4749-bf0e-f2b09afa23fd",
+"lat": 47.8075582,
+"lng": 7.3129815,
+"city": "Wittenheim",
+"name": "McDonald's Wittenheim",
+"brand": "McDonald's",
+"address": "Centre commercial Cora, Rue de Soultz, 68260 Wittenheim",
 "has_dine_in": true,
 "has_drive": true
 },

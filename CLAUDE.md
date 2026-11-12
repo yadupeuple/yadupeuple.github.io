@@ -104,6 +104,9 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 
 - Zone de Mulhouse (12/11/2026, supabase/2026-11-12_zone_mulhouse.sql) : 21 restos (Mulhouse, Kingersheim, Illzach, Wittenheim,
   Sausheim, Rixheim, Lutterbach, Morschwiller-le-Bas), horaires + courbes + Drive relevés sur Google Maps.
+- Zones (v95) : sans GPS, la carte s'ouvre sur la dernière zone regardée (localStorage ydp_zone), sinon Moselle
+  + bulle « Ta zone : Moselle / Mulhouse » ; « Aller à » dans les Filtres. Bandeau « Pas de connexion » + Réessayer.
+- Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
 
 ## Charte graphique
 Bleu nuit `#0B1F3A`, turquoise `#14B8A6`, blanc, touche jaune-orangé `#F5A524`.

@@ -553,3 +553,19 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .filter-actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; margin-top: 20px; }
 .filter-actions .btn { margin: 0; }
 .filter-actions.single { grid-template-columns: 1fr; }
+
+/* ---------- Choix de zone (sans GPS) et bandeau hors connexion ---------- */
+.zone-pick, .offline {
+  position: fixed; left: 50%; transform: translateX(-50%); top: calc(64px + var(--safe-top));
+  display: flex; align-items: center; gap: 8px; z-index: 25; max-width: 94vw;
+  background: #fff; color: var(--navy); border-radius: 999px; padding: 6px 6px 6px 14px;
+  box-shadow: var(--shadow); font-weight: 700; font-size: 14px; white-space: nowrap;
+}
+.zone-pick button, .offline button {
+  border: 0; border-radius: 999px; padding: 7px 12px; font: inherit; font-size: 13px; cursor: pointer;
+  background: var(--teal); color: #fff;
+}
+.zone-pick .zp-x { background: transparent; color: #6b7280; padding: 7px 8px; }
+.offline { background: var(--navy); color: #fff; white-space: normal; }
+.offline button { background: var(--amber); color: var(--navy); flex: none; }
+.zone-pick[hidden], .offline[hidden] { display: none; }
