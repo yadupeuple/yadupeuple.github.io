@@ -1,6 +1,6 @@
 # Y'a du peuple ? — règles du projet
 
-Appli web (installable sur téléphone) qui montre l'affluence des fast-foods de Moselle en direct,
+Appli web (installable sur téléphone) qui montre l'affluence des fast-foods de Moselle (et de la zone de Mulhouse) en direct,
 salle et Drive séparés, grâce aux signalements des utilisateurs.
 Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur son téléphone.
 
@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (54, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (18),
+Tables : establishments (75 : 54 en Moselle + 21 autour de Mulhouse, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (18),
 user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
@@ -101,6 +101,9 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →
   « J'ai une pause déjeuner, pas un congé sabbatique. » → « Pas venu pour camper au Drive. » →
   « Pas besoin de poser un RTT pour un burger. »
+
+- Zone de Mulhouse (12/11/2026, supabase/2026-11-12_zone_mulhouse.sql) : 21 restos (Mulhouse, Kingersheim, Illzach, Wittenheim,
+  Sausheim, Rixheim, Lutterbach, Morschwiller-le-Bas), horaires + courbes + Drive relevés sur Google Maps.
 
 ## Charte graphique
 Bleu nuit `#0B1F3A`, turquoise `#14B8A6`, blanc, touche jaune-orangé `#F5A524`.
