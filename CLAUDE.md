@@ -30,7 +30,8 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
 Tables : establishments (42, lecture publique), reports, profiles, favorites, badges (13),
-user_badges, levels (6), app_settings. Sécurité (RLS) active partout.
+user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis),
+popular_times, opening_hours. Sécurité (RLS) active partout.
 
 Fonctions appelées par l'appli (RPC) :
 | Fonction | Sans compte | Rôle |
@@ -45,6 +46,7 @@ Fonctions appelées par l'appli (RPC) :
 | get_my_profile(), get_badges_progress(), change_pseudo(new_pseudo) | non | compte |
 | toggle_favorite(est), my_favorites() | non | favoris |
 | export_my_data(), delete_my_account() | non | RGPD |
+| set_customization(p_kind 'avatar'|'banner', p_code) | non | choisir son avatar / sa bannière (niveau contrôlé) |
 | set_referrer(p_code) | non | déclarer son parrain (compte < 7 j, avant 1er signalement) |
 
 Statut renvoyé : `{state, level, uncertain, wait, reliability, last_report_minutes, users_total, ...}`
@@ -68,6 +70,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Trajet estimé : distance à vol d'oiseau × 1,3 à 46 km/h (calé sur Google Maps).
 - Parrainage : lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
   filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
+- Niveaux 1 à 100 : points ≈ 10 × (niveau − 1)^1,8 (niv. 10 = 520, 50 = 11 025, 100 = 39 095) ; titres tous les 10 niveaux.
+  Avatars (emojis) et bannières (dégradés) choisis seulement dans la table customizations, débloqués par niveau.
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →
@@ -85,9 +89,8 @@ Supabase · mentions légales, RGPD, CGU · vérification de la marque · tests 
 ## Plus tard (idées validées, pas encore faites)
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
-Personnalisation du profil (idées d'Alexis, 12/11/2026) : niveaux jusqu'à 100 ; image de profil à choisir
-uniquement parmi celles proposées par l'appli ; bannières de profil ; images et bannières débloquées en
-montant de niveau ; illustrations de badges propres à l'appli (à créer plus tard).
+Profil : vraies illustrations (avatars, bannières, badges) à créer pour remplacer les emojis/dégradés ;
+nouvelle disposition de la page Profil.
 
 ## Mises à jour
 Après chaque modification du code, augmenter le numéro `?v=N` partout (imports des fichiers `js/`

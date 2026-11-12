@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=41';
+import { api, DEMO } from './api.js?v=42';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=41';
+} from './config.js?v=42';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=41';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=41';
-import { BRAND_PATHS } from './brands.js?v=41';
+} from './levels.js?v=42';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=42';
+import { BRAND_PATHS } from './brands.js?v=42';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1068,6 +1068,7 @@ async function loadFavorites() {
 }
 
 async function renderAccount(tab = 'badges') {
+  await custom.load();
   await refreshProfile();
   const p = state.profile || { pseudo: '…', points: 0, level_name: '', next_level_at: null };
   const pct = p.next_level_at ? Math.min(100, Math.round((p.points / p.next_level_at) * 100)) : 100;
@@ -1076,9 +1077,9 @@ async function renderAccount(tab = 'badges') {
       <div class="grow"><h2>Mon compte</h2></div>
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
-    <div class="profile-card">
+    <div class="profile-card" style="${custom.banner(p.banner)}">
       <div class="profile-top">
-        <div class="avatar">${esc((p.pseudo || '?').slice(0, 1).toUpperCase())}</div>
+        <button class="avatar" id="btn-custom" aria-label="Personnaliser mon profil">${custom.avatar(p.avatar) || esc((p.pseudo || '?').slice(0, 1).toUpperCase())}<span class="avatar-edit">✏️</span></button>
         <div class="grow">
           <div class="pseudo">${esc(p.pseudo)}</div>
           <div class="lvl">Niveau ${p.level ?? 1} · ${esc(p.level_name)}${p.member_since ? ` · membre depuis ${new Date(p.member_since).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}` : ''}</div>
@@ -1110,6 +1111,7 @@ async function renderAccount(tab = 'badges') {
   `);
   $('#btn-close').onclick = closeSheet;
   $('#btn-invite').onclick = () => openShare();
+  $('#btn-custom').onclick = () => openCustomize();
   $('#btn-refer').onclick = () => openShare();
   const rf = document.querySelector('#ref-form');
   if (rf) rf.onsubmit = async (ev) => {
@@ -1130,6 +1132,43 @@ async function renderAccount(tab = 'badges') {
   } catch (err) {
     body.innerHTML = `<p class="muted">${esc(err.message)}</p>`;
   }
+}
+
+// Personnalisation : avatars et bannières proposés par l'appli, débloqués en montant de niveau (la base contrôle).
+const custom = {
+  list: [],
+  async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
+  find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
+  avatar(code) { return this.find('avatar', code)?.value || ''; },
+  banner(code) { const b = this.find('banner', code); return b ? `background:${b.value}` : ''; },
+};
+async function openCustomize() {
+  await custom.load();
+  const p = state.profile || {};
+  const lvl = p.level || 1;
+  const cell = (c) => {
+    const locked = lvl < c.min_level;
+    const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${c.value}</span>` : `<span class="cz-banner" style="background:${c.value}"></span>`;
+    return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
+      ${inner}${locked ? `<span class="cz-lock">🔒 Niv. ${c.min_level}</span>` : ''}</button>`;
+  };
+  openSheet('custom', `
+    <div class="sheet-head">
+      <button class="round-btn" id="btn-back" aria-label="Retour">${ICON.back}</button>
+      <div class="grow"><h2>Personnaliser mon profil</h2><div class="sub">Niveau ${lvl} · de nouvelles images se débloquent en montant de niveau.</div></div>
+    </div>
+    <div class="section-title">Image de profil</div>
+    <div class="cz-grid avatars">${custom.list.filter((c) => c.kind === 'avatar').map(cell).join('')}</div>
+    <div class="section-title">Bannière</div>
+    <div class="cz-grid banners">${custom.list.filter((c) => c.kind === 'banner').map(cell).join('')}</div>`);
+  $('#btn-back').onclick = () => renderAccount('badges');
+  $('#sheet-body').querySelectorAll('.cz:not(.locked)').forEach((b) => b.onclick = async () => {
+    const r = await api.setCustomization(b.dataset.kind, b.dataset.code).catch((e) => ({ ok: false, message: e.message }));
+    if (!r?.ok) { toast(r?.message || 'Impossible pour le moment.'); return; }
+    await refreshProfile();
+    openCustomize();
+  });
 }
 
 // Badges rangés par catégorie ; les badges pas encore disponibles tout en bas.

@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=41';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=41';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=42';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=42';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -42,7 +42,7 @@ function withStatus(e, lat, lng) {
 export function createDemoApi() {
   let user = null;
   const listeners = [];
-  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true };
+  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'nuit' };
   const favorites = new Set(['1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42']);
   try { if (localStorage.getItem('ydp_demo_user')) user = { id: 'demo', email: 'demo@exemple.fr' }; } catch {}
   const setUser = (u) => {
@@ -82,6 +82,20 @@ export function createDemoApi() {
       const s = fakeStatus(id, service);
       if (!s.last_report_minutes && s.state !== 'recent') return [];
       return [0, 1, 2].map((i) => ({ level: LEVELS[(hash(id) + i) % 4], minutes_ago: (s.last_report_minutes || 3) + i * 7 }));
+    },
+    async customizations() {
+      await wait();
+      return [
+        ['avatar', 'burger', '🍔', 1], ['avatar', 'frites', '🍟', 1], ['avatar', 'tacos', '🌮', 1], ['avatar', 'pizza', '🍕', 1],
+        ['avatar', 'soda', '🥤', 5], ['avatar', 'hotdog', '🌭', 10], ['avatar', 'renard', '🦊', 30], ['avatar', 'fusee', '🚀', 100],
+        ['banner', 'nuit', 'linear-gradient(135deg,#0B1F3A,#16325C)', 1], ['banner', 'lagon', 'linear-gradient(135deg,#0F766E,#14B8A6)', 1],
+        ['banner', 'sunset', 'linear-gradient(135deg,#F97316,#DB2777)', 10], ['banner', 'or', 'linear-gradient(135deg,#B45309,#F5A524,#FDE68A)', 50],
+      ].map(([kind, code, value, min_level]) => ({ kind, code, value, min_level }));
+    },
+    async setCustomization(kind, code) {
+      await wait();
+      if (kind === 'avatar') profile.avatar = code; else profile.banner = code;
+      return { ok: true };
     },
     async openingHours() {
       await wait();
