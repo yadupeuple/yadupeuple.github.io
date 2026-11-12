@@ -516,7 +516,7 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
    Resto sans Drive : la bulle Salle prend la place des 2 bulles. */
 .card { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
 .card-row { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; min-height: 52px; }
-.card-row .chip:only-child { flex: 1; align-self: stretch; justify-content: center; font-size: 14px; gap: 7px; border-radius: 14px; }
+.card-row .chip:only-child { flex: 1; align-self: stretch; justify-content: flex-start; padding: 4px 14px; font-size: 14px; gap: 7px; border-radius: 14px; }
 .card-row .chip:only-child .dot { width: 11px; height: 11px; }
 /* La carte (MapLibre) impose « Helvetica Neue » : les pastilles reprennent la police de l'appli */
 .maplibregl-map, .pill { font-family: inherit; }
