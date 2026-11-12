@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=53';
+import { api, DEMO } from './api.js?v=54';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=53';
+} from './config.js?v=54';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=53';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=53';
-import { BRAND_PATHS } from './brands.js?v=53';
+} from './levels.js?v=54';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=54';
+import { BRAND_PATHS } from './brands.js?v=54';
 
 // ---------------------------------------------------------------------------
 // État
@@ -170,10 +170,11 @@ map.on('moveend', updateClusters);
 function openCluster(members) {
   const b = new maplibregl.LngLatBounds();
   members.forEach((e) => b.extend([e.lng, e.lat]));
-  const cam = map.cameraForBounds(b, { padding: 90 });
-  // Si zoomer permet de les séparer, on zoome ; sinon on affiche la liste.
+  // Zoom modéré : juste assez pour séparer le groupe, en gardant les restos voisins visibles.
+  const cam = map.cameraForBounds(b, { padding: { top: 140, bottom: 220, left: 110, right: 110 } });
   if (cam && cam.zoom > map.getZoom() + 0.6 && map.getZoom() < 16) {
-    map.easeTo({ center: cam.center, zoom: Math.min(cam.zoom, 17), duration: 450 });
+    const z = Math.min(cam.zoom - 0.4, map.getZoom() + 2, 15.5);
+    map.easeTo({ center: cam.center, zoom: Math.max(z, map.getZoom() + 0.7), duration: 450 });
     return;
   }
   openSheet('cluster', `
@@ -652,7 +653,8 @@ function focusResto(e) {
   const sheetH = Math.min(window.innerHeight * 0.62, 640);
   map.flyTo({
     center: [e.lng, e.lat],
-    zoom: Math.max(map.getZoom(), 15),
+    // Zoom limité pour voir les autres restos autour (au-dessus de la fiche) : entre 13 et 14,5.
+    zoom: Math.min(Math.max(map.getZoom(), 13), 14.5),
     offset: [0, -sheetH / 2],
     duration: 900,
     essential: true,
@@ -1140,8 +1142,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=53" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=53) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=54" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=54) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
