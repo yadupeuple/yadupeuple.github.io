@@ -70,7 +70,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Trajet estimé : distance à vol d'oiseau × 1,3 à 46 km/h (calé sur Google Maps).
 - Parrainage : lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
   filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
-- Niveaux 1 à 100 : points ≈ 4 × (niveau − 1)^1,75 (niv. 10 = 185, 50 = 3 630, 100 = 12 430) ; titres tous les 10 niveaux.
+- Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.
   Avatars et bannières : illustrations de l'appli (icons/avatars/*.svg, icons/banners/*.svg, dessinées pour le projet),
   choisies seulement dans la table customizations, débloquées par niveau.
 - Contact : contact.yadupeuple@gmail.com
