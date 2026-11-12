@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=69';
+import { api, DEMO } from './api.js?v=70';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=69';
+} from './config.js?v=70';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=69';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=69';
-import { BRAND_PATHS } from './brands.js?v=69';
+} from './levels.js?v=70';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=70';
+import { BRAND_PATHS } from './brands.js?v=70';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1177,8 +1177,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=69" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=69) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=70" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=70) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1262,7 +1262,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg (dessinés) ; les autres viennent de la planche ChatGPT d'Alexis (.webp, outils/badges_sheet.py).
 const BADGE_SVG = new Set(['v10', 'drive10', 'explorer10', 'ref1']);
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=69" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=70" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1280,12 +1280,12 @@ async function badgesHtml() {
   const fams = [...BADGE_FAMILIES, ...[...new Set(rows.map((b) => b.family))].filter((f) => !known.includes(f)).map((f) => [f, f])];
   const active = rows.filter((b) => b.is_active);
   const locked = rows.filter((b) => !b.is_active);
-  let html = '';
+  let html = '<p class="badge-rule">🏅 +1 point par badge · 🎉 +10 points par catégorie complète</p>';
   for (const [fam, label] of fams) {
     const list = active.filter((b) => b.family === fam).sort((a, b2) => (b2.earned - a.earned));
     if (!list.length) continue;
     const got = list.filter((b) => b.earned).length;
-    html += `<div class="badge-fam"><span>${esc(label)}</span><small>${got}/${list.length}</small></div><ul class="list">${list.map(item).join('')}</ul>`;
+    html += `<div class="badge-fam"><span>${esc(label)}</span><small>${got === list.length ? '✅ +10 pts · ' : ''}${got}/${list.length}</small></div><ul class="list">${list.map(item).join('')}</ul>`;
   }
   if (locked.length) html += `<div class="badge-fam muted-fam"><span>Bientôt disponibles</span></div><ul class="list">${locked.map(item).join('')}</ul>`;
   return html;

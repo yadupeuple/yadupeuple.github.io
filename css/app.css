@@ -445,3 +445,4 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .sheet.full .tabs { margin: 0 0 12px; }
 .sheet.full .tabs { display: grid; grid-template-columns: 1.15fr 1fr 1.2fr 1fr; gap: 6px; overflow: visible; }
 .sheet.full .tabs button { padding: 9px 4px; font-size: 13.5px; white-space: nowrap; text-align: center; }
+.badge-rule { background: #FFF7E6; border: 1px solid #FCD9A0; color: #8A5300; border-radius: 12px; padding: 8px 12px; font-size: 13px; font-weight: 600; margin: 0 0 4px; }

@@ -75,6 +75,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Avatars (30) et bannières (17, dont 2 au niveau 1) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
   et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
   Table customizations (is_active) ; paliers 1, 5, 10 … 50, 60 … 100 ; bannière en bandeau entier en haut du profil (pas en fond : trop flou), thèmes alternés d'un palier à l'autre.
+- Points des badges (ajoutés aux points normaux) : +1 par badge, +10 quand une catégorie (badges actifs) est complète
+  (trigger sur user_badges, table badge_family_bonus, réglages badge_points / badge_family_bonus).
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →
