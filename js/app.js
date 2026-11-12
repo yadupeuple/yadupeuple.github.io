@@ -1,16 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=96';
+import { api, DEMO } from './api.js?v=97';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
-  ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=96';
+  ROUTE, REFRESH_MS,
+} from './config.js?v=97';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=96';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=96';
-import { BRAND_PATHS } from './brands.js?v=96';
+  estimateRoute, fmtDuration,
+} from './levels.js?v=97';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=97';
+import { BRAND_PATHS } from './brands.js?v=97';
 
 // ---------------------------------------------------------------------------
 // État
@@ -458,7 +459,7 @@ function renderCards() {
   box.innerHTML = `<div class="cards-count">${visible.length}<small>resto${visible.length > 1 ? 's' : ''}<br>ici</small></div>` + list.map(({ e, d }) => `
     <button class="card" data-id="${e.id}" type="button">
       <p class="card-title">${partnerOf(e.id) ? '<span class="card-star" title="Partenaire">⭐</span> ' : ''}${esc(e.name)}</p>
-      <div class="card-sub">${esc(e.city)}${fromMe ? ` · ${fmtDistance(d)}` : ''}${openLabelHtml(e)}</div>
+      <div class="card-sub">${esc(e.city)}${fromMe ? ` · ${fmtDistance(d > 150 ? estimateRoute(d, ROUTE).m : d)}` : ''}${openLabelHtml(e)}</div>
       <div class="card-row">
         ${e.has_dine_in ? chipHtml('Salle', e.status_salle) : ''}
         ${e.has_drive ? chipHtml('Drive', e.status_drive) : ''}
@@ -786,9 +787,9 @@ function routeHtml(e) {
     return `<div class="route"><button type="button" class="chip chip-btn" id="btn-route-gps">📍 Voir le temps de trajet</button></div>`;
   }
   const d = distanceM(p.lat, p.lng, e.lat, e.lng);
-  const min = Math.max(1, Math.round(((d * ROUTE_FACTOR) / 1000 / ROUTE_SPEED_KMH) * 60));
-  const parts = [`<span class="chip">📍 ${fmtDistance(d)}</span>`];
-  if (d > 150) parts.push(`<span class="chip">🚗 ≈ ${min} min de trajet</span>`);
+  const r = estimateRoute(d, ROUTE);
+  const parts = [`<span class="chip">📍 ${d > 150 ? '≈ ' + fmtDistance(r.m) : fmtDistance(d)}</span>`];
+  if (d > 150) parts.push(`<span class="chip">🚗 ≈ ${fmtDuration(r.min)} de trajet</span>`);
   if (e.has_drive) {
     const w = e.status_drive?.wait && WAIT_INFO[e.status_drive.wait];
     parts.push(w
@@ -1345,8 +1346,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=96" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=96) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=97" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=97) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1430,7 +1431,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=96" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=97" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];

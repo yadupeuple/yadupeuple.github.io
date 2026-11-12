@@ -75,7 +75,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Signalement à moins de 100 m ; points 10 puis 5 puis 0 dans la même heure et le même resto
   (salle + Drive ensemble) ; tout est contrôlé par submit_report.
 - Restos sans Drive (has_drive = false) : rien de ce qui touche au Drive ne s'affiche.
-- Trajet estimé : distance à vol d'oiseau × 1,3 à 46 km/h (calé sur Google Maps).
+- Trajet estimé (13/11/2026, calé sur Google Maps) : route = vol d'oiseau × 1,3 en local → × 1,5 au-delà de 100 km ;
+  15 premiers km à 46 km/h, le reste à 100 km/h (js/config.js ROUTE, estimateRoute dans levels.js). Durée en « 3 h 07 ».
 - Parrainage : code à 6 caractères créé pour chaque compte (profiles.ref_code, unique grâce au trigger ensure_ref_code), affiché dans Réglages (Copier / Partager) ; lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
   filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
 - Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.

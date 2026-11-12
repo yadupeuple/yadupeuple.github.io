@@ -9,9 +9,9 @@ export const DEFAULT_ZOOM = 10.2;
 
 export const CONTACT_EMAIL = 'contact.yadupeuple@gmail.com';
 
-// Trajet estimé : distance à vol d'oiseau × 1,3 à 46 km/h (réglage validé par Alexis).
-export const ROUTE_FACTOR = 1.3;
-export const ROUTE_SPEED_KMH = 46;
+// Trajet estimé (calé sur Google Maps, 13/11/2026) : distance par la route = vol d'oiseau × 1,3 en local,
+// jusqu'à × 1,5 au-delà de 100 km ; les 15 premiers km à 46 km/h (ville), le reste à 100 km/h (voie rapide).
+export const ROUTE = { factorNear: 1.3, factorFar: 1.5, nearKm: 20, farKm: 100, cityKm: 15, citySpeed: 46, fastSpeed: 100 };
 
 // Rafraîchissement automatique des statuts (ms).
 export const REFRESH_MS = 60_000;

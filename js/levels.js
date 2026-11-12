@@ -152,6 +152,21 @@ export function distanceM(lat1, lng1, lat2, lng2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+// Trajet estimé à partir de la distance à vol d'oiseau (mètres) → { m: distance par la route, min: durée }.
+export function estimateRoute(crowM, R) {
+  const crowKm = crowM / 1000;
+  const t = Math.min(1, Math.max(0, (crowKm - R.nearKm) / (R.farKm - R.nearKm)));
+  const roadKm = crowKm * (R.factorNear + (R.factorFar - R.factorNear) * t);
+  const cityKm = Math.min(roadKm, R.cityKm);
+  const min = (cityKm / R.citySpeed + (roadKm - cityKm) / R.fastSpeed) * 60;
+  return { m: roadKm * 1000, min: Math.max(1, Math.round(min)) };
+}
+export function fmtDuration(min) {
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return `${h} h ${String(m).padStart(2, '0')}`;
+}
+
 export function fmtDistance(m) {
   if (m == null) return '';
   return m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(m < 10000 ? 1 : 0).replace('.', ',')} km`;
