@@ -401,3 +401,7 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .lb-av .avatar-img { width: 100%; height: 100%; }
 .pub-badges { display: flex; flex-wrap: wrap; gap: 8px; }
 .pub-badge { background: #F1F5F9; border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 700; }
+.profile-card .since { white-space: nowrap; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; }
+.profile-card .profile-top .grow { min-width: 0; }
+.profile-card { position: relative; }
+.profile-card #btn-invite { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: rgba(11,31,58,.55); backdrop-filter: blur(4px); }
