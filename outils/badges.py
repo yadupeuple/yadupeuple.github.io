@@ -92,12 +92,23 @@ B['tour_zone'] = wrap(f'''
 <path d="M48 132 C70 120 64 96 92 94 C118 92 110 70 148 72" fill="none" stroke="#EF4444" stroke-width="5" stroke-dasharray="9 8" stroke-linecap="round"/>
 <circle cx="148" cy="72" r="9" fill="#EF4444" {O(3)}/><circle cx="48" cy="132" r="7" fill="#F5B82E" {O(3)}/>''')
 # 10 Poignée de main
+SKIN, SKIN2, CREASE = '#FCC995', '#F5B07A', '#D98B4E'
 B['ref1'] = wrap(f'''
-<path d="M20 86 L52 70 L74 112 L46 128 Z" fill="url(#blue)" {O(5)}/>
-<path d="M180 86 L148 70 L126 112 L154 128 Z" fill="url(#teal)" {O(5)}/>
-<path d="M60 84 L92 70 C100 66 108 70 112 74 L140 92 L120 122 C112 134 98 136 88 128 L66 112 Z" fill="#FBBF7C" {O(5)}/>
-<path d="M92 76 L76 94 C72 100 80 106 86 101 L104 86" fill="#FDD4A8" {O(4)}/>
-<path d="M94 112 L104 120 M104 104 L116 112 M114 96 L124 104" stroke="#E08A3C" stroke-width="4" stroke-linecap="round"/>''')
+<g transform="translate(0 -6)">
+<rect x="8" y="100" width="44" height="46" rx="9" fill="url(#blue)" {O(5)} transform="rotate(-28 30 123)"/>
+<rect x="148" y="100" width="44" height="46" rx="9" fill="url(#teal)" {O(5)} transform="rotate(28 170 123)"/>
+<path d="M44 104 C60 88 82 80 104 82 L134 86 C144 88 144 102 134 104 L118 106 L116 128 L76 138 C62 142 50 136 44 124 Z" fill="{SKIN2}" {O(5)}/>
+<path d="M156 98 C142 84 122 78 104 80 L100 136 C120 142 142 140 160 128 Z" fill="{SKIN}" {O(5)}/>
+<rect x="70" y="88" width="46" height="15" rx="7.5" fill="{SKIN}" {O(4)}/>
+<rect x="68" y="101" width="48" height="15" rx="7.5" fill="{SKIN}" {O(4)}/>
+<rect x="70" y="114" width="46" height="15" rx="7.5" fill="{SKIN}" {O(4)}/>
+<rect x="76" y="127" width="38" height="14" rx="7" fill="{SKIN}" {O(4)}/>
+<path d="M54 100 C66 82 94 70 124 72 C138 73 138 90 124 90 C104 90 86 96 72 110 Z" fill="{SKIN2}" {O(4)}/>
+<path d="M118 76 C124 76 128 80 128 84" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+<path d="M128 94 C136 98 140 106 140 116" fill="none" stroke="{CREASE}" stroke-width="3" stroke-linecap="round"/>
+
+</g>
+{star(44, 52, 9, "#FDE047", 3)}{star(158, 48, 7, "#FDE047", 3)}{star(150, 172, 5, "#fff", 2)}''')
 # 11 Mégaphone
 B['ref10'] = wrap(f'''
 <path d="M50 84 L130 46 V158 L50 120 Z" fill="url(#red)" {O(5)}/>

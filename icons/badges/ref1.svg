@@ -11,8 +11,18 @@
 <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7DD3FC"/><stop offset="1" stop-color="#2563EB"/></linearGradient>
 <linearGradient id="brown" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6A06B"/><stop offset="1" stop-color="#92400E"/></linearGradient>
 </defs><circle cx="100" cy="100" r="94" fill="url(#bg)"/><path d="M30 70 A80 80 0 0 1 120 22" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".6"/>
-<path d="M20 86 L52 70 L74 112 L46 128 Z" fill="url(#blue)" stroke="#1F2937" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M180 86 L148 70 L126 112 L154 128 Z" fill="url(#teal)" stroke="#1F2937" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M60 84 L92 70 C100 66 108 70 112 74 L140 92 L120 122 C112 134 98 136 88 128 L66 112 Z" fill="#FBBF7C" stroke="#1F2937" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M92 76 L76 94 C72 100 80 106 86 101 L104 86" fill="#FDD4A8" stroke="#1F2937" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M94 112 L104 120 M104 104 L116 112 M114 96 L124 104" stroke="#E08A3C" stroke-width="4" stroke-linecap="round"/></svg>
+<g transform="translate(0 -6)">
+<rect x="8" y="100" width="44" height="46" rx="9" fill="url(#blue)" stroke="#1F2937" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" transform="rotate(-28 30 123)"/>
+<rect x="148" y="100" width="44" height="46" rx="9" fill="url(#teal)" stroke="#1F2937" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" transform="rotate(28 170 123)"/>
+<path d="M44 104 C60 88 82 80 104 82 L134 86 C144 88 144 102 134 104 L118 106 L116 128 L76 138 C62 142 50 136 44 124 Z" fill="#F5B07A" stroke="#1F2937" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M156 98 C142 84 122 78 104 80 L100 136 C120 142 142 140 160 128 Z" fill="#FCC995" stroke="#1F2937" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="70" y="88" width="46" height="15" rx="7.5" fill="#FCC995" stroke="#1F2937" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="68" y="101" width="48" height="15" rx="7.5" fill="#FCC995" stroke="#1F2937" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="70" y="114" width="46" height="15" rx="7.5" fill="#FCC995" stroke="#1F2937" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="76" y="127" width="38" height="14" rx="7" fill="#FCC995" stroke="#1F2937" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M54 100 C66 82 94 70 124 72 C138 73 138 90 124 90 C104 90 86 96 72 110 Z" fill="#F5B07A" stroke="#1F2937" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M118 76 C124 76 128 80 128 84" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+<path d="M128 94 C136 98 140 106 140 116" fill="none" stroke="#D98B4E" stroke-width="3" stroke-linecap="round"/>
+
+</g>
+<polygon points="44.0,43.0 46.4,48.7 52.6,49.2 47.9,53.3 49.3,59.3 44.0,56.0 38.7,59.3 40.1,53.3 35.4,49.2 41.6,48.7" fill="#FDE047" stroke="#1F2937" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><polygon points="158.0,41.0 159.9,45.5 164.7,45.8 161.0,49.0 162.1,53.7 158.0,51.1 153.9,53.7 155.0,49.0 151.3,45.8 156.1,45.5" fill="#FDE047" stroke="#1F2937" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><polygon points="150.0,167.0 151.3,170.2 154.8,170.5 152.1,172.7 152.9,176.0 150.0,174.2 147.1,176.0 147.9,172.7 145.2,170.5 148.7,170.2" fill="#fff" stroke="#1F2937" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>
