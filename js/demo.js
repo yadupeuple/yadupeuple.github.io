@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=51';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=51';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=52';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=52';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
