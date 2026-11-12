@@ -520,7 +520,3 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .card-row .chip:only-child .dot { width: 11px; height: 11px; }
 /* La carte (MapLibre) impose « Helvetica Neue » : les pastilles reprennent la police de l'appli */
 .maplibregl-map, .pill { font-family: inherit; }
-/* Essai de la police Nunito (fichiers dans vendor/fonts, licence OFL) : activée par ?nunito, retirée par ?systeme */
-@font-face { font-family: 'Nunito'; font-style: normal; font-display: swap; font-weight: 200 1000; src: url('../vendor/fonts/nunito-latin-wght-normal.woff2?v=82') format('woff2-variations'); }
-@font-face { font-family: 'Nunito'; font-style: italic; font-display: swap; font-weight: 200 1000; src: url('../vendor/fonts/nunito-latin-wght-italic.woff2?v=82') format('woff2-variations'); }
-html.font-nunito, html.font-nunito body { font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
