@@ -523,3 +523,8 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .legal-links { margin-top: 2px; }
 .legal-links .link-btn { font-weight: 600; color: var(--muted); }
 .legal-links > span { margin: 0 6px; }
+/* Réglages : mon code de parrainage */
+.my-code { display: flex; gap: 8px; align-items: center; }
+.mc-code { flex: 1; font-size: 22px; font-weight: 800; letter-spacing: .18em; text-align: center; padding: 9px 6px; border: 2px dashed var(--teal, #14B8A6); border-radius: 14px; color: var(--navy); background: #F0FDFA; font-variant-numeric: tabular-nums; user-select: all; }
+.my-code .mc-btn { width: auto; margin: 0; padding: 12px 14px; }
+.mc-note { font-size: 12.5px; margin: 6px 0 0; }

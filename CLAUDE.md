@@ -74,7 +74,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   (salle + Drive ensemble) ; tout est contrôlé par submit_report.
 - Restos sans Drive (has_drive = false) : rien de ce qui touche au Drive ne s'affiche.
 - Trajet estimé : distance à vol d'oiseau × 1,3 à 46 km/h (calé sur Google Maps).
-- Parrainage : lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
+- Parrainage : code à 6 caractères créé pour chaque compte (profiles.ref_code, unique grâce au trigger ensure_ref_code), affiché dans Réglages (Copier / Partager) ; lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
   filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
 - Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.
   Avatars (30) et bannières (17, dont 2 au niveau 1) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles

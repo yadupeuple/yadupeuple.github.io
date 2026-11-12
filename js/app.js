@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=84';
+import { api, DEMO } from './api.js?v=85';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=84';
+} from './config.js?v=85';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=84';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=84';
-import { BRAND_PATHS } from './brands.js?v=84';
+} from './levels.js?v=85';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=85';
+import { BRAND_PATHS } from './brands.js?v=85';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1218,8 +1218,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=84" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=84) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=85" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=85) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1303,7 +1303,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=84" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=85" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1430,6 +1430,14 @@ function settingsHtml(resto = null) {
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>
 
+    ${state.profile?.ref_code ? `<div class="section-title">Mon code de parrainage</div>
+    <div class="my-code">
+      <div class="mc-code" aria-label="Mon code">${esc(state.profile.ref_code)}</div>
+      <button type="button" class="btn btn-ghost mc-btn" id="btn-copy-code">Copier</button>
+      <button type="button" class="btn btn-primary mc-btn" id="btn-share-code">Partager</button>
+    </div>
+    <p class="muted mc-note">Ton ami saisit ce code dans son profil (ou ouvre ton lien) : +20 pts pour toi, +10 pour lui à son 1er signalement.</p>` : ''}
+
     ${resto ? myRestoHtml(resto) : `<details class="partner-card pc-fold">
       <summary class="pc-head"><span class="pc-ico">🍔</span><div class="grow"><div class="pc-title">Vous êtes restaurateur ?</div><div class="pc-sub">Devenez partenaire de Y'a du peuple ?</div></div><span class="pc-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
       <ul class="pc-list">
@@ -1466,6 +1474,14 @@ function settingsHtml(resto = null) {
 }
 
 function bindSettings(body, resto = null) {
+  const cp = $('#btn-copy-code', body);
+  if (cp) cp.onclick = async () => {
+    const code = state.profile?.ref_code || '';
+    try { await navigator.clipboard.writeText(code); toast('Code copié ✅'); }
+    catch { toast(`Ton code : ${code}`); }
+  };
+  const sc = $('#btn-share-code', body);
+  if (sc) sc.onclick = () => openShare();
   const of = $('#offer-form', body);
   if (of) {
     const send = async (o) => {
