@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=88';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=88';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=89';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=89';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -170,14 +170,6 @@ export function createDemoApi() {
       const e = DEMO_ESTABLISHMENTS.find((x) => x.id === id);
       const other = DEMO_ESTABLISHMENTS.find((x) => x.city === e?.city && x.id !== id);
       return other ? `Plus calme à côté : ${other.name}` : '';
-    },
-    async leaderboard() {
-      await wait();
-      return [
-        { rang: 1, pseudo: 'BurgerHunter', points_periode: 120, is_me: false },
-        { rang: 2, pseudo: 'Testeur57', points_periode: 85, is_me: !!user },
-        { rang: 3, pseudo: 'DriveMaster', points_periode: 40, is_me: false },
-      ];
     },
     async ranking(scope) {
       await wait();

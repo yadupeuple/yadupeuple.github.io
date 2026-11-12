@@ -32,6 +32,8 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 Tables : establishments (42, lecture publique), reports, profiles, favorites, badges (18),
 user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
+Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
+(tout passe par les fonctions RPC) ; pseudo modifiable seulement via change_pseudo ; fonctions de compte interdites sans connexion.
 
 Fonctions appelées par l'appli (RPC) :
 | Fonction | Sans compte | Rôle |

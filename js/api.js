@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=88';
-import { createDemoApi } from './demo.js?v=88';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=89';
+import { createDemoApi } from './demo.js?v=89';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -103,7 +103,6 @@ function createSupabaseApi() {
       if (error) return null; // table pas encore créée : on garde la courbe type
       return data?.profile || null;
     },
-    leaderboard: (city = null, days = 7) => rpc('get_leaderboard', { p_city: city, p_days: days }),
     ranking: (scope = 'month', city = null) => rpc('get_ranking', { p_scope: scope, p_city: city }),
     publicProfile: (pseudo) => rpc('get_public_profile', { p_pseudo: pseudo }),
     submitReport: (r) => rpc('submit_report', {
