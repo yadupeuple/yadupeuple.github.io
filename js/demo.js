@@ -205,16 +205,16 @@ export function createDemoApi() {
       await wait();
       if (!user) return [];
       return [
-        ['v1', 'Volume', 'Premier signalement', 'Faire 1 signalement ayant rapporté des points', true, 1, 1],
-        ['v10', 'Volume', '5 signalements', 'Faire 5 signalements ayant rapporté des points', true, 5, 5],
-        ['v50', 'Volume', '10 signalements', 'Faire 10 signalements ayant rapporté des points', false, 7, 10],
-        ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements Drive ayant rapporté des points', false, 3, 10],
-        ['explorer', 'Variété', 'Explorateur', 'Signaler dans 5 restaurants différents en gagnant des points', false, 4, 5],
-        ['ref1', 'Parrainage', 'Parrain', 'Parrainer 1 ami (après son premier signalement)', true, 1, 1],
+        ['v1', 'Volume', 'Premier signalement', 'Faire 1 signalement', true, 1, 1],
+        ['v10', 'Volume', '5 signalements', 'Faire 5 signalements', true, 5, 5],
+        ['v50', 'Volume', '10 signalements', 'Faire 10 signalements', false, 7, 10],
+        ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements Drive', false, 3, 10],
+        ['explorer', 'Variété', 'Explorateur', 'Signaler dans 5 restaurants différents', false, 4, 5],
+        ['ref1', 'Parrainage', 'Parrain', 'Parrainer 1 ami', true, 1, 1],
         ['ref10', 'Parrainage', 'Ambassadeur', 'Parrainer 10 amis', false, 2, 10],
-        ['explorer10', 'Variété', 'Fin gourmet', 'Signaler dans 10 restaurants différents en gagnant des points', false, 4, 10],
-        ['tour_zone6', 'Variété', 'Globe-trotteur', 'Signaler dans 6 villes différentes en gagnant des points', false, 1, 6],
-        ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 3 villes différentes en gagnant des points', false, 1, 3],
+        ['explorer10', 'Variété', 'Fin gourmet', 'Signaler dans 10 restaurants différents', false, 4, 10],
+        ['tour_zone6', 'Variété', 'Globe-trotteur', 'Signaler dans 6 villes différentes', false, 1, 6],
+        ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 3 villes différentes', false, 1, 3],
         ['fiable', 'Fiabilité', 'Fiable', 'Avoir 10 signalements confirmés', null, null, null],
         ['coup_de_feu', 'Moments', 'Coup de feu', 'Signaler pendant un pic (12h-13h30 ou 19h-20h30)', null, null, null],
       ].map(([code, family, name, description, earned, cur, target]) => ({
