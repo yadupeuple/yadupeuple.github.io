@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=49';
+import { api, DEMO } from './api.js?v=50';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=49';
+} from './config.js?v=50';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=49';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=49';
-import { BRAND_PATHS } from './brands.js?v=49';
+} from './levels.js?v=50';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=50';
+import { BRAND_PATHS } from './brands.js?v=50';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1094,7 +1094,7 @@ async function renderAccount(tab = 'badges') {
         <div><strong>${p.restos_total ?? 0}</strong><span>restos</span></div>
         <div><strong>${(p.badges || []).length}</strong><span>badges</span></div>
       </div>
-      ${p.top_resto ? `<div class="top-resto">⭐ Ton resto le plus signalé : <strong>${esc(p.top_resto)}</strong></div>` : ''}
+      ${p.top_resto ? `<div class="top-resto">⭐ Ton resto le plus signalé :<br><strong>${esc(p.top_resto)}</strong></div>` : ''}
     </div>
     <div class="referral">
       <div class="grow">
@@ -1140,8 +1140,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=49" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=49) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=50" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=50) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
