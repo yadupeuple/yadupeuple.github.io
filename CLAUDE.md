@@ -92,7 +92,7 @@ Supabase · mentions légales, RGPD, CGU · vérification de la marque · tests 
 ## Plus tard (idées validées, pas encore faites)
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
-Profil : illustrations des badges à créer ;
+Badges : illustrations dessinées pour l'appli (icons/badges/*.svg, outils/badges.py), grises tant que non gagnés ;
 nouvelle disposition de la page Profil.
 
 ## Mises à jour

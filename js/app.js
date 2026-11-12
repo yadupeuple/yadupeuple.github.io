@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=55';
+import { api, DEMO } from './api.js?v=56';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=55';
+} from './config.js?v=56';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=55';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=55';
-import { BRAND_PATHS } from './brands.js?v=55';
+} from './levels.js?v=56';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=56';
+import { BRAND_PATHS } from './brands.js?v=56';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1142,8 +1142,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=55" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=55) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=56" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=56) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1207,7 +1207,7 @@ async function openPublicProfile(pseudo, back) {
       </div>
     </div>
     <div class="section-title">Badges (${p.badges.length})</div>
-    ${p.badges.length ? `<div class="pub-badges">${p.badges.map((b) => `<span class="pub-badge">${BADGE_ICONS[b.code] || '🏅'} ${esc(b.name)}</span>`).join('')}</div>` : '<p class="muted">Pas encore de badge.</p>'}`);
+    ${p.badges.length ? `<div class="pub-badges">${p.badges.map((b) => `<span class="pub-badge">${badgeImg(b.code)} ${esc(b.name)}</span>`).join('')}</div>` : '<p class="muted">Pas encore de badge.</p>'}`);
   $('#btn-back').onclick = back;
 }
 
@@ -1222,15 +1222,19 @@ const BADGE_ICONS = {
   ref1: '🤝', ref10: '📣', ref30: '👑',
   coup_de_feu: '🔥', regulier: '📅', fiable: '✅', oeil_lynx: '🦉',
 };
+// Illustrations des badges (icons/badges/*.svg, dessinées pour l'appli) ; emoji en secours pour un badge sans image.
+const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10', 'explorer', 'tour_zone', 'ref1', 'ref10', 'ref30', 'coup_de_feu', 'regulier', 'fiable', 'oeil_lynx']);
+const badgeImg = (code) => BADGE_ART.has(code)
+  ? `<img src="icons/badges/${code}.svg?v=56" alt="" class="badge-img">`
+  : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
   const item = (b) => {
     const prog = b.is_active && b.target_value ? Math.round((b.current_value / b.target_value) * 100) : 0;
     const sub = !b.is_active ? 'Bientôt disponible' : b.earned ? 'Obtenu ✅' : `${b.current_value} / ${b.target_value}`;
-    const ico = BADGE_ICONS[b.code] || '🏅';
     return `<li class="${b.is_active ? '' : 'locked'}">
-      <span class="badge-ico ${b.earned ? 'on' : ''}">${b.is_active ? ico : '🔒'}</span>
+      <span class="badge-art ${b.earned ? 'on' : ''}">${badgeImg(b.code)}${b.is_active ? '' : '<span class="badge-lock">🔒</span>'}</span>
       <div class="grow"><div class="t">${esc(b.name)}</div><div class="s">${esc(b.description)} · ${sub}</div>
       ${b.is_active && !b.earned ? `<div class="mini-progress"><div style="width:${prog}%"></div></div>` : ''}</div>
     </li>`;

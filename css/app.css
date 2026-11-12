@@ -416,3 +416,11 @@ html, body { background: #E4EED3; }
 body { caret-color: transparent; }
 input, textarea, select, [contenteditable="true"] { caret-color: auto; }
 .welcome, .welcome h1, .slogan, .welcome-note, .btn { -webkit-user-select: none; user-select: none; }
+/* Badges illustrés : couleur une fois gagnés, gris tant qu'ils ne le sont pas */
+.badge-art { position: relative; flex: none; width: 52px; height: 52px; display: grid; place-items: center; }
+.badge-art .badge-img { width: 52px; height: 52px; filter: grayscale(1); opacity: .45; }
+.badge-art.on .badge-img { filter: none; opacity: 1; }
+.badge-lock { position: absolute; right: -2px; bottom: -2px; font-size: 14px; }
+.badge-emoji { font-size: 26px; }
+.pub-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 4px; }
+.pub-badge .badge-img { width: 30px; height: 30px; }
