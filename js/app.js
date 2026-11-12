@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=67';
+import { api, DEMO } from './api.js?v=68';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=67';
+} from './config.js?v=68';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=67';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=67';
-import { BRAND_PATHS } from './brands.js?v=67';
+} from './levels.js?v=68';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=68';
+import { BRAND_PATHS } from './brands.js?v=68';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1098,16 +1098,22 @@ async function loadFavorites() {
   try { (await api.myFavorites() || []).forEach((e) => state.favorites.add(e.id)); } catch {}
 }
 
-async function renderAccount(tab = 'badges') {
+async function renderAccount(tab = 'profil') {
   await custom.load();
   await refreshProfile();
   const p = state.profile || { pseudo: '…', points: 0, level_name: '', next_level_at: null };
   const pct = p.next_level_at ? Math.min(100, Math.round((p.points / p.next_level_at) * 100)) : 100;
   openSheet('account', `
     <div class="sheet-head">
-      <div class="grow"><h2>Mon compte</h2></div>
+      <div class="grow"><h2>${tab === 'reglages' ? 'Réglages' : 'Mon compte'}</h2></div>
+      <button class="round-btn ${tab === 'reglages' ? 'on' : ''}" id="btn-settings" aria-label="Réglages">⚙️</button>
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
+    <div class="tabs" role="tablist">
+      ${[['profil', 'Mon profil'], ['badges', 'Badges'], ['classement', 'Classement'], ['favoris', 'Favoris']]
+        .map(([k, l]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`).join('')}
+    </div>
+    ${tab === 'profil' ? `
     <div class="profile-card">
       <div class="profile-banner" style="${custom.banner(p.banner)}"></div>
       <div class="profile-top">
@@ -1135,15 +1141,15 @@ async function renderAccount(tab = 'badges') {
       </div>
       <button class="btn btn-primary ref-btn" id="btn-refer">Inviter des amis</button>
     </div>
-    <div class="tabs" role="tablist">
-      ${[['badges', 'Badges'], ['classement', 'Classement'], ['favoris', 'Favoris'], ['reglages', 'Réglages']]
-        .map(([k, l]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`).join('')}
-    </div>
-    <div id="tab-body"><div class="spinner"></div></div>
+    <button class="btn btn-ghost" id="btn-custom2">🎨 Personnaliser mon image et ma bannière</button>` : ''}
+    <div id="tab-body">${tab === 'profil' ? '' : '<div class="spinner"></div>'}</div>
   `);
   $('#btn-close').onclick = closeSheet;
-  $('#btn-custom').onclick = () => openCustomize();
-  $('#btn-refer').onclick = () => openShare();
+  $('#btn-settings').onclick = () => renderAccount(tab === 'reglages' ? 'profil' : 'reglages');
+  const on = (sel, fn) => { const el = document.querySelector(sel); if (el) el.onclick = fn; };
+  on('#btn-custom', () => openCustomize());
+  on('#btn-custom2', () => openCustomize());
+  on('#btn-refer', () => openShare());
   const rf = document.querySelector('#ref-form');
   if (rf) rf.onsubmit = async (ev) => {
     ev.preventDefault();
@@ -1171,8 +1177,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=67" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=67) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=68" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=68) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1197,7 +1203,7 @@ async function openCustomize() {
     <div class="cz-grid avatars">${custom.list.filter((c) => c.kind === 'avatar').map(cell).join('')}</div>
     <div class="section-title">Bannière</div>
     <div class="cz-grid banners">${custom.list.filter((c) => c.kind === 'banner').map(cell).join('')}</div>`);
-  $('#btn-back').onclick = () => renderAccount('badges');
+  $('#btn-back').onclick = () => renderAccount('profil');
   $('#sheet-body').querySelectorAll('.cz:not(.locked)').forEach((b) => b.onclick = async () => {
     const r = await api.setCustomization(b.dataset.kind, b.dataset.code).catch((e) => ({ ok: false, message: e.message }));
     if (!r?.ok) { toast(r?.message || 'Impossible pour le moment.'); return; }
@@ -1256,7 +1262,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg (dessinés) ; les autres viennent de la planche ChatGPT d'Alexis (.webp, outils/badges_sheet.py).
 const BADGE_SVG = new Set(['v10', 'drive10', 'explorer10', 'ref1']);
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=67" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=68" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];

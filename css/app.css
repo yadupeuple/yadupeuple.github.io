@@ -439,3 +439,9 @@ input, textarea, select, [contenteditable="true"] { caret-color: auto; }
 .sheet.full .sheet-body { padding-bottom: calc(40px + var(--safe-bottom)); }
 html.sheet-full, html.sheet-full body { background: #0B1F3A; }
 html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibility: hidden; }
+#btn-settings { font-size: 18px; }
+#btn-settings.on { background: var(--navy); }
+#btn-custom2 { margin-top: 10px; }
+.sheet.full .tabs { margin: 0 0 12px; }
+.sheet.full .tabs { display: grid; grid-template-columns: 1.15fr 1fr 1.2fr 1fr; gap: 6px; overflow: visible; }
+.sheet.full .tabs button { padding: 9px 4px; font-size: 13.5px; white-space: nowrap; text-align: center; }
