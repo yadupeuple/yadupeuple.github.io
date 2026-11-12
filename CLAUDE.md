@@ -109,8 +109,8 @@ Supabase · mentions légales, RGPD, CGU · vérification de la marque · tests 
 ## Plus tard (idées validées, pas encore faites)
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
-Badges : images ChatGPT d'Alexis (icons/badges/*.webp) — 14 découpées de la planche (outils/badges_sheet.py),
-4 (v10, drive10, explorer10, ref1) dessinés en SVG dans le même style (outils/badges4_svg.py) ; gris tant que non gagnés ;
+Badges : images ChatGPT d'Alexis (icons/badges/*.webp), découpées telles quelles : planche 1 (outils/badges_sheet.py)
++ v10, drive10, explorer10, ref1, tour_zone refaits le 12/11/2026 (outils/badges_sheet2.py) ; ne pas redessiner ; gris tant que non gagnés ;
 nouvelle disposition de la page Profil.
 
 ## Mises à jour
