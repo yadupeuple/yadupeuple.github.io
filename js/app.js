@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=68';
+import { api, DEMO } from './api.js?v=69';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=68';
+} from './config.js?v=69';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=68';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=68';
-import { BRAND_PATHS } from './brands.js?v=68';
+} from './levels.js?v=69';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=69';
+import { BRAND_PATHS } from './brands.js?v=69';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1177,8 +1177,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=68" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=68) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=69" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=69) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1262,7 +1262,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg (dessinés) ; les autres viennent de la planche ChatGPT d'Alexis (.webp, outils/badges_sheet.py).
 const BADGE_SVG = new Set(['v10', 'drive10', 'explorer10', 'ref1']);
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=68" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=69" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1293,20 +1293,18 @@ async function badgesHtml() {
 
 // Classements : « Ce mois-ci » (remis à zéro le 1er du mois) et « Depuis le début ».
 async function renderLeaderboard(body, city = null, scope = 'month') {
-  const cities = [...new Set([...state.establishments.values()].map((e) => e.city))].sort((a, b) => a.localeCompare(b, 'fr'));
   const month = new Intl.DateTimeFormat('fr-FR', { month: 'long', timeZone: 'Europe/Paris' }).format(new Date());
   body.innerHTML = `
     <div class="seg">
       <button data-scope="month" class="${scope === 'month' ? 'on' : ''}">Ce mois-ci</button>
       <button data-scope="all" class="${scope === 'all' ? 'on' : ''}">Depuis le début</button>
     </div>
-    <select class="select" id="lb-city" style="width:100%;margin-bottom:6px"><option value="">Toute la zone</option>${cities.map((c) => `<option ${c === city ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>
     <p class="muted" style="font-size:12.5px;margin:2px 0 8px">${scope === 'month'
       ? `Points gagnés en ${month}. Le classement repart de zéro le 1er de chaque mois.`
       : 'Tous les points gagnés depuis l\'inscription.'}</p>
     <div id="lb-list"><div class="spinner"></div></div>`;
-  body.querySelectorAll('[data-scope]').forEach((b) => b.onclick = () => renderLeaderboard(body, $('#lb-city').value || null, b.dataset.scope));
-  $('#lb-city').onchange = () => renderLeaderboard(body, $('#lb-city').value || null, scope);
+  // Classement général uniquement (plus de filtre par ville) ; par région plus tard si l'appli s'étend.
+  body.querySelectorAll('[data-scope]').forEach((b) => b.onclick = () => renderLeaderboard(body, null, b.dataset.scope));
   const rows = await api.ranking(scope, city) || [];
   $('#lb-list').innerHTML = rows.length ? `<ul class="list">${rows.map((r) => `
     <li class="${r.is_me ? 'me-row' : ''} lb-row" data-pseudo="${esc(r.pseudo)}" role="button" tabindex="0">
