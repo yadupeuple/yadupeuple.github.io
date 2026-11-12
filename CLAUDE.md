@@ -94,7 +94,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Affiche QR code : `affiche.html?r=ID` (A4, imprimable / PDF) ; QR → `?r=ID&src=affiche`. Bibliothèque vendor/qrcode.js (qrcode-generator, MIT).
   Lien dans « Mon restaurant » et dans le Mode test.
 - Alerte « c'est calme + offre » aux favoris : à faire avec les notifications.
-- Filtres (bouton entre la loupe et le profil) : affluence (4 niveaux + « aucune info / fermé »), enseignes, « avec Drive » ;
+- Filtres (bouton entre la loupe et le profil) : affluence (4 niveaux + « aucune info / fermé »), enseignes, « Avec Drive » ;
   s'appliquent à la carte et à la liste du bas, gardés sur le téléphone (localStorage ydp_filters).
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :

@@ -1,16 +1,16 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=93';
+import { api, DEMO } from './api.js?v=94';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE_FACTOR, ROUTE_SPEED_KMH, REFRESH_MS,
-} from './config.js?v=93';
+} from './config.js?v=94';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
-} from './levels.js?v=93';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=93';
-import { BRAND_PATHS } from './brands.js?v=93';
+} from './levels.js?v=94';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=94';
+import { BRAND_PATHS } from './brands.js?v=94';
 
 // ---------------------------------------------------------------------------
 // État
@@ -171,7 +171,7 @@ function openFilters() {
       <div class="section-title">Enseignes</div>
       <div class="fchips">${brands.map((b) => `<button type="button" class="fchip ${filters.brands.has(b) ? 'on' : ''}" data-brand="${esc(b)}">${esc(b)}</button>`).join('')}</div>
       <div class="section-title">Service</div>
-      <div class="fchips"><button type="button" class="fchip ${filters.drive ? 'on' : ''}" data-drive="1">🚗 Avec Drive seulement</button></div>
+      <div class="fchips"><button type="button" class="fchip ${filters.drive ? 'on' : ''}" data-drive="1">🚗 Avec Drive</button></div>
       <div class="filter-actions ${filtersActive() ? '' : 'single'}">
         ${filtersActive() ? '<button type="button" class="btn btn-ghost" id="btn-freset">Effacer</button>' : ''}
         <button type="button" class="btn btn-primary" id="btn-fok">Voir ${count()} resto${count() > 1 ? 's' : ''}</button>
@@ -1301,8 +1301,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=93" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=93) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=94" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=94) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1386,7 +1386,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=93" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=94" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
