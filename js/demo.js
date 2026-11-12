@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=42';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=42';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=43';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=43';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -86,10 +86,10 @@ export function createDemoApi() {
     async customizations() {
       await wait();
       return [
-        ['avatar', 'burger', '🍔', 1], ['avatar', 'frites', '🍟', 1], ['avatar', 'tacos', '🌮', 1], ['avatar', 'pizza', '🍕', 1],
-        ['avatar', 'soda', '🥤', 5], ['avatar', 'hotdog', '🌭', 10], ['avatar', 'renard', '🦊', 30], ['avatar', 'fusee', '🚀', 100],
-        ['banner', 'nuit', 'linear-gradient(135deg,#0B1F3A,#16325C)', 1], ['banner', 'lagon', 'linear-gradient(135deg,#0F766E,#14B8A6)', 1],
-        ['banner', 'sunset', 'linear-gradient(135deg,#F97316,#DB2777)', 10], ['banner', 'or', 'linear-gradient(135deg,#B45309,#F5A524,#FDE68A)', 50],
+        ['avatar', 'burger', 'icons/avatars/burger.svg', 1], ['avatar', 'frites', 'icons/avatars/frites.svg', 1], ['avatar', 'tacos', 'icons/avatars/tacos.svg', 1], ['avatar', 'pizza', 'icons/avatars/pizza.svg', 1],
+        ['avatar', 'soda', 'icons/avatars/soda.svg', 5], ['avatar', 'hotdog', 'icons/avatars/hotdog.svg', 10], ['avatar', 'renard', 'icons/avatars/renard.svg', 30], ['avatar', 'fusee', 'icons/avatars/fusee.svg', 100],
+        ['banner', 'nuit', 'icons/banners/nuit.svg', 1], ['banner', 'lagon', 'icons/banners/lagon.svg', 1],
+        ['banner', 'sunset', 'icons/banners/sunset.svg', 10], ['banner', 'or', 'icons/banners/or.svg', 50],
       ].map(([kind, code, value, min_level]) => ({ kind, code, value, min_level }));
     },
     async setCustomization(kind, code) {

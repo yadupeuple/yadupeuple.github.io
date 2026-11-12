@@ -70,8 +70,9 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Trajet estimé : distance à vol d'oiseau × 1,3 à 46 km/h (calé sur Google Maps).
 - Parrainage : lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
   filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
-- Niveaux 1 à 100 : points ≈ 10 × (niveau − 1)^1,8 (niv. 10 = 520, 50 = 11 025, 100 = 39 095) ; titres tous les 10 niveaux.
-  Avatars (emojis) et bannières (dégradés) choisis seulement dans la table customizations, débloqués par niveau.
+- Niveaux 1 à 100 : points ≈ 4 × (niveau − 1)^1,75 (niv. 10 = 185, 50 = 3 630, 100 = 12 430) ; titres tous les 10 niveaux.
+  Avatars et bannières : illustrations de l'appli (icons/avatars/*.svg, icons/banners/*.svg, dessinées pour le projet),
+  choisies seulement dans la table customizations, débloquées par niveau.
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →
@@ -89,7 +90,7 @@ Supabase · mentions légales, RGPD, CGU · vérification de la marque · tests 
 ## Plus tard (idées validées, pas encore faites)
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
-Profil : vraies illustrations (avatars, bannières, badges) à créer pour remplacer les emojis/dégradés ;
+Profil : illustrations des badges à créer (avatars et bannières faits le 12/11) ;
 nouvelle disposition de la page Profil.
 
 ## Mises à jour
