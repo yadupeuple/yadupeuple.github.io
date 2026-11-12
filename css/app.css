@@ -380,10 +380,13 @@ html.on-welcome, html.on-welcome body { background: #0B1F3A; }
 .cz.locked > :first-child { filter: grayscale(1); opacity: .35; }
 .cz-emoji { font-size: 32px; }
 .cz-emoji { display: grid; place-items: center; }
-/* Profil : bannière en fond de toute la carte (voile sombre pour la lisibilité) */
-.profile-card.has-banner { background: linear-gradient(180deg, rgba(11,31,58,.15), rgba(11,31,58,.55) 45%, rgba(11,31,58,.82)), var(--banner, none) center / cover, var(--navy); }
-.profile-card.has-banner .pseudo, .profile-card.has-banner .lvl, .profile-card.has-banner small { text-shadow: 0 1px 3px rgba(0,0,0,.55); }
-.profile-card .avatar { width: 64px; height: 64px; background: var(--navy); box-shadow: 0 0 0 3px rgba(255,255,255,.85); }
+/* Profil : bannière en bandeau (image entière, non rognée) et image de profil ronde par-dessus */
+.profile-card { padding-top: 12px; }
+.profile-banner { aspect-ratio: 4.5 / 1; border-radius: 12px; background-color: var(--navy-2); margin: 0 -4px; }
+.profile-card .profile-top { margin-top: -26px; padding-left: 8px; align-items: flex-end; }
+.profile-card .avatar { width: 72px; height: 72px; background: var(--navy); box-shadow: 0 0 0 3px var(--navy); }
+.profile-card .profile-top .grow { padding-top: 30px; }
+.profile-card .profile-top .round-btn { margin-bottom: 2px; }
 .avatar-img { width: 100%; height: 100%; display: block; border-radius: 50%; }
 .cz { padding: 8px 6px 4px; gap: 2px; }
 .cz-img { width: 56px; height: 56px; display: block; }
