@@ -575,3 +575,8 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .card.focus { box-shadow: 0 0 0 2.5px var(--teal) !important; }
 /* Carte calée sur la gauche : garder un petit espace pour voir la bulle (et son contour) en entier */
 .cards { scroll-padding-inline: 7px; }
+/* Liens du bas des Réglages : chacun sur une seule ligne, même sur petit téléphone */
+.legal-grid > * { white-space: nowrap; }
+.legal-grid { column-gap: 5px; font-size: 12px; }
+.legal-grid .link-btn { font-size: 12px; }
+.legal-grid { grid-template-columns: auto auto auto; justify-content: center; }
