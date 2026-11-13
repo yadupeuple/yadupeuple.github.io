@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=100';
+import { api, DEMO } from './api.js?v=101';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=100';
+} from './config.js?v=101';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=100';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=100';
-import { BRAND_PATHS } from './brands.js?v=100';
+} from './levels.js?v=101';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=101';
+import { BRAND_PATHS } from './brands.js?v=101';
 
 // ---------------------------------------------------------------------------
 // État
@@ -130,12 +130,12 @@ function partnerHtml(e) {
 const BRANDS = ["McDonald's", 'Burger King', 'KFC', 'Quick', 'Subway', 'Buffalo Grill', "O'Tacos", 'Starbucks', 'Flunch'];
 const FILTER_LEVELS = [
   ['calme', LEVEL_INFO.calme], ['modere', LEVEL_INFO.modere], ['frequente', LEVEL_INFO.frequente],
-  ['tres_frequente', LEVEL_INFO.tres_frequente], ['aucune', { label: 'Aucune info / fermé', color: NO_INFO.color }],
+  ['tres_frequente', LEVEL_INFO.tres_frequente],
 ];
 const filters = (() => {
   try {
     const f = JSON.parse(store.get('ydp_filters') || '{}');
-    return { brands: new Set(f.brands || []), levels: new Set(f.levels || []), drive: !!f.drive };
+    return { brands: new Set(f.brands || []), levels: new Set((f.levels || []).filter((l) => l !== 'aucune')), drive: !!f.drive };
   } catch { return { brands: new Set(), levels: new Set(), drive: false }; }
 })();
 const filtersActive = () => filters.brands.size > 0 || filters.levels.size > 0 || filters.drive;
@@ -1346,8 +1346,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=100" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=100) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=101" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=101) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1431,7 +1431,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=100" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=101" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
