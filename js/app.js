@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=104';
+import { api, DEMO } from './api.js?v=105';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=104';
+} from './config.js?v=105';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=104';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=104';
-import { BRAND_PATHS } from './brands.js?v=104';
+} from './levels.js?v=105';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=105';
+import { BRAND_PATHS } from './brands.js?v=105';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1344,8 +1344,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=104" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=104) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=105" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=105) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1429,7 +1429,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=104" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=105" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1850,4 +1850,38 @@ window.__ydp = { state, map, openDetail, openReport, openAccount, openSearch, op
   if (window.ResizeObserver) new ResizeObserver(place).observe(box);
   window.addEventListener('resize', place);
   place();
+})();
+
+// Fiche : glisser vers le bas depuis la barre grise (ou le titre) pour fermer
+(() => {
+  const sheet = $('#sheet');
+  let y0 = null, dy = 0, t0 = 0;
+  const startOk = (ev) => !sheet.classList.contains('full') &&
+    (ev.target.closest('.sheet-grip') || (ev.target.closest('.sheet-head') && !ev.target.closest('button, a, input')));
+  sheet.addEventListener('touchstart', (ev) => {
+    if (!startOk(ev)) return;
+    y0 = ev.touches[0].clientY; dy = 0; t0 = Date.now();
+    sheet.style.transition = 'none';
+  }, { passive: true });
+  sheet.addEventListener('touchmove', (ev) => {
+    if (y0 === null) return;
+    dy = Math.max(0, ev.touches[0].clientY - y0);
+    sheet.style.setProperty('--drag', dy + 'px');
+    if (dy > 4) ev.preventDefault();
+  }, { passive: false });
+  const end = () => {
+    if (y0 === null) return;
+    y0 = null;
+    const fast = dy > 40 && dy / Math.max(1, Date.now() - t0) > 0.5;
+    sheet.style.transition = 'transform .2s ease';
+    if (dy > 110 || fast) {
+      sheet.style.setProperty('--drag', sheet.offsetHeight + 'px');
+      setTimeout(() => { closeSheet(); sheet.style.transition = ''; sheet.style.setProperty('--drag', '0px'); }, 200);
+    } else {
+      sheet.style.setProperty('--drag', '0px');
+      setTimeout(() => { sheet.style.transition = ''; }, 200);
+    }
+  };
+  sheet.addEventListener('touchend', end);
+  sheet.addEventListener('touchcancel', end);
 })();

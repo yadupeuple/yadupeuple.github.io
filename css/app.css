@@ -581,3 +581,7 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .legal-grid .link-btn { font-size: 12px; }
 .legal-grid { grid-template-columns: auto auto auto; justify-content: center; }
 .locate-btn { bottom: calc(12px + var(--cards-h, 145px) + 14px + var(--safe-bottom)); }
+.sheet { transform: translateY(var(--drag, 0px)); }
+@media (min-width: 640px) { .sheet { transform: translateX(-50%) translateY(var(--drag, 0px)); } }
+.sheet-grip { position: relative; touch-action: none; }
+.sheet-grip::before { content: ''; position: absolute; left: -60px; right: -60px; top: -12px; bottom: -14px; }
