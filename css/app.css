@@ -594,3 +594,4 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .service-wait { display: flex; justify-content: flex-start; }
 /* Pas de zoom de la page (seule la carte se zoome) : sinon la page reste agrandie après fermeture d'une fiche */
 html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
+.emo.emo-flat { transform: translateY(-0.02em); }
