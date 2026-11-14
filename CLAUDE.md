@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (95 : 60 en Moselle / Meurthe-et-Moselle + 21 autour de Mulhouse + 14 Carcassonne / Limoux, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (18),
+Tables : establishments (95 : 60 en Moselle / Meurthe-et-Moselle + 21 autour de Mulhouse + 14 Carcassonne / Limoux, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
 user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
@@ -129,7 +129,7 @@ partenaires paient ou qu'Alexis crée une micro-entreprise.
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
 Badges : images ChatGPT d'Alexis (icons/badges/*.webp), découpées telles quelles : planche 1 (outils/badges_sheet.py)
-+ v10, drive10, explorer10, ref1, tour_zone refaits le 12/11/2026 (outils/badges_sheet2.py) ; ne pas redessiner ; gris tant que non gagnés ;
++ v10, drive10, explorer10, ref1, tour_zone refaits le 12/11/2026, tour_zone6 (Globe-trotteur) le 14/11 (outils/badges_sheet2.py) ; tour_zone10 « Routard du burger » (10 villes, 14/11, outils/badge_detoure.py) ; ne pas redessiner ; gris tant que non gagnés ;
 nouvelle disposition de la page Profil.
 
 ## Mises à jour
