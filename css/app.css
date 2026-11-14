@@ -580,3 +580,4 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 .legal-grid { column-gap: 5px; font-size: 12px; }
 .legal-grid .link-btn { font-size: 12px; }
 .legal-grid { grid-template-columns: auto auto auto; justify-content: center; }
+.locate-btn { bottom: calc(12px + var(--cards-h, 145px) + 14px + var(--safe-bottom)); }

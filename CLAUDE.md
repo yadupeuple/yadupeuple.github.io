@@ -89,7 +89,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   partner_offers (une offre à la fois, option « heures creuses » = salle calme ou un peu de monde, décidé par la base),
   partner_stats (compteurs anonymes par jour). Sur l'appli : ⭐ + 🎁 sur la liste et la pastille, encadré sur la fiche,
   « Mon restaurant » dans Réglages pour le propriétaire. Inscription d'un partenaire à la main (voir supabase/2026-11-12_partenaires.sql).
-  Pas de paiement dans l'appli pour l'instant ; pas de classement sponsorisé. Démo de l'espace restaurateur : `?demo&resto`.
+  Pas de paiement dans l'appli (décidé le 14/11/2026 : abonnement partenaire réglé en dehors ; idée de tarif dégressif à l'ancienneté) ; pas de classement sponsorisé. Démo de l'espace restaurateur : `?demo&resto`.
 - Offre de lancement affichée : 3 mois offerts aux 10 premiers partenaires + badge « Partenaire fondateur » à vie.
 - Lot du mois : bandeau 🏆 dans « Classement > Ce mois-ci » quand un lot existe pour le mois en cours.
 - Affiche QR code : `affiche.html?r=ID` (A4, imprimable / PDF) ; QR → `?r=ID&src=affiche`. Bibliothèque vendor/qrcode.js (qrcode-generator, MIT).
