@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=107';
+import { api, DEMO } from './api.js?v=108';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=107';
+} from './config.js?v=108';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=107';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=107';
-import { BRAND_PATHS } from './brands.js?v=107';
+} from './levels.js?v=108';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=108';
+import { BRAND_PATHS } from './brands.js?v=108';
 
 // ---------------------------------------------------------------------------
 // État
@@ -816,7 +816,7 @@ async function refineRoute(e, p) {
 function routeHtml(e) {
   const p = myPosition();
   if (!p) {
-    return `<div class="route"><button type="button" class="chip chip-btn" id="btn-route-gps">📍 Voir le temps de trajet</button></div>`;
+    return `<div class="route"><button type="button" class="chip chip-btn" id="btn-route-gps">📍 Voir le temps de trajet</button>${goHtml(e)}</div>`;
   }
   const d = distanceM(p.lat, p.lng, e.lat, e.lng);
   const real = d > 150 ? cachedRoute(e, p) : null;
@@ -833,7 +833,12 @@ function routeHtml(e) {
       ? `<span class="chip">+ file au Drive : ${w.short} voitures</span>`
       : `<span class="chip chip-muted">File au Drive : pas d'info récente</span>`);
   }
-  return `<div class="route">${parts.join('')}</div>`;
+  return `<div class="route">${parts.join('')}${goHtml(e)}</div>`;
+}
+// « S'y rendre » : ouvre Google Maps (l'appli si elle est installée) en itinéraire voiture.
+function goHtml(e) {
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lng}&travelmode=driving`;
+  return `<a class="chip chip-go" href="${url}" target="_blank" rel="noopener" id="btn-go">🧭 S'y rendre</a>`;
 }
 
 // Resto dont la fiche est affichée : quand on la redessine (jour du graphique, rafraîchissement…), on garde la position de défilement.
@@ -1381,8 +1386,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=107" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=107) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=108" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=108) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1466,7 +1471,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=107" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=108" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
