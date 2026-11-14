@@ -33,3 +33,5 @@ for code, box in zip(['v10', 'drive10', 'explorer10', 'ref1'], b):  # mégaphone
     save(im, box, code)
 im, b = discs('outils/src/badge_tour_zone.png', 1)
 save(im, b[0], 'tour_zone')  # itinéraire sur carte
+im, b = discs('outils/src/badge_tour_zone6.png', 1)
+save(im, b[0], 'tour_zone6')  # Globe-trotteur (14/11/2026) : carte + épingles sur globe
