@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=108';
+import { api, DEMO } from './api.js?v=109';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=108';
+} from './config.js?v=109';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=108';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=108';
-import { BRAND_PATHS } from './brands.js?v=108';
+} from './levels.js?v=109';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=109';
+import { BRAND_PATHS } from './brands.js?v=109';
 
 // ---------------------------------------------------------------------------
 // État
@@ -217,7 +217,7 @@ function openFilters() {
       <div class="section-title">Aller à</div>
       <div class="fchips">${ZONES.map((z) => `<button type="button" class="fchip" data-zone="${z.key}">📍 ${esc(z.label)}</button>`).join('')}</div>
       <div class="section-title">Service</div>
-      <div class="fchips"><button type="button" class="fchip ${filters.drive ? 'on' : ''}" data-drive="1">🚗 Avec Drive</button></div>
+      <div class="fchips"><button type="button" class="fchip ${filters.drive ? 'on' : ''}" data-drive="1"><span class="emo">🚗</span>Avec Drive</button></div>
       <div class="filter-actions ${filtersActive() ? '' : 'single'}">
         ${filtersActive() ? '<button type="button" class="btn btn-ghost" id="btn-freset">Effacer</button>' : ''}
         <button type="button" class="btn btn-primary" id="btn-fok">Voir ${count()} resto${count() > 1 ? 's' : ''}</button>
@@ -681,7 +681,7 @@ function serviceBlock(e, service) {
   const d = describeStatus(st);
   const hist = detailExtra.get(e.id)?.history?.[service];
   const waitHtml = service === 'drive' && st?.wait && WAIT_INFO[st.wait]
-    ? `<div class="service-wait">🚗 File au Drive : ${WAIT_INFO[st.wait].label}</div>` : '';
+    ? `<div class="service-wait"><span class="emo">🚗</span>File au Drive : ${WAIT_INFO[st.wait].label}</div>` : '';
   const histHtml = hist && hist.length ? `
     <details class="history">
       <summary>Derniers signalements (${hist.length})</summary>
@@ -805,8 +805,8 @@ async function refineRoute(e, p) {
     routeCache.set(key, r);
     const dist = $('#route-dist'), time = $('#route-time');
     if (dist && time && state.selectedId === e.id) {
-      dist.textContent = `📍 ${fmtDistance(r.m)}`;
-      time.textContent = `🚗 ${fmtDuration(r.min)} de trajet`;
+      dist.innerHTML = `<span class="emo">📍</span>${fmtDistance(r.m)}`;
+      time.innerHTML = `<span class="emo">🚗</span>${fmtDuration(r.min)} de trajet`;
     }
     const sub = document.querySelector(`#cards .card[data-id="${e.id}"] .card-dist`);
     if (sub) sub.textContent = fmtDistance(r.m);
@@ -816,15 +816,15 @@ async function refineRoute(e, p) {
 function routeHtml(e) {
   const p = myPosition();
   if (!p) {
-    return `<div class="route"><button type="button" class="chip chip-btn" id="btn-route-gps">📍 Voir le temps de trajet</button>${goHtml(e)}</div>`;
+    return `<div class="route"><button type="button" class="chip chip-btn" id="btn-route-gps"><span class="emo">📍</span>Voir le temps de trajet</button>${goHtml(e)}</div>`;
   }
   const d = distanceM(p.lat, p.lng, e.lat, e.lng);
   const real = d > 150 ? cachedRoute(e, p) : null;
   const r = real || estimateRoute(d, ROUTE);
   const approx = real ? '' : '≈ ';
-  const parts = [`<span class="chip" id="route-dist">📍 ${d > 150 ? approx + fmtDistance(r.m) : fmtDistance(d)}</span>`];
+  const parts = [`<span class="chip" id="route-dist"><span class="emo">📍</span>${d > 150 ? approx + fmtDistance(r.m) : fmtDistance(d)}</span>`];
   if (d > 150) {
-    parts.push(`<span class="chip" id="route-time">🚗 ${approx}${fmtDuration(r.min)} de trajet</span>`);
+    parts.push(`<span class="chip" id="route-time"><span class="emo">🚗</span>${approx}${fmtDuration(r.min)} de trajet</span>`);
     if (!real) setTimeout(() => refineRoute(e, p), 0);
   }
   if (e.has_drive) {
@@ -838,7 +838,7 @@ function routeHtml(e) {
 // « S'y rendre » : ouvre Google Maps (l'appli si elle est installée) en itinéraire voiture.
 function goHtml(e) {
   const url = `https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lng}&travelmode=driving`;
-  return `<a class="chip chip-go" href="${url}" target="_blank" rel="noopener" id="btn-go">🧭 S'y rendre</a>`;
+  return `<a class="chip chip-go" href="${url}" target="_blank" rel="noopener" id="btn-go"><span class="emo">🧭</span>S'y rendre</a>`;
 }
 
 // Resto dont la fiche est affichée : quand on la redessine (jour du graphique, rafraîchissement…), on garde la position de défilement.
@@ -974,7 +974,7 @@ function openReport(id, presetService) {
       ${error ? `<div class="error-box">${esc(error)}</div>` : ''}
       ${services.length > 1 ? `
         <div class="seg" role="tablist">
-          ${services.map((s) => `<button data-service="${s}" class="${form.service === s ? 'on' : ''}">${s === 'salle' ? '🍔 En salle' : '🚗 Au Drive'}</button>`).join('')}
+          ${services.map((s) => `<button data-service="${s}" class="${form.service === s ? 'on' : ''}">${s === 'salle' ? '<span class="emo">🍔</span>En salle' : '<span class="emo">🚗</span>Au Drive'}</button>`).join('')}
         </div>` : ''}
       <div class="label">${form.service === 'drive' ? 'Comment ça bouge au Drive ?' : 'Combien de monde en salle ?'}</div>
       <div class="levels">
@@ -1386,8 +1386,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=108" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=108) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=109" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=109) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1471,7 +1471,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=108" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=109" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
