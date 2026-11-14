@@ -585,3 +585,5 @@ html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibi
 @media (min-width: 640px) { .sheet { transform: translateX(-50%) translateY(var(--drag, 0px)); } }
 .sheet-grip { position: relative; touch-action: none; }
 .sheet-grip::before { content: ''; position: absolute; left: -60px; right: -60px; top: -12px; bottom: -14px; }
+.gps-steps { margin: 0 0 14px; padding-left: 22px; font-size: 15px; line-height: 1.45; }
+.gps-steps li { margin-bottom: 8px; }

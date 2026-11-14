@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=105';
+import { api, DEMO } from './api.js?v=106';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=105';
+} from './config.js?v=106';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=105';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=105';
-import { BRAND_PATHS } from './brands.js?v=105';
+} from './levels.js?v=106';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=106';
+import { BRAND_PATHS } from './brands.js?v=106';
 
 // ---------------------------------------------------------------------------
 // État
@@ -50,6 +50,8 @@ let toastTimer;
 function toast(msg, ms = 2600) {
   const t = $('#toast');
   t.textContent = msg;
+  t.dataset.action = /localisation/i.test(msg) ? 'gps' : '';
+  t.style.cursor = t.dataset.action ? 'pointer' : '';
   t.hidden = false;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { t.hidden = true; }, ms);
@@ -833,7 +835,7 @@ function renderDetail(id) {
   $('#btn-close').onclick = closeSheet;
   $('#btn-report').onclick = () => openReport(id);
   const gpsBtn = document.querySelector('#btn-route-gps');
-  if (gpsBtn) gpsBtn.onclick = () => { toast('Autorise la localisation pour voir le trajet.'); watchGps(); };
+  if (gpsBtn) gpsBtn.onclick = () => askLocation();
   document.querySelectorAll('#sheet-body .day-tab').forEach((b) => b.onclick = () => { curveDay = Number(b.dataset.day); renderDetail(id); });
   $('#btn-fav').onclick = () => toggleFav(id);
   $('#btn-share').onclick = () => openShare(e);
@@ -961,7 +963,7 @@ function openReport(id, presetService) {
     let pos;
     try {
       pos = await getPreciseLocation();
-    } catch (err) { render(err.message); return; }
+    } catch (err) { if (/Autorise la localisation/.test(err.message)) { gpsHelp('denied'); return; } render(err.message); return; }
     btn.textContent = 'Envoi…';
     let res;
     try {
@@ -1344,8 +1346,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=105" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=105) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=106" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=106) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1429,7 +1431,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=105" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=106" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1779,10 +1781,58 @@ function watchGps() {
     }
   }, () => {}, { enableHighAccuracy: false, maximumAge: 60000, timeout: 20000 });
 }
+// Demande la localisation : fenêtre du navigateur si possible, sinon explications pour la réactiver.
+function gpsHelp(kind) {
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const pwa = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone;
+  const off = kind === 'off';
+  const steps = off
+    ? (ios
+      ? ['Ouvre <b>Réglages</b> du téléphone › <b>Confidentialité et sécurité</b> › <b>Service de localisation</b>.', 'Active-le, puis descends sur <b>Safari</b> (ou l\'appli) › <b>Lorsque l\'app est active</b>.']
+      : ['Fais glisser le haut de l\'écran vers le bas.', 'Active <b>Localisation</b> (ou <b>Position</b>).'])
+    : ios
+      ? (pwa
+        ? ['Ouvre <b>Réglages</b> du téléphone › <b>Confidentialité et sécurité</b> › <b>Service de localisation</b>.', 'Choisis <b>Safari</b> (ou « Sites web Safari ») › <b>Lorsque l\'app est active</b>.', 'Reviens ici et touche à nouveau 📍.']
+        : ['Dans Safari, touche <b>aA</b> (ou l\'icône à gauche de l\'adresse) › <b>Réglages du site web</b>.', '<b>Position</b> › <b>Autoriser</b> (ou « Demander »).', 'Si ça ne marche pas : Réglages du téléphone › Confidentialité › Service de localisation › Safari › <b>Lorsque l\'app est active</b>.'])
+      : (pwa
+        ? ['Appui long sur l\'icône <b>Y\'a du peuple ?</b> › <b>Infos sur l\'appli</b>.', '<b>Autorisations</b> › <b>Position</b> › <b>Autoriser</b>.', 'Reviens ici et touche à nouveau 📍.']
+        : ['Touche l\'icône à gauche de l\'adresse (🔒 ou ⚙️) en haut.', '<b>Autorisations</b> (ou Paramètres du site) › <b>Position</b> › <b>Autoriser</b>.', 'Recharge la page.']);
+  openSheet('gpshelp', `
+    <div class="sheet-head">
+      <div class="grow"><h2>${off ? 'Active la localisation' : 'Autorise la localisation'}</h2>
+        <div class="sub">${off ? 'La localisation du téléphone est coupée.' : 'Elle a été refusée : le navigateur ne peut plus la redemander tout seul.'}</div></div>
+      <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+    </div>
+    <ol class="gps-steps">${steps.map((t) => `<li>${t}</li>`).join('')}</ol>
+    <div class="hint">Ta position sert à trouver les restos proches et à signaler. Elle n'est jamais affichée aux autres.</div>
+    <button class="btn btn-primary" id="btn-gps-retry" style="width:100%">Réessayer</button>`);
+  $('#btn-close').onclick = closeSheet;
+  $('#btn-gps-retry').onclick = () => { closeSheet(); askLocation(); };
+}
+function askLocation() {
+  if (!navigator.geolocation) { toast('Ce navigateur ne donne pas la position.'); return; }
+  // Appel direct au toucher : c'est ce qui fait apparaître la fenêtre « Autoriser » du navigateur.
+  navigator.geolocation.getCurrentPosition((p) => {
+    state.gps = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
+    renderMe();
+    map.flyTo({ center: [state.gps.lng, state.gps.lat], zoom: 14 });
+    if (state.sheetView === 'detail' && state.selectedId) renderDetail(state.selectedId);
+    watchGps();
+  }, (err) => {
+    if (err.code === 1) gpsHelp('denied');
+    else if (err.code === 2) gpsHelp('off');
+    else toast('Position introuvable pour l\'instant, réessaie dehors ou dans un instant.');
+  }, { enableHighAccuracy: true, maximumAge: 30000, timeout: 15000 });
+}
+window.askLocation = askLocation;
+$('#toast').addEventListener('click', () => {
+  if ($('#toast').dataset.action === 'gps') { $('#toast').hidden = true; askLocation(); }
+});
 $('#btn-locate').addEventListener('click', () => {
   const p = myPosition();
   if (p) map.flyTo({ center: [p.lng, p.lat], zoom: 14 });
-  else { toast('Autorise la localisation pour te situer.'); watchGps(); }
+  else askLocation();
 });
 
 // ---------------------------------------------------------------------------
