@@ -1,6 +1,6 @@
 # Y'a du peuple ?
 
-L'affluence des fast-foods de Moselle et de la zone de Mulhouse en direct, salle et Drive.
+L'affluence des fast-foods de Moselle et des zones de Mulhouse et de Carcassonne en direct, salle et Drive.
 
 - Appli : `index.html` (données réelles, Supabase)
 - Démo sans réseau : `demo.html` ou `index.html?demo`

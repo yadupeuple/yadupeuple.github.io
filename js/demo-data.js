@@ -1,4 +1,4 @@
-// Copie des restaurants (13/11/2026, 81 restos) pour le mode démo uniquement.
+// Copie des restaurants (14/11/2026, 95 restos) pour le mode démo uniquement.
 export const DEMO_ESTABLISHMENTS = [
 {
 "id": "67772eb6-b950-4c0b-a791-c5a365127424",
@@ -890,5 +890,159 @@ export const DEMO_ESTABLISHMENTS = [
 "address": "1 Rue de Lorraine, 57970 Yutz",
 "has_dine_in": true,
 "has_drive": true
+},
+{
+"id": "3219437c-2fa7-4cce-923f-9840c27618f2",
+"lat": 43.2065221,
+"lng": 2.3866519,
+"city": "Carcassonne",
+"name": "Buffalo Grill Carcassonne",
+"brand": "Buffalo Grill",
+"address": "N113, Route de Narbonne, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "874f2a80-5503-409b-9b1b-89cd73e91541",
+"lat": 43.200396,
+"lng": 2.312648,
+"city": "Carcassonne",
+"name": "Buffalo Grill Carcassonne Salvaza",
+"brand": "Buffalo Grill",
+"address": "Bretelle A61, Chemin de Maquens, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "f1e1b1e4-8208-4205-9cfc-63d3a6d5a90f",
+"lat": 43.2351145,
+"lng": 2.3669453,
+"city": "Carcassonne",
+"name": "Burger King Carcassonne Pont-Rouge",
+"brand": "Burger King",
+"address": "ZI du Pont-Rouge, Rue Magellan, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "cb0934cc-83a0-4d0a-9ca4-f363c47aae46",
+"lat": 43.2066846,
+"lng": 2.3919667,
+"city": "Carcassonne",
+"name": "Burger King Carcassonne Rocadest",
+"brand": "Burger King",
+"address": "19 D Rue Joséphine Baker, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "f7c7798f-cabc-4dc9-8ebd-1dfeae6f0b43",
+"lat": 43.2087194,
+"lng": 2.3088303,
+"city": "Carcassonne",
+"name": "Burger King Carcassonne Salvaza",
+"brand": "Burger King",
+"address": "Centre commercial Salvaza, 330 Boulevard Henry Bouffet, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "49e38973-8d35-4981-8c6b-1ccec1e44702",
+"lat": 43.2066305,
+"lng": 2.3933997,
+"city": "Carcassonne",
+"name": "KFC Carcassonne Rocadest",
+"brand": "KFC",
+"address": "19C Rue Joséphine Baker, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "30be7d3c-a4b1-4d52-b01a-918fb1254963",
+"lat": 43.203938,
+"lng": 2.3121126,
+"city": "Carcassonne",
+"name": "KFC Carcassonne Salvaza",
+"brand": "KFC",
+"address": "Zone commerciale La Ferraudière, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "6a9c5fda-936a-45c3-b541-27057a66852c",
+"lat": 43.2072786,
+"lng": 2.3846265,
+"city": "Carcassonne",
+"name": "McDonald's Carcassonne Cité",
+"brand": "McDonald's",
+"address": "N113, Rond-point d'Europe, 11090 Carcassonne",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "2658aa97-0a80-44e0-8802-88ce656c4ebe",
+"lat": 43.2065116,
+"lng": 2.311301,
+"city": "Carcassonne",
+"name": "McDonald's Carcassonne Salvaza",
+"brand": "McDonald's",
+"address": "Zone commerciale de Salvaza, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "f64c8171-6181-494e-aeeb-ebf9d325b886",
+"lat": 43.0746314,
+"lng": 2.2201895,
+"city": "Limoux",
+"name": "McDonald's Limoux",
+"brand": "McDonald's",
+"address": "ZI Le Flassian, Route de Carcassonne, 11300 Limoux",
+"has_dine_in": true,
+"has_drive": true
+},
+{
+"id": "85bceb61-bb5e-469a-8cb7-3a96746d5921",
+"lat": 43.213716,
+"lng": 2.3521106,
+"city": "Carcassonne",
+"name": "O'Tacos Carcassonne",
+"brand": "O'Tacos",
+"address": "3 Rue Georges Clemenceau, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "16d5d040-46a8-41e9-b5f7-6d9d657a8c8c",
+"lat": 43.2015792,
+"lng": 2.3148644,
+"city": "Carcassonne",
+"name": "Quick Carcassonne Salvaza",
+"brand": "Quick",
+"address": "Planeto Nord, ZAC de Salvaza, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "1d438f73-ccfe-4adc-9ff5-ba4a3bb5202b",
+"lat": 43.214722,
+"lng": 2.3522544,
+"city": "Carcassonne",
+"name": "Subway Carcassonne Clemenceau",
+"brand": "Subway",
+"address": "38 Rue Georges Clemenceau, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": false
+},
+{
+"id": "d9de3aa8-030c-435a-a4a0-9b63fd25ec00",
+"lat": 43.2090762,
+"lng": 2.3094894,
+"city": "Carcassonne",
+"name": "Subway Carcassonne Henry Bouffet",
+"brand": "Subway",
+"address": "43 Boulevard Henry Bouffet, 11000 Carcassonne",
+"has_dine_in": true,
+"has_drive": false
 }
 ];

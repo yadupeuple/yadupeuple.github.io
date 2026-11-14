@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=111';
+import { api, DEMO } from './api.js?v=112';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=111';
+} from './config.js?v=112';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=111';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=111';
-import { BRAND_PATHS } from './brands.js?v=111';
+} from './levels.js?v=112';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=112';
+import { BRAND_PATHS } from './brands.js?v=112';
 
 // ---------------------------------------------------------------------------
 // État
@@ -163,7 +163,8 @@ function passesFilter(e) {
 // Zones couvertes : sert à poser la carte au bon endroit quand le GPS n'est pas disponible.
 const ZONES = [
   { key: 'moselle', label: 'Moselle', test: (e) => e.lat >= 48 },
-  { key: 'mulhouse', label: 'Mulhouse', test: (e) => e.lat < 48 },
+  { key: 'mulhouse', label: 'Mulhouse', test: (e) => e.lat < 48 && e.lat >= 45 },
+  { key: 'aude', label: 'Carcassonne', test: (e) => e.lat < 45 },
 ];
 function savedZone() { try { return localStorage.getItem('ydp_zone'); } catch { return null; } }
 function saveZone(k) { try { localStorage.setItem('ydp_zone', k); } catch {} }
@@ -1386,8 +1387,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=111" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=111) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=112" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=112) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1471,7 +1472,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=111" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=112" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1774,7 +1775,7 @@ function showCards() {
 }
 
 // Animation d'entrée : la carte part de loin (vue de la région) et plonge sur la position.
-const FAR_VIEW = { center: [6.75, 48.55], zoom: 6 };
+const FAR_VIEW = { center: [4.2, 46.2], zoom: 4.8 };
 let introDone = false;
 function introFly() {
   if (introDone) return;

@@ -1,6 +1,6 @@
 # Y'a du peuple ? — règles du projet
 
-Appli web (installable sur téléphone) qui montre l'affluence des fast-foods de Moselle (et de la zone de Mulhouse) en direct,
+Appli web (installable sur téléphone) qui montre l'affluence des fast-foods de Moselle (et des zones de Mulhouse et Carcassonne) en direct,
 salle et Drive séparés, grâce aux signalements des utilisateurs.
 Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur son téléphone.
 
@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (81 : 60 en Moselle / Meurthe-et-Moselle + 21 autour de Mulhouse, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (18),
+Tables : establishments (95 : 60 en Moselle / Meurthe-et-Moselle + 21 autour de Mulhouse + 14 Carcassonne / Limoux, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (18),
 user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
@@ -108,8 +108,10 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Sausheim, Rixheim, Lutterbach, Morschwiller-le-Bas), horaires + courbes + Drive relevés sur Google Maps.
 - Ajouts du 13/11/2026 (supabase/2026-11-13_jarny_woippy.sql) : McDonald's Conflans-en-Jarnisy, Woippy et aire A4 Saint-Privat,
   KFC Semécourt, Subway Metz Muse, Burger King Clouange.
-- Zones (v95) : sans GPS, la carte s'ouvre sur la dernière zone regardée (localStorage ydp_zone), sinon Moselle
-  + bulle « Ta zone : Moselle / Mulhouse » ; « Aller à » dans les Filtres. Bandeau « Pas de connexion » + Réessayer.
+- Zone de Carcassonne / Limoux (14/11/2026, supabase/2026-11-14_carcassonne_limoux.sql) : 14 restos ; Drive et horaires des sites
+  officiels (BK, KFC) et d'OpenStreetMap ; **pas encore de courbes Google** (courbe type en attendant) → à relever avec outils/maj_courbes.md.
+- Zones (v95, Carcassonne ajouté en v112 : lat < 45) : sans GPS, la carte s'ouvre sur la dernière zone regardée (localStorage ydp_zone), sinon Moselle
+  + bulle « Ta zone : Moselle / Mulhouse / Carcassonne » ; « Aller à » dans les Filtres. Bandeau « Pas de connexion » + Réessayer.
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
 
 ## Charte graphique
