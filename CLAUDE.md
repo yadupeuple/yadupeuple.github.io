@@ -152,7 +152,7 @@ partenaires paient ou qu'Alexis crée une micro-entreprise.
 Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · défis et missions · page partenaire payante · stores Apple/Google.
 Badges : images ChatGPT d'Alexis (icons/badges/*.webp), découpées telles quelles : planche 1 (outils/badges_sheet.py)
-+ v10, drive10, explorer10, ref1, tour_zone refaits le 12/11/2026, tour_zone6 (Globe-trotteur) le 14/11 (outils/badges_sheet2.py) ; tour_zone10 « Routard du burger » (10 villes, 14/11, outils/badge_detoure.py) ; ne pas redessiner ; gris tant que non gagnés ;
++ v10, drive10, explorer10, ref1, tour_zone refaits le 12/11/2026, tour_zone6 (Globe-trotteur) le 14/11 (outils/badges_sheet2.py) ; tour_zone10 « Routard du burger » (10 villes, 14/11, outils/badge_detoure.py) ; testeur (loupe + insecte, 15/11, badge_detoure.py) ; en réserve : outils/src/badge_fusee_reserve.png (fusée, pour un futur badge « lancement ») ; ne pas redessiner ; gris tant que non gagnés ;
 nouvelle disposition de la page Profil.
 
 ## Mises à jour
