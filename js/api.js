@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=116';
-import { createDemoApi } from './demo.js?v=116';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=117';
+import { createDemoApi } from './demo.js?v=117';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -71,12 +71,18 @@ function createSupabaseApi() {
       if (error) throw new ApiError(frenchAuthError(error));
     },
 
+    // Tous les restos (par pages de 1000 : limite du serveur)
     async listEstablishments() {
-      const { data, error } = await sb.from('establishments')
-        .select('id,name,brand,city,address,lat,lng,has_dine_in,has_drive')
-        .order('name');
-      if (error) throw new ApiError('Impossible de charger les restaurants.');
-      return data;
+      const all = [];
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await sb.from('establishments')
+          .select('id,name,brand,city,address,lat,lng,has_dine_in,has_drive')
+          .order('id').range(from, from + 999);
+        if (error) throw new ApiError('Impossible de charger les restaurants.');
+        all.push(...data);
+        if (data.length < 1000) break;
+      }
+      return all;
     },
     nearby: (lat, lng, radius = 5000, limit = 50) =>
       rpc('get_nearby_establishments', { p_lat: lat, p_lng: lng, p_radius_m: radius, p_limit: limit }),
@@ -93,9 +99,14 @@ function createSupabaseApi() {
     },
     setCustomization: (kind, code) => rpc('set_customization', { p_kind: kind, p_code: code }),
     async openingHours() {
-      const { data, error } = await sb.from('opening_hours').select('establishment_id,hours');
-      if (error || !data) return {};
-      return Object.fromEntries(data.map((r) => [r.establishment_id, r.hours]));
+      const out = {};
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await sb.from('opening_hours').select('establishment_id,hours').order('establishment_id').range(from, from + 999);
+        if (error || !data) return out;
+        for (const r of data) out[r.establishment_id] = r.hours;
+        if (data.length < 1000) break;
+      }
+      return out;
     },
     // Courbe d'affluence habituelle (Google Maps) : 168 valeurs, jour 0 = dimanche. null si absente.
     async popularTimes(id) {

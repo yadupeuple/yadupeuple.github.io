@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=116';
+import { api, DEMO } from './api.js?v=117';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=116';
+} from './config.js?v=117';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=116';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=116';
-import { BRAND_PATHS } from './brands.js?v=116';
+} from './levels.js?v=117';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=117';
+import { BRAND_PATHS } from './brands.js?v=117';
 
 // ---------------------------------------------------------------------------
 // État
@@ -160,44 +160,19 @@ function passesFilter(e) {
   if (filters.levels.size && !filters.levels.has(levelKey(e))) return false;
   return true;
 }
-// Zones couvertes : sert à poser la carte au bon endroit quand le GPS n'est pas disponible.
-const ZONES = [
-  { key: 'moselle', label: 'Moselle', test: (e) => e.lat >= 48 },
-  { key: 'mulhouse', label: 'Mulhouse', test: (e) => e.lat < 48 && e.lat >= 45 },
-  { key: 'aude', label: 'Carcassonne', test: (e) => e.lat < 45 },
-];
-function savedZone() { try { return localStorage.getItem('ydp_zone'); } catch { return null; } }
-function saveZone(k) { try { localStorage.setItem('ydp_zone', k); } catch {} }
-function zoneBounds(key) {
-  const z = ZONES.find((x) => x.key === key) || ZONES[0];
-  const b = new maplibregl.LngLatBounds();
-  let n = 0;
-  state.establishments.forEach((e) => { if (z.test(e)) { b.extend([e.lng, e.lat]); n++; } });
-  return n ? b : null;
-}
-function goZone(key, duration = 1600) {
-  const b = zoneBounds(key);
-  if (!b) return;
-  saveZone(key);
-  map.fitBounds(b, { padding: { top: 80, bottom: 170, left: 30, right: 30 }, duration, maxZoom: 13 });
-}
-// Mémorise la zone regardée (la plus proche du centre de la carte) pour la prochaine ouverture.
+// Sans GPS : la carte s'ouvre sur le dernier endroit regardé (France entière la 1re fois).
+const FRANCE = [[-5.2, 41.3], [9.6, 51.1]];
+function savedView() { try { return JSON.parse(localStorage.getItem('ydp_view') || 'null'); } catch { return null; } }
 function rememberZone() {
-  if (map.getZoom() < 9 || !state.establishments.size) return;
+  if (map.getZoom() < 9) return;
   const c = map.getCenter();
-  let best = null, bestD = Infinity;
-  state.establishments.forEach((e) => {
-    const d = distanceM(c.lat, c.lng, e.lat, e.lng);
-    if (d < bestD) { bestD = d; best = e; }
-  });
-  const z = best && ZONES.find((x) => x.test(best));
-  if (z && bestD < 60000) saveZone(z.key);
+  try { localStorage.setItem('ydp_view', JSON.stringify({ lng: +c.lng.toFixed(4), lat: +c.lat.toFixed(4), zoom: +map.getZoom().toFixed(1) })); } catch {}
 }
 function zonePicker() {
   const el = $('#zone-pick');
-  el.innerHTML = `<span>Ta zone :</span>${ZONES.map((z) => `<button type="button" data-zone="${z.key}">${esc(z.label)}</button>`).join('')}<button type="button" class="zp-x" aria-label="Fermer">✕</button>`;
+  el.innerHTML = `<span>Tous les fast-foods de France sont là.</span><button type="button" data-find="1">🔍 Ma ville</button><button type="button" class="zp-x" aria-label="Fermer">✕</button>`;
   el.hidden = false;
-  el.querySelectorAll('[data-zone]').forEach((b) => b.onclick = () => { goZone(b.dataset.zone); el.hidden = true; });
+  el.querySelector('[data-find]').onclick = () => { el.hidden = true; $('#btn-search').click(); };
   el.querySelector('.zp-x').onclick = () => { el.hidden = true; };
   setTimeout(() => { el.hidden = true; }, 12000);
 }
@@ -215,8 +190,6 @@ function openFilters() {
       <div class="fchips">${FILTER_LEVELS.map(([k, i]) => `<button type="button" class="fchip ${filters.levels.has(k) ? 'on' : ''}" data-level="${k}"><span class="dot" style="background:${i.color}"></span>${esc(i.label)}</button>`).join('')}</div>
       <div class="section-title">Enseignes</div>
       <div class="fchips">${brands.map((b) => `<button type="button" class="fchip ${filters.brands.has(b) ? 'on' : ''}" data-brand="${esc(b)}">${esc(b)}</button>`).join('')}</div>
-      <div class="section-title">Aller à</div>
-      <div class="fchips">${ZONES.map((z) => `<button type="button" class="fchip" data-zone="${z.key}">📍 ${esc(z.label)}</button>`).join('')}</div>
       <div class="section-title">Service</div>
       <div class="fchips"><button type="button" class="fchip ${filters.drive ? 'on' : ''}" data-drive="1"><span class="emo">🚗</span>Avec Drive</button></div>
       <div class="filter-actions ${filtersActive() ? '' : 'single'}">
@@ -228,7 +201,6 @@ function openFilters() {
     $('#btn-fok').onclick = closeSheet;
     if ($('#btn-freset')) $('#btn-freset').onclick = () => { filters.brands.clear(); filters.levels.clear(); filters.drive = false; apply(); };
     document.querySelectorAll('#sheet-body .fchip').forEach((b) => b.onclick = () => {
-      if (b.dataset.zone) { closeSheet(); goZone(b.dataset.zone); return; }
       if (b.dataset.level) filters.levels.has(b.dataset.level) ? filters.levels.delete(b.dataset.level) : filters.levels.add(b.dataset.level);
       else if (b.dataset.brand) filters.brands.has(b.dataset.brand) ? filters.brands.delete(b.dataset.brand) : filters.brands.add(b.dataset.brand);
       else filters.drive = !filters.drive;
@@ -253,31 +225,33 @@ function pillHtml(e) {
   return `<span class="dot${live}" style="background:${d.info.color};color:${d.info.color}"></span>${esc(brandShort(e))}${partnerOf(e.id)?.offer ? '<span class="gift" title="Offre du jour">🎁</span>' : ''}`;
 }
 
+// Pastilles : seuls les restos visibles à l'écran ont une pastille (France entière = plusieurs milliers de restos).
+function makeMarker(e) {
+  const el = document.createElement('button');
+  el.className = 'pill';
+  el.type = 'button';
+  el.setAttribute('aria-label', e.name);
+  el.addEventListener('click', (ev) => { ev.stopPropagation(); openDetail(e.id); });
+  const marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([e.lng, e.lat]);
+  const m = { marker, el, onMap: false };
+  state.markers.set(e.id, m);
+  return m;
+}
+function paintMarker(e, m) {
+  m.el.innerHTML = pillHtml(e);
+  const os = openState(state.hours?.[e.id]);
+  m.el.classList.toggle('closed', !!(os && !os.open));
+  m.el.classList.toggle('selected', state.selectedId === e.id);
+  m.el.classList.toggle('focus', focusId === e.id);
+  m.painted = true;
+}
 function renderMarkers() {
-  for (const e of state.establishments.values()) {
-    let m = state.markers.get(e.id);
-    if (!m) {
-      const el = document.createElement('button');
-      el.className = 'pill';
-      el.type = 'button';
-      el.setAttribute('aria-label', e.name);
-      el.addEventListener('click', (ev) => { ev.stopPropagation(); openDetail(e.id); });
-      const marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([e.lng, e.lat]).addTo(map);
-      m = { marker, el };
-      state.markers.set(e.id, m);
-    }
-    m.el.innerHTML = pillHtml(e);
-    const os = openState(state.hours?.[e.id]);
-    m.el.classList.toggle('closed', !!(os && !os.open));
-    m.el.classList.toggle('selected', state.selectedId === e.id);
-    m.hidden = !passesFilter(e);
-  }
-  applyZoomClass();
+  for (const [id, m] of state.markers) m.painted = false;
   updateClusters();
 }
 
 // ---------------------------------------------------------------------------
-// Regroupement des pastilles trop proches (« 3 restos »)
+// Regroupement des pastilles trop proches (« 3 restos »), par grille : rapide même avec des milliers de restos
 // ---------------------------------------------------------------------------
 const CLUSTER_PX = 46;
 const clusterMarkers = [];
@@ -285,24 +259,49 @@ let focusId = null; // resto mis en avant par la liste du bas
 function updateClusters() {
   for (const c of clusterMarkers) c.remove();
   clusterMarkers.length = 0;
-  const pts = [];
+  const b = map.getBounds();
+  const padLng = (b.getEast() - b.getWest()) * 0.15, padLat = (b.getNorth() - b.getSouth()) * 0.15;
+  const W = b.getWest() - padLng, E = b.getEast() + padLng, S = b.getSouth() - padLat, N = b.getNorth() + padLat;
+  const cell = map.getZoom() < 9 ? CLUSTER_PX * 1.6 : CLUSTER_PX;
+  const cells = new Map();
   for (const e of state.establishments.values()) {
-    const m = state.markers.get(e.id);
-    if (!m) continue;
-    if (m.hidden) { m.el.style.display = 'none'; continue; }
+    if (e.lng < W || e.lng > E || e.lat < S || e.lat > N || !passesFilter(e)) continue;
     const p = map.project([e.lng, e.lat]);
-    pts.push({ e, m, x: p.x, y: p.y, used: false });
+    const k = Math.floor(p.x / cell) + ':' + Math.floor(p.y / cell);
+    let g = cells.get(k);
+    if (!g) cells.set(k, g = []);
+    g.push(e);
   }
-  for (const a of pts) {
-    if (a.used) continue;
-    const group = [a];
-    for (const b of pts) {
-      if (b === a || b.used) continue;
-      if (Math.hypot(a.x - b.x, a.y - b.y) < CLUSTER_PX) group.push(b);
+  // Fusion des groupes voisins (deux cases côte à côte ne doivent pas se chevaucher)
+  const groups = [...cells.values()].map((m) => {
+    let x = 0, y = 0;
+    for (const e of m) { const p = map.project([e.lng, e.lat]); x += p.x; y += p.y; }
+    return { m, x: x / m.length, y: y / m.length };
+  });
+  groups.sort((a, b2) => b2.m.length - a.m.length);
+  for (let i = 0; i < groups.length; i++) {
+    const a = groups[i];
+    if (!a) continue;
+    for (let j = i + 1; j < groups.length; j++) {
+      const g = groups[j];
+      if (!g || Math.hypot(a.x - g.x, a.y - g.y) >= cell) continue;
+      const n = a.m.length + g.m.length;
+      a.x = (a.x * a.m.length + g.x * g.m.length) / n; a.y = (a.y * a.m.length + g.y * g.m.length) / n;
+      a.m = a.m.concat(g.m);
+      groups[j] = null;
     }
-    if (group.length === 1) { a.used = true; a.m.el.style.display = ''; continue; }
-    for (const g of group) { g.used = true; g.m.el.style.display = 'none'; }
-    const members = group.map((g) => g.e);
+  }
+  const shown = new Set();
+  for (const members of groups.filter(Boolean).map((g) => g.m)) {
+    if (members.length === 1) {
+      const e = members[0];
+      const m = state.markers.get(e.id) || makeMarker(e);
+      if (!m.painted) paintMarker(e, m);
+      if (!m.onMap) { m.marker.addTo(map); m.onMap = true; }
+      m.el.style.display = '';
+      shown.add(e.id);
+      continue;
+    }
     const lng = members.reduce((t, e) => t + e.lng, 0) / members.length;
     const lat = members.reduce((t, e) => t + e.lat, 0) / members.length;
     // couleur = resto le plus chargé du groupe
@@ -317,6 +316,11 @@ function updateClusters() {
     el.addEventListener('click', (ev) => { ev.stopPropagation(); openCluster(members); });
     clusterMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).addTo(map));
   }
+  // Les pastilles hors écran ou regroupées sont retirées de la carte (moins d'éléments = carte fluide)
+  for (const [id, m] of state.markers) {
+    if (!shown.has(id) && m.onMap) { m.marker.remove(); m.onMap = false; }
+  }
+  applyZoomClass();
 }
 map.on('moveend', () => { updateClusters(); rememberZone(); });
 
@@ -348,7 +352,8 @@ function openCluster(members) {
 
 function applyZoomClass() {
   const compact = map.getZoom() < 11.5;
-  for (const { el } of state.markers.values()) {
+  for (const { el, onMap } of state.markers.values()) {
+    if (!onMap) continue;
     el.style.padding = compact ? '4px' : '';
     el.style.fontSize = compact ? '0px' : '';
     el.style.gap = compact ? '0' : '';
@@ -384,11 +389,15 @@ async function loadEstablishments() {
 }
 
 // Les statuts arrivent par la fonction « restos proches » (rayon max 5 km).
-// On choisit quelques points de la zone pour couvrir tous les restos.
+// On ne demande que les restos de la zone affichée (pas toute la France) ; au-delà d'un zoom large, rien.
+const MAX_STATUS_CALLS = 25;
 function coverPoints() {
-  const left = [...state.establishments.values()];
+  if (map.getZoom() < 9) return [];
+  const b = map.getBounds();
+  const left = [...state.establishments.values()].filter((e) => b.contains([e.lng, e.lat]));
+  if (state.selectedId && state.establishments.has(state.selectedId)) left.unshift(state.establishments.get(state.selectedId));
   const points = [];
-  while (left.length) {
+  while (left.length && points.length < MAX_STATUS_CALLS) {
     const c = left[0];
     points.push(c);
     for (let i = left.length - 1; i >= 0; i--) {
@@ -397,6 +406,8 @@ function coverPoints() {
   }
   return points;
 }
+let statusTimer;
+map.on('moveend', () => { clearTimeout(statusTimer); statusTimer = setTimeout(() => refreshStatuses(), 700); });
 
 let refreshing = false;
 async function refreshStatuses() {
@@ -540,7 +551,7 @@ $('#cards').addEventListener('scroll', () => {
     const e = state.establishments.get(c.dataset.id);
     if (!e) return;
     cardsMove = true;
-    const hidden = state.markers.get(e.id)?.el.style.display === 'none';
+    const hidden = !state.markers.get(e.id)?.onMap;
     map.easeTo({
       center: [e.lng, e.lat],
       zoom: hidden ? Math.min(Math.max(map.getZoom() + 1.5, 14), 16) : map.getZoom(),
@@ -562,6 +573,7 @@ function welcomeForm(on) {
   if (!on) $('#welcome-form').innerHTML = '';
 }
 function openSheet(view, html) {
+  const zp = document.getElementById('zone-pick'); if (zp) zp.hidden = true;
   if (authInWelcome && view === 'auth' && !$('#welcome').hidden) {
     state.sheetView = view;
     $('#sheet-body').innerHTML = '';
@@ -1434,8 +1446,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=116" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=116) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=117" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=117) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1519,7 +1531,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=116" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=117" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1845,10 +1857,10 @@ function introFly() {
       firstFix = false;
       map.flyTo({ center: [p.lng, p.lat], zoom: 13.5, duration: 2600, curve: 1.6, essential: true });
     } else if (state.establishments.size) {
-      // Sans GPS : dernière zone regardée, sinon la Moselle + petit choix de zone.
-      const z = savedZone();
-      goZone(z || 'moselle', 2400);
-      if (!z) setTimeout(zonePicker, 2600);
+      // Sans GPS : dernier endroit regardé, sinon la France entière + bulle « Ma ville ».
+      const v = savedView();
+      if (v) map.flyTo({ center: [v.lng, v.lat], zoom: v.zoom, duration: 2400, curve: 1.6, essential: true });
+      else { map.fitBounds(FRANCE, { padding: { top: 80, bottom: 190, left: 20, right: 20 }, duration: 1600 }); setTimeout(zonePicker, 1800); setTimeout(showCards, 1800); }
     } else {
       showCards();
     }
@@ -2005,7 +2017,7 @@ window.__ydp = { state, map, openDetail, openReport, openAccount, openSearch, op
     y0 = ev.touches[0].clientY; dy = 0; t0 = Date.now();
     sheet.style.transition = 'none';
   }, { passive: true });
-  sheet.addEventListener('touchmove', (ev) => {
+  window.addEventListener('touchmove', (ev) => {
     if (y0 === null) return;
     dy = Math.max(0, ev.touches[0].clientY - y0);
     sheet.style.setProperty('--drag', dy + 'px');
@@ -2024,8 +2036,9 @@ window.__ydp = { state, map, openDetail, openReport, openAccount, openSearch, op
       setTimeout(() => { sheet.style.transition = ''; }, 200);
     }
   };
-  sheet.addEventListener('touchend', end);
-  sheet.addEventListener('touchcancel', end);
+  // Sur la fenêtre : la fiche peut être redessinée pendant le glissé (le doigt « perd » alors son élément)
+  window.addEventListener('touchend', end);
+  window.addEventListener('touchcancel', end);
 })();
 
 // iPhone (Safari ignore user-scalable=no) : bloque le pincement hors de la carte

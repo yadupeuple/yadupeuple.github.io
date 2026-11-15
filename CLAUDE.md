@@ -1,6 +1,6 @@
 # Y'a du peuple ? — règles du projet
 
-Appli web (installable sur téléphone) qui montre l'affluence des fast-foods de Moselle (et des zones de Mulhouse et Carcassonne) en direct,
+Appli web (installable sur téléphone) qui montre l'affluence des fast-foods de toute la France en direct,
 salle et Drive séparés, grâce aux signalements des utilisateurs.
 Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur son téléphone.
 
@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (95 : 60 en Moselle / Meurthe-et-Moselle + 21 autour de Mulhouse + 14 Carcassonne / Limoux, lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
+Tables : establishments (3 676 en France métropolitaine depuis le 15/11/2026, dont les 95 relevés à la main en Moselle, Mulhouse, Carcassonne ; lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
 user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
@@ -110,8 +110,17 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   KFC Semécourt, Subway Metz Muse, Burger King Clouange.
 - Zone de Carcassonne / Limoux (14/11/2026, supabase/2026-11-14_carcassonne_limoux.sql) : 14 restos ; Drive et horaires des sites
   officiels (BK, KFC) et d'OpenStreetMap ; **pas encore de courbes Google** (courbe type en attendant) → à relever avec outils/maj_courbes.md.
-- Zones (v95, Carcassonne ajouté en v112 : lat < 45) : sans GPS, la carte s'ouvre sur la dernière zone regardée (localStorage ydp_zone), sinon Moselle
-  + bulle « Ta zone : Moselle / Mulhouse / Carcassonne » ; « Aller à » dans les Filtres. Bandeau « Pas de connexion » + Réessayer.
+- France entière (15/11/2026, v117, supabase/2026-11-15_import_france_1.sql et _2.sql) : source AllThePlaces (localisateurs officiels,
+  run 2026-10-31) téléchargée par la base elle-même (extensions http / pg_net, schéma privé `import`) ; colonnes establishments.source /
+  source_ref ('atp:<spider>', réf. officielle) ; horaires convertis par import.oh_parse ; Drive = drive_through officiel ; restos déjà
+  présents (même enseigne < 200 m) gardés et seulement reliés. Relancer : re-télécharger import.atp_raw puis `select * from import.apply_atp();`.
+  **Manquent : KFC et Subway** (fichiers AllThePlaces vides ou tronqués ; à compléter via Overpass/OSM quand les serveurs répondent).
+  **94 doublons « McCafé »** (dans des McDonald's) à supprimer — en attente de l'accord d'Alexis.
+- Carte (v117) : pastilles créées seulement pour les restos à l'écran, regroupement par grille + fusion des groupes voisins ;
+  statuts demandés seulement pour la zone affichée (zoom ≥ 9, 25 appels max) ; chargement par pages de 1000 (limite Supabase).
+  Plus de zones : sans GPS, la carte s'ouvre sur le dernier endroit regardé (localStorage ydp_view), sinon France entière
+  + bulle « Tous les fast-foods de France sont là. 🔍 Ma ville » (ouvre la recherche, qui cherche aussi par ville).
+  Bandeau « Pas de connexion » + Réessayer.
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
@@ -120,7 +129,7 @@ partenariats, affiches QR code, bouche-à-oreille. Fait en v116 : aperçu des li
 outils/og_image.py), bouton « Inviter un ami » sur l'écran « Merci » après un signalement, installation sur l'écran d'accueil
 (Réglages + écran « Merci » ; Android : fenêtre du navigateur, iPhone : explications), robots.txt + sitemap.xml.
 Au changement de nom de domaine : mettre à jour APP_URL (js/app.js), les balises og:/canonical (index.html), robots.txt, sitemap.xml.
-Idées proposées, pas encore décidées : tous les restos de France d'un coup (import OpenStreetMap), pages Google par ville / resto,
+Idées proposées, pas encore décidées : pages Google par ville / resto,
 bilan automatique du lundi.
 
 ## Charte graphique
