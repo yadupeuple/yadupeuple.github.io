@@ -7,7 +7,11 @@
   if (window.ydpRun) return 'déjà lancé';
   const DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
   const re = /(\d+)\s*%\s*à\s*(\d+)\s*h/, reL = /actuel de \d+\s*%\s*\((\d+)\s*%/;
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  // Attente via un Web Worker : les minuteries d'un onglet en arrière-plan sont ralenties par Chrome (×10 et plus),
+  // celles d'un worker non. (Sans ça : 135 fiches en 1 h 35 ; avec : ~50 / min.)
+  const tw = new Worker(URL.createObjectURL(new Blob(['onmessage=e=>setTimeout(()=>postMessage(e.data.id),e.data.ms)'], { type: 'text/javascript' })));
+  const cbs = {}; let n = 0; tw.onmessage = (e) => { const f = cbs[e.data]; delete cbs[e.data]; f && f(); };
+  const sleep = (ms) => new Promise((r) => { const id = ++n; cbs[id] = r; tw.postMessage({ id, ms }); });
   const dist = (a, b, c, d) => { const R = 6371000, r = Math.PI / 180, x = (d - b) * r * Math.cos((a + c) / 2 * r), y = (c - a) * r; return Math.hypot(x, y) * R; };
   const load = () => JSON.parse(localStorage.ydp_q || '[]');
   const done = () => new Set((localStorage.ydp_res || '').split('\n').filter(Boolean).map((l) => JSON.parse(l).id));
