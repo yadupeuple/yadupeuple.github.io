@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (3 573 en France métropolitaine depuis le 15/11/2026, dont les 95 relevés à la main en Moselle, Mulhouse, Carcassonne ; lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
+Tables : establishments (4 248 en France métropolitaine depuis le 15/11/2026, dont les 95 relevés à la main en Moselle, Mulhouse, Carcassonne ; lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
 user_badges, levels (100), app_settings, feedback (avis, lecture réservée à Supabase), customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
@@ -117,7 +117,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   run 2026-10-31) téléchargée par la base elle-même (extensions http / pg_net, schéma privé `import`) ; colonnes establishments.source /
   source_ref ('atp:<spider>', réf. officielle) ; horaires convertis par import.oh_parse ; Drive = drive_through officiel ; restos déjà
   présents (même enseigne < 200 m) gardés et seulement reliés. 9 doublons manuel/import à 200-400 m supprimés le 15/11 (supabase/2026-11-15_doublons_import.sql, accord d'Alexis). Relancer : re-télécharger import.atp_raw puis `select * from import.apply_atp();`.
-  **Manquent : KFC et Subway** (fichiers AllThePlaces vides ou tronqués ; à compléter via Overpass/OSM quand les serveurs répondent).
+  KFC et Subway ajoutés le 15/11 depuis OpenStreetMap (supabase/2026-11-15_kfc_subway.sql : +368 KFC, +307 Subway, source 'osm',
+  villes/rues via geo.api.gouv.fr et api-adresse.data.gouv.fr ; KFC sans info = Drive sauf centre-ville).
 - Carte (v117) : pastilles créées seulement pour les restos à l'écran, regroupement par grille + fusion des groupes voisins ;
   statuts demandés seulement pour la zone affichée (zoom ≥ 9, 25 appels max) ; chargement par pages de 1000 (limite Supabase).
   Plus de zones : sans GPS, la carte s'ouvre sur le dernier endroit regardé (localStorage ydp_view), sinon France entière
