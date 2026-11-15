@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=119';
+import { api, DEMO } from './api.js?v=120';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=119';
+} from './config.js?v=120';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=119';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=119';
-import { BRAND_PATHS } from './brands.js?v=119';
+} from './levels.js?v=120';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=120';
+import { BRAND_PATHS } from './brands.js?v=120';
 
 // ---------------------------------------------------------------------------
 // État
@@ -636,6 +636,31 @@ const ICON = {
 };
 
 // ---------------------------------------------------------------------------
+// Avis des testeurs (table feedback, lue dans Supabase)
+// ---------------------------------------------------------------------------
+function openFeedback() {
+  openSheet('feedback', `
+    <div class="sheet-head">
+      <div class="grow"><h2>Ton avis</h2><div class="sub">Un bug, une idée, une info fausse sur un resto ? Dis-nous tout.</div></div>
+      <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+    </div>
+    <textarea id="fb-text" class="select" rows="6" maxlength="2000" placeholder="Ex. : le Drive du McDo de … est fermé le dimanche" style="width:100%;font-size:16px;resize:vertical"></textarea>
+    <button type="button" class="btn btn-primary" id="fb-send" style="margin-top:10px">Envoyer</button>
+    <p class="muted" style="font-size:12.5px">Ou par e-mail : contact.yadupeuple@gmail.com</p>`);
+  $('#btn-close').onclick = closeSheet;
+  setTimeout(() => $('#fb-text')?.focus(), 80);
+  $('#fb-send').onclick = async () => {
+    const btn = $('#fb-send'); btn.disabled = true;
+    try {
+      const ctx = [`v${APP_VERSION}`, state.selectedId ? `resto ${state.selectedId}` : '', navigator.userAgent.slice(0, 200)].filter(Boolean).join(' | ');
+      const r = await api.submitFeedback($('#fb-text').value, ctx);
+      toast(r?.message || 'Merci !');
+      if (r?.ok) closeSheet(); else btn.disabled = false;
+    } catch (err) { toast(err.message || 'Envoi impossible pour le moment.'); btn.disabled = false; }
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Installer l'appli sur l'écran d'accueil (ceux qui l'installent reviennent bien plus souvent)
 // ---------------------------------------------------------------------------
 let installEvent = null;
@@ -667,6 +692,7 @@ async function installApp() {
 // Partage (WhatsApp, Snapchat, Facebook, Instagram via le menu du téléphone…)
 // ---------------------------------------------------------------------------
 const APP_URL = 'https://yadupeuple.github.io/';
+const APP_VERSION = (import.meta.url.match(/v=(\d+)/) || [])[1] || '?';
 function openShare(e = null) {
   // Lien d'invitation perso : ?p=CODE (parrainage). Sur une fiche : ?r=resto (+ code si connecté).
   const code = state.profile?.ref_code;
@@ -1083,7 +1109,7 @@ function openReport(id, presetService) {
 const BADGE_NAMES = {
   v1: 'Premier signalement', v10: '5 signalements', v50: '10 signalements', v100: '25 signalements',
   v250: '50 signalements', v500: '100 signalements', drive10: 'Éclaireur du Drive',
-  explorer: 'Explorateur', tour_zone: 'Tour de la zone',
+  explorer: 'Explorateur', tour_zone: 'Tour de la zone', testeur: 'Testeur fondateur',
 };
 
 function showReportResult(id, res) {
@@ -1479,8 +1505,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=119" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=119) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=120" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=120) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1550,12 +1576,12 @@ async function openPublicProfile(pseudo, back) {
 
 // Badges rangés par catégorie ; les badges pas encore disponibles tout en bas.
 const BADGE_FAMILIES = [
-  ['Volume', 'Signalements'], ['Variété', 'Exploration'], ['Parrainage', 'Parrainage'],
+  ['Spécial', 'Spécial'], ['Volume', 'Signalements'], ['Variété', 'Exploration'], ['Parrainage', 'Parrainage'],
   ['Moments', 'Moments'], ['Fiabilité', 'Fiabilité'],
 ];
 const BADGE_ICONS = {
   v1: '📍', v10: '🖐️', v50: '🔟', v100: '🥉', v250: '🥈', v500: '🥇',
-  drive10: '🚗', explorer: '🧭', explorer10: '🍽️', tour_zone: '🗺️', tour_zone6: '🏙️', tour_zone10: '🍔',
+  drive10: '🚗', explorer: '🧭', explorer10: '🍽️', tour_zone: '🗺️', tour_zone6: '🏙️', tour_zone10: '🍔', testeur: '🧪',
   ref1: '🤝', ref10: '📣', ref30: '👑',
   coup_de_feu: '🔥', regulier: '📅', fiable: '✅', oeil_lynx: '🦉',
 };
@@ -1564,7 +1590,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=119" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=120" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1723,6 +1749,10 @@ function settingsHtml(resto = null) {
     </form>
     <p><a class="link-btn" href="affiche.html" target="_blank" rel="noopener">🖨️ Affiches QR code des restaurants</a></p>` : ''}
 
+    <div class="section-title">Ton avis</div>
+    <button type="button" class="btn btn-primary" id="btn-feedback">💬 Donner mon avis / signaler un bug</button>
+    <p class="muted" style="font-size:12.5px;margin:6px 0 0">L'appli est en test : chaque remarque nous aide à l'améliorer.</p>
+
     <div class="section-title">Compte</div>
     <button class="btn btn-ghost" id="btn-logout">Se déconnecter</button>
     <button class="btn btn-danger" id="btn-delete">Supprimer mon compte</button>
@@ -1747,6 +1777,7 @@ function bindSettings(body, resto = null) {
   const sc = $('#btn-share-code', body);
   if (sc) sc.onclick = () => openShare();
   const ins = $('#btn-install'); if (ins) ins.onclick = installApp;
+  const fb = $('#btn-feedback'); if (fb) fb.onclick = () => openFeedback();
   const of = $('#offer-form', body);
   if (of) {
     const send = async (o) => {

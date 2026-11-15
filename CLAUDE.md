@@ -30,7 +30,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
 Tables : establishments (3 582 en France métropolitaine depuis le 15/11/2026, dont les 95 relevés à la main en Moselle, Mulhouse, Carcassonne ; lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
-user_badges, levels (100), app_settings, customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
+user_badges, levels (100), app_settings, feedback (avis, lecture réservée à Supabase), customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
 (tout passe par les fonctions RPC) ; pseudo modifiable seulement via change_pseudo ; fonctions de compte interdites sans connexion.
@@ -56,6 +56,7 @@ Fonctions appelées par l'appli (RPC) :
 | partner_track(p_establishment, p_kind 'view'|'click') | oui | compteur anonyme (vues de fiche, clics lien / tél.) |
 | get_my_restaurant() | non | espace du restaurateur : chiffres 30 j + son offre |
 | set_partner_offer(p_title, p_details, p_hours ≤ 168, p_only_when_calm) | non | publier / retirer (titre vide) son offre du jour |
+| submit_feedback(p_message 3-2000 car., p_context) | oui | avis / bug (Réglages > Donner mon avis) ; 10/jour par compte |
 
 Statut renvoyé : `{state, level, uncertain, wait, reliability, last_report_minutes, users_total, ...}`
 - state : `recent` (≤ 30 min) · `a_confirmer` (30-60 min) · `estimation` (habitudes, ≥ 3 jours et 3 personnes)
@@ -131,12 +132,17 @@ Au changement de nom de domaine : mettre à jour APP_URL (js/app.js), les balise
 Idées proposées, pas encore décidées : pages Google par ville / resto,
 bilan automatique du lundi.
 
+## Testeurs (15/11/2026, supabase/2026-11-15_testeurs_avis.sql)
+Phase de test ouverte : badge « Testeur fondateur » (code testeur, famille Spécial, kind 'beta') donné au 1er signalement validé
+tant que app_settings.beta_open = 1 ; bouton « Donner mon avis / signaler un bug » dans Réglages (table feedback).
+Recrutement de 20 à 50 testeurs (surtout Moselle) via TikTok et l'entourage, durée ~3 semaines.
+
 ## Charte graphique
 Bleu nuit `#0B1F3A`, turquoise `#14B8A6`, blanc, touche jaune-orangé `#F5A524`.
 Affluence : calme `#22C55E`, modéré `#EAB308`, animé `#F97316`, max `#EF4444`, aucune info `#9CA3AF`.
 
 ## Avant le lancement public (à ne pas oublier)
-Nettoyer les données de test : décidé par Alexis le 12/11/2026 → remise à zéro des signalements (et des points/badges qui en découlent) au lancement, à faire seulement quand il dit « on lance » ; comptes gardés : Maylixela, Testeur1, Enthyy · réactiver la confirmation des e-mails dans
+Nettoyer les données de test : décidé par Alexis le 12/11/2026 → remise à zéro des signalements (et des points/badges qui en découlent, **sauf le badge testeur, gardé à vie**) au lancement, mettre beta_open à 0, à faire seulement quand il dit « on lance » ; comptes gardés : Maylixela, Testeur1, Enthyy · réactiver la confirmation des e-mails dans
 Supabase · vérification de la marque · tests terrain.
 Fait le 12/11/2026 : mentions-legales.html (éditeur particulier anonyme, hébergeur GitHub), cgu.html, confidentialite.html mis à jour ;
 liens sur l'accueil et en bas des Réglages. À refaire en version « professionnelle » (nom, adresse, SIRET) dès que les

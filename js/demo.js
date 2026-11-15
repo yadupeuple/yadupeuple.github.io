@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=119';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=119';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=120';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=120';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -201,6 +201,7 @@ export function createDemoApi() {
       if (!user) return [];
       return [
         ['v1', 'Volume', 'Premier signalement', 'Faire 1 signalement', true, 1, 1],
+        ['testeur', 'Spécial', 'Testeur fondateur', "A testé l'appli avant son lancement", true, 1, 1],
         ['v10', 'Volume', '5 signalements', 'Faire 5 signalements', true, 5, 5],
         ['v50', 'Volume', '10 signalements', 'Faire 10 signalements', false, 7, 10],
         ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements Drive', false, 3, 10],
@@ -227,6 +228,7 @@ export function createDemoApi() {
     },
     // Partenaire fictif (démo) ; ajouter &resto à l'adresse pour voir l'espace du restaurateur.
     // Lot du mois fictif en démo.
+    async submitFeedback(m) { await wait(); return (m || '').trim().length < 3 ? { ok: false, message: 'Écris quelques mots 🙂' } : { ok: true, message: 'Merci, ton avis est bien arrivé ! (démo)' }; },
     async monthlyPrize() { await wait(50); return { title: 'Un menu offert', sponsor_name: 'McDonald\'s Linkling', establishment_id: demoPartner.id, winners: 1 }; },
     async partners() { await wait(50); return [demoPartner]; },
     async partnerTrack(_id, kind) { kind === 'view' ? demoStats.views++ : demoStats.clicks++; },
