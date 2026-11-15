@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=117';
+import { api, DEMO } from './api.js?v=118';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=117';
+} from './config.js?v=118';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=117';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=117';
-import { BRAND_PATHS } from './brands.js?v=117';
+} from './levels.js?v=118';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=118';
+import { BRAND_PATHS } from './brands.js?v=118';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1119,6 +1119,7 @@ async function openDetailRefreshOnly(id) {
 // ---------------------------------------------------------------------------
 // Recherche
 // ---------------------------------------------------------------------------
+const normTxt = (t) => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[-'’]/g, ' ').replace(/\s+/g, ' ').trim();
 function openSearch() {
   openSheet('search', `
     <div class="sheet-head">
@@ -1142,16 +1143,46 @@ function openSearch() {
       const ul = $('#search-results');
       if (q.length < 2) { ul.innerHTML = ''; return; }
       const p = myPosition();
+      // Villes correspondantes (tous les restos sont déjà chargés) : un clic montre tous les restos de la ville.
+      const nq = normTxt(q);
+      const byCity = new Map();
+      for (const e of state.establishments.values()) {
+        const nc = normTxt(e.city);
+        if (!nc.includes(nq)) continue;
+        const k = nc;
+        if (!byCity.has(k)) byCity.set(k, { name: e.city, list: [] });
+        byCity.get(k).list.push(e);
+      }
+      const cities = [...byCity.values()]
+        .sort((a, b) => (normTxt(a.name).startsWith(nq) ? 0 : 1) - (normTxt(b.name).startsWith(nq) ? 0 : 1) || b.list.length - a.list.length)
+        .slice(0, 4);
+      const cityHtml = cities.map((c, i) => `<li data-city="${i}" style="cursor:pointer">
+            <span class="badge-ico" style="background:#E6F7F5">📍</span>
+            <div class="grow"><div class="t">${esc(c.name)}</div><div class="s">${c.list.length} resto${c.list.length > 1 ? 's' : ''} · voir sur la carte</div></div>
+          </li>`).join('');
+      const bindCities = () => ul.querySelectorAll('li[data-city]').forEach((li) => li.onclick = () => {
+        const c = cities[+li.dataset.city];
+        const b = new maplibregl.LngLatBounds();
+        c.list.forEach((e) => b.extend([e.lng, e.lat]));
+        closeSheet();
+        map.fitBounds(b, { padding: { top: 90, bottom: 200, left: 40, right: 40 }, maxZoom: 14.5, duration: 1200 });
+      });
+      ul.innerHTML = cityHtml;
+      bindCities();
       try {
         const rows = await api.search(q, p?.lat ?? null, p?.lng ?? null);
-        if (!rows?.length) { ul.innerHTML = '<li class="muted">Aucun restaurant trouvé.</li>'; return; }
-        ul.innerHTML = rows.map((r) => {
+        if (input.value.trim() !== q) return;
+        if (!rows?.length) { ul.innerHTML = cityHtml || '<li class="muted">Aucun restaurant trouvé.</li>'; bindCities(); return; }
+        // Restos de la ville cherchée d'abord
+        rows.sort((a, b) => (normTxt(a.city).includes(nq) ? 0 : 1) - (normTxt(b.city).includes(nq) ? 0 : 1));
+        ul.innerHTML = cityHtml + rows.map((r) => {
           const st = describeStatus(mainStatus(r));
           return `<li data-id="${r.id}" style="cursor:pointer">
             <span class="badge-ico" style="background:${st.info.soft}"><span class="dot" style="width:12px;height:12px;border-radius:50%;background:${st.info.color}"></span></span>
             <div class="grow"><div class="t">${esc(r.name)}</div><div class="s">${esc(r.city)}${r.distance_m != null ? ' · ' + fmtDistance(r.distance_m) : ''} · ${esc(st.info.label)}</div></div>
           </li>`;
         }).join('');
+        bindCities();
         ul.querySelectorAll('li[data-id]').forEach((li) => li.onclick = () => {
           openDetail(li.dataset.id);
         });
@@ -1446,8 +1477,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=117" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=117) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=118" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=118) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1531,7 +1562,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=117" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=118" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
