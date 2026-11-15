@@ -125,6 +125,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   + bulle « Tous les fast-foods de France sont là. 🔍 Ma ville » (ouvre la recherche, qui cherche aussi par ville).
   Bandeau « Pas de connexion » + Réessayer.
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
+  Relevé en masse (15/11/2026, tous les restos) : outils/gmaps_batch.js dans le Chrome d'Alexis → import.gmaps_raw (trigger → popular_times),
+  supabase/2026-11-15_courbes_google_france.sql. Fonction temporaire public.import_gmaps_batch à supprimer à la fin (bas du fichier).
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
 But : aller au national (voire plus), pas seulement local ; pas forcément en vivre. Leviers : TikTok (compte « reportages » 13k, public français),
