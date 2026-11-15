@@ -44,7 +44,7 @@ Fonctions appelées par l'appli (RPC) :
 | get_history(p_establishment, p_service, p_limit ≤ 5) | oui | 5 derniers signalements anonymes de moins de 12 h (app_settings history_max_hours) |
 | get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 10 + moi, avec avatar) |
 | get_public_profile(p_pseudo) | oui | profil public d'un joueur : jamais d'e-mail, de contact ni de lieu |
-| calmer_nearby_info(p_id) | oui | {id, name, label} « Plus calme à côté : … », cliquable sur la fiche (v123) ; ancienne calmer_nearby (texte) gardée |
+| calmer_nearby_info(p_id) | oui | {id, name, distance_m, label} : resto plus calme **le plus proche** (≤ 5 km, v125), cliquable sur la fiche, avec « ‹ Retour à … » ; ancienne calmer_nearby (texte) gardée |
 | submit_report(p_establishment, p_service, p_level, p_wait, p_lat, p_lng, p_accuracy_m) | non | envoyer un signalement |
 | get_my_profile(), get_badges_progress(), change_pseudo(new_pseudo) | non | compte |
 | toggle_favorite(est), my_favorites() | non | favoris |
@@ -84,7 +84,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.
   Avatars (30) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
   et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
-  Bannières = 10 rubans (15/11/2026, planche ChatGPT, outils/rubans_sheet.py ; ombre grise et liseré blanc retirés en v124 → icons/banners/ruban_*.webp) qui portent le pseudo sous l'avatar ;
+  Bannières = 10 rubans (15/11/2026, planche ChatGPT, outils/rubans_sheet.py ; ombre grise et liseré retirés (v125 : vrai fond blanc + épluchage des gris + trous gris non bouchés) ; pseudo placé par ruban et contour de sa couleur (custom.RIB dans app.js) → icons/banners/ruban_*.webp) qui portent le pseudo sous l'avatar ;
   niveaux 1 (bleu, vert), 5, 10, 20, 30, 40, 50, 70, 100 ; anciennes bannières désactivées. Badges gagnés utilisables en image de profil
   (customizations.requires_badge, contrôlé par set_customization ; supabase/2026-11-15_rubans_avatars_badges.sql).
 - Points des badges (ajoutés aux points normaux) : +1 par badge, +10 quand une catégorie (badges actifs) est complète

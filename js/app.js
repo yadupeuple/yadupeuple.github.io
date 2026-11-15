@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=124';
+import { api, DEMO } from './api.js?v=125';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=124';
+} from './config.js?v=125';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=124';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=124';
-import { BRAND_PATHS } from './brands.js?v=124';
+} from './levels.js?v=125';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=125';
+import { BRAND_PATHS } from './brands.js?v=125';
 
 // ---------------------------------------------------------------------------
 // État
@@ -930,7 +930,9 @@ function renderDetail(id) {
   const curveLoading = !detailExtra.has(id);
   const calmer = detailExtra.get(id)?.calmer;
   const fav = state.favorites.has(id);
+  const back = detailBack?.for === id ? state.establishments.get(detailBack.from) : null;
   const html = `
+    ${back ? `<button type="button" class="back-link" id="btn-detail-back">‹ Retour à ${esc(back.name)}</button>` : ''}
     <div class="sheet-head">
       <div class="grow">
         <h2>${esc(e.name)}</h2>
@@ -946,7 +948,7 @@ function renderDetail(id) {
     ${e.has_dine_in ? serviceBlock(e, 'salle') : ''}
     ${e.has_drive ? serviceBlock(e, 'drive') : ''}
     ${calmer?.label ? (calmer.id && state.establishments.has(calmer.id)
-      ? `<button type="button" class="hint hint-go" id="btn-calmer">💡 ${esc(calmer.label)} <span class="hint-arrow">›</span></button>`
+      ? `<button type="button" class="hint hint-go" id="btn-calmer">💡 ${esc(calmer.label)}${calmer.distance_m != null ? ` · ${calmer.distance_m < 1000 ? calmer.distance_m + ' m' : (calmer.distance_m / 1000).toFixed(1).replace('.', ',') + ' km'}` : ''} <span class="hint-arrow">›</span></button>`
       : `<div class="hint">💡 ${esc(calmer.label)}</div>`) : ''}
     ${curveHtml(e, profile, curveLoading)}
     <button class="btn btn-primary" id="btn-report">J'y suis : je signale l'affluence</button>
@@ -956,7 +958,8 @@ function renderDetail(id) {
   detailShown = id;
   $('#btn-close').onclick = closeSheet;
   $('#btn-report').onclick = () => openReport(id);
-  const bc = $('#btn-calmer'); if (bc) bc.onclick = () => openDetail(calmer.id);
+  const bc = $('#btn-calmer'); if (bc) bc.onclick = () => openDetail(calmer.id, id);
+  const bb = $('#btn-detail-back'); if (bb) bb.onclick = () => { const f = detailBack.from; detailBack = null; openDetail(f); };
   const gpsBtn = document.querySelector('#btn-route-gps');
   if (gpsBtn) gpsBtn.onclick = () => askLocation();
   document.querySelectorAll('#sheet-body .day-tab').forEach((b) => b.onclick = () => { curveDay = Number(b.dataset.day); renderDetail(id); });
@@ -978,9 +981,12 @@ function focusResto(e) {
   });
 }
 
-async function openDetail(id) {
+let detailBack = null; // { for: id affiché, from: id de la fiche d'origine } (« Plus calme à côté »)
+async function openDetail(id, fromId) {
   const e = state.establishments.get(id);
   if (!e) return;
+  if (fromId) detailBack = { for: id, from: fromId };
+  else if (detailBack?.for !== id) detailBack = null;
   if (state.selectedId && state.selectedId !== id) state.markers.get(state.selectedId)?.el.classList.remove('selected');
   state.selectedId = id;
   state.markers.get(id)?.el.classList.add('selected');
@@ -1507,14 +1513,16 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=124" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=124) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=125" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=125) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 15/11/2026, découpés tels quels).
+  // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
+  RIB: { ruban_argent: ['45%', '#354265'], ruban_bleu: ['44%', '#00656e'], ruban_obsidienne: ['43.5%', '#1a1527'], ruban_or: ['45.8%', '#605800'], ruban_outils: ['45.7%', '#035354'], ruban_rose: ['44%', '#890355'], ruban_rouge: ['49.5%', '#500a00'], ruban_royal: ['46.5%', '#300542'], ruban_trophee: ['49.5%', '#442a04'], ruban_vert: ['44%', '#485903'] },
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
-    const dark = /argent/.test(b?.code || '');
-    return `<div class="ribbon ${dark ? 'dark' : ''}">${b ? `<img src="${b.value}?v=124" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=125" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1526,7 +1534,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=124" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=125" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒 À gagner' : (BADGE_NAMES[c.requires_badge] || 'Badge')) : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1602,7 +1610,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=124" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=125" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
