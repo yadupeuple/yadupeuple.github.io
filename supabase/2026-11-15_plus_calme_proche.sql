@@ -1,7 +1,7 @@
 -- 15/11/2026 (Alexis) : « Plus calme à côté » = le resto plus calme LE PLUS PROCHE (≤ 5 km), pas le plus calme de la ville.
 -- Ex. : resto « Animé » → le plus proche qui est « Un peu de monde » ou « Calme ».
 create or replace function public.calmer_nearby_info(p_id uuid)
-returns jsonb language plpgsql stable set search_path = public, pg_temp as $fn$
+returns jsonb language plpgsql stable security definer set search_path = public, pg_temp as $fn$
 declare me record; my_l int; c record; l int;
 begin
   select e.lat, e.lng into me from establishments e where e.id = p_id;
@@ -28,3 +28,6 @@ begin
   return '{}'::jsonb;
 end; $fn$;
 grant execute on function public.calmer_nearby_info(uuid) to anon, authenticated;
+
+-- Correctif (même jour) : sans compte, distance_m était refusée → la suggestion ne s'affichait pas dans l'appli.
+alter function public.calmer_nearby_info(uuid) security definer;
