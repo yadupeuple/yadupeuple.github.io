@@ -6,7 +6,8 @@ from scipy import ndimage
 im = Image.open('outils/src/rubans_sheet.png').convert('RGB')
 a = np.asarray(im).astype(int)
 # fond = zones très claires reliées au bord de l'image
-light = a.min(axis=2) >= 215
+# fond + ombre grise + liseré blanc : pixels clairs et peu colorés reliés au bord (15/11 : retire les « ratures »)
+light = (a.min(axis=2) >= 150) & ((a.max(axis=2) - a.min(axis=2)) <= 26)
 lab, _ = ndimage.label(light)
 edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
 bg = np.isin(lab, list(edge))
@@ -19,7 +20,7 @@ boxes = sorted(boxes, key=lambda t: (t[0][1].start > a.shape[1] / 2, t[0][0].sta
 codes = ['ruban_or', 'ruban_bleu', 'ruban_vert', 'ruban_rose', 'ruban_outils',
          'ruban_royal', 'ruban_rouge', 'ruban_argent', 'ruban_obsidienne', 'ruban_trophee']
 for code, (b, i) in zip(codes, boxes):
-    mask = ndimage.binary_erosion(lab2 == i, iterations=1) & fg
+    mask = ndimage.binary_erosion(fg & (lab2 == i), iterations=2)
     alpha = Image.fromarray((mask * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(0.7))
     rgba = im.convert('RGBA'); rgba.putalpha(alpha)
     y0, y1, x0, x1 = b[0].start, b[0].stop, b[1].start, b[1].stop

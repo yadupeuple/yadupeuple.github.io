@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=123';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=123';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=124';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=124';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -129,7 +129,8 @@ export function createDemoApi() {
         ['banner', 'ruban_trophee', 'icons/banners/ruban_trophee.webp', 50],
         ['banner', 'ruban_obsidienne', 'icons/banners/ruban_obsidienne.webp', 70],
         ['banner', 'ruban_royal', 'icons/banners/ruban_royal.webp', 100],
-        ['avatar', 'badge_testeur', 'icons/badges/testeur.webp', 1, 'testeur'],
+        // badge testeur caché jusqu'au lancement (beta_badge_visible)
+        //        ['avatar', 'badge_testeur', 'icons/badges/testeur.webp', 1, 'testeur'],
         ['avatar', 'badge_v1', 'icons/badges/v1.webp', 1, 'v1'],
         ['avatar', 'badge_v10', 'icons/badges/v10.webp', 1, 'v10'],
         ['avatar', 'badge_v50', 'icons/badges/v50.webp', 1, 'v50'],
@@ -211,7 +212,7 @@ export function createDemoApi() {
       if (!user) return [];
       return [
         ['v1', 'Volume', 'Premier signalement', 'Faire 1 signalement', true, 1, 1],
-        ['testeur', 'Spécial', 'Testeur fondateur', "A testé l'appli avant son lancement", true, 1, 1],
+        // caché jusqu'au lancement : ['testeur', 'Spécial', 'Testeur fondateur', "A testé l'appli avant son lancement", true, 1, 1],
         ['v10', 'Volume', '5 signalements', 'Faire 5 signalements', true, 5, 5],
         ['v50', 'Volume', '10 signalements', 'Faire 10 signalements', false, 7, 10],
         ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements Drive', false, 3, 10],
