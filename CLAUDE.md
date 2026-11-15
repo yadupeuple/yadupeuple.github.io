@@ -44,7 +44,7 @@ Fonctions appelées par l'appli (RPC) :
 | get_history(p_establishment, p_service, p_limit ≤ 5) | oui | 5 derniers signalements anonymes de moins de 12 h (app_settings history_max_hours) |
 | get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 10 + moi, avec avatar) |
 | get_public_profile(p_pseudo) | oui | profil public d'un joueur : jamais d'e-mail, de contact ni de lieu |
-| calmer_nearby(p_id) | oui | « Plus calme à côté : … » |
+| calmer_nearby_info(p_id) | oui | {id, name, label} « Plus calme à côté : … », cliquable sur la fiche (v123) ; ancienne calmer_nearby (texte) gardée |
 | submit_report(p_establishment, p_service, p_level, p_wait, p_lat, p_lng, p_accuracy_m) | non | envoyer un signalement |
 | get_my_profile(), get_badges_progress(), change_pseudo(new_pseudo) | non | compte |
 | toggle_favorite(est), my_favorites() | non | favoris |
@@ -95,7 +95,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   « Mon restaurant » dans Réglages pour le propriétaire. Inscription d'un partenaire à la main (voir supabase/2026-11-12_partenaires.sql).
   Pas de paiement dans l'appli (décidé le 14/11/2026 : abonnement partenaire réglé en dehors ; idée de tarif dégressif à l'ancienneté) ; pas de classement sponsorisé. Démo de l'espace restaurateur : `?demo&resto`.
 - Offre de lancement affichée : 3 mois offerts aux 10 premiers partenaires + badge « Partenaire fondateur » à vie.
-- Lot du mois : bandeau 🏆 dans « Classement > Ce mois-ci » quand un lot existe pour le mois en cours.
+- Lot du mois : bandeau 🏆 dans « Classement > Ce mois-ci » quand un lot existe pour le mois en cours ; sinon (et dans « Depuis le début ») encart 🎁 « Des récompenses arrivent bientôt » (v123).
 - Affiche QR code : `affiche.html?r=ID` (A4, imprimable / PDF) ; QR → `?r=ID&src=affiche`. Bibliothèque vendor/qrcode.js (qrcode-generator, MIT).
   Lien dans « Mon restaurant » et dans le Mode test.
 - Alerte « c'est calme + offre » aux favoris : à faire avec les notifications.
