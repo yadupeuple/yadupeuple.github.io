@@ -620,3 +620,6 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .hint-go .hint-txt { display: flex; flex-direction: column; gap: 2px; }
 .hint-go .hint-txt small { font-size: 12.5px; font-weight: 600; color: #0F766E; }
 .hint-go .hint-ico { align-self: flex-start; margin-right: 4px; }
+.hint-go .hint-grid { display: grid; grid-template-columns: 22px 1fr; column-gap: 4px; row-gap: 2px; align-items: center; }
+.hint-go .hint-grid > span:nth-child(odd) { text-align: center; }
+.hint-go .hint-grid small { font-size: 12.5px; font-weight: 600; color: #0F766E; }
