@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=122';
-import { createDemoApi } from './demo.js?v=122';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=123';
+import { createDemoApi } from './demo.js?v=123';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -90,7 +90,7 @@ function createSupabaseApi() {
       rpc('search_establishments', { p_query: q, p_lat: lat, p_lng: lng, p_limit: 20 }),
     serviceStatus: (id, service) => rpc('get_service_status', { p_establishment: id, p_service: service }),
     history: (id, service) => rpc('get_history', { p_establishment: id, p_service: service, p_limit: 5 }),
-    calmerNearby: (id) => rpc('calmer_nearby', { p_id: id }),
+    calmerNearby: (id) => rpc('calmer_nearby_info', { p_id: id }),
     // Horaires d'ouverture de tous les restos (table opening_hours). {} si absente.
     // Catalogue des avatars et bannières proposés par l'appli (avec niveau requis).
     async customizations() {

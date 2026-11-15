@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=122';
+import { api, DEMO } from './api.js?v=123';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=122';
+} from './config.js?v=123';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=122';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=122';
-import { BRAND_PATHS } from './brands.js?v=122';
+} from './levels.js?v=123';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=123';
+import { BRAND_PATHS } from './brands.js?v=123';
 
 // ---------------------------------------------------------------------------
 // État
@@ -945,7 +945,9 @@ function renderDetail(id) {
     ${partnerHtml(e)}
     ${e.has_dine_in ? serviceBlock(e, 'salle') : ''}
     ${e.has_drive ? serviceBlock(e, 'drive') : ''}
-    ${calmer ? `<div class="hint">💡 ${esc(calmer)}</div>` : ''}
+    ${calmer?.label ? (calmer.id && state.establishments.has(calmer.id)
+      ? `<button type="button" class="hint hint-go" id="btn-calmer">💡 ${esc(calmer.label)} <span class="hint-arrow">›</span></button>`
+      : `<div class="hint">💡 ${esc(calmer.label)}</div>`) : ''}
     ${curveHtml(e, profile, curveLoading)}
     <button class="btn btn-primary" id="btn-report">J'y suis : je signale l'affluence</button>
   `;
@@ -954,6 +956,7 @@ function renderDetail(id) {
   detailShown = id;
   $('#btn-close').onclick = closeSheet;
   $('#btn-report').onclick = () => openReport(id);
+  const bc = $('#btn-calmer'); if (bc) bc.onclick = () => openDetail(calmer.id);
   const gpsBtn = document.querySelector('#btn-route-gps');
   if (gpsBtn) gpsBtn.onclick = () => askLocation();
   document.querySelectorAll('#sheet-body .day-tab').forEach((b) => b.onclick = () => { curveDay = Number(b.dataset.day); renderDetail(id); });
@@ -994,7 +997,7 @@ async function openDetail(id) {
       e.has_drive ? api.serviceStatus(id, 'drive') : null,
       e.has_dine_in ? api.history(id, 'salle') : [],
       e.has_drive ? api.history(id, 'drive') : [],
-      e.has_dine_in ? api.calmerNearby(id).catch(() => '') : '',
+      e.has_dine_in ? api.calmerNearby(id).catch(() => null) : null,
       api.popularTimes ? api.popularTimes(id).catch(() => null) : null,
     ]);
     if (e.has_dine_in) e.status_salle = salle;
@@ -1004,7 +1007,7 @@ async function openDetail(id) {
     if (state.sheetView === 'detail' && state.selectedId === id) renderDetail(id);
   } catch (err) {
     if (!detailExtra.has(id)) {
-      detailExtra.set(id, { history: { salle: [], drive: [] }, calmer: '', profile: null });
+      detailExtra.set(id, { history: { salle: [], drive: [] }, calmer: null, profile: null });
       if (state.sheetView === 'detail' && state.selectedId === id) renderDetail(id);
     }
     toast(err.message || 'Impossible de charger la fiche.');
@@ -1504,14 +1507,14 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=122" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=122) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=123" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=123) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 15/11/2026, découpés tels quels).
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const dark = /argent/.test(b?.code || '');
-    return `<div class="ribbon ${dark ? 'dark' : ''}">${b ? `<img src="${b.value}?v=122" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon ${dark ? 'dark' : ''}">${b ? `<img src="${b.value}?v=123" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1523,7 +1526,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=122" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=123" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒 À gagner' : (BADGE_NAMES[c.requires_badge] || 'Badge')) : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1599,7 +1602,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=122" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=123" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1639,7 +1642,8 @@ async function renderLeaderboard(body, city = null, scope = 'month') {
     <p class="muted" style="font-size:12.5px;margin:2px 0 8px">${scope === 'month'
       ? `Points gagnés en ${month}. Le classement repart de zéro le 1er de chaque mois.`
       : 'Tous les points gagnés depuis l\'inscription.'}</p>
-    <div id="lb-prize"></div>
+    <div id="lb-prize"><div class="prize prize-soon"><span class="prize-ico">🎁</span><div><div class="prize-t">Des récompenses arrivent bientôt</div>
+      <div class="prize-s">Les meilleurs du classement gagneront des cadeaux offerts par nos restos partenaires. Tes points comptent déjà : continue à signaler !</div></div></div></div>
     <div id="lb-list"><div class="spinner"></div></div>`;
   // Lot du mois offert par un partenaire (rien ne s'affiche s'il n'y en a pas).
   if (scope === 'month') api.monthlyPrize().then((pz) => {
