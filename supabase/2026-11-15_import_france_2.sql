@@ -135,3 +135,7 @@ begin
   select replace(ins.source, 'atp:', ''), count(*)::int, 0 from ins group by 1;
 end $$;
 revoke all on function import.apply_atp() from public, anon, authenticated;
+
+-- 15/11/2026 (accord d'Alexis) : suppression des 94 doublons « McCafé » (situés dans des McDonald's)
+delete from public.opening_hours where establishment_id in (select id from public.establishments where brand='McCafé' and source like 'atp:%');
+delete from public.establishments where brand='McCafé' and source like 'atp:%' and not exists (select 1 from public.reports r where r.establishment_id = establishments.id);
