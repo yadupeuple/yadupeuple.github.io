@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=118';
+import { api, DEMO } from './api.js?v=119';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=118';
+} from './config.js?v=119';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=118';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=118';
-import { BRAND_PATHS } from './brands.js?v=118';
+} from './levels.js?v=119';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=119';
+import { BRAND_PATHS } from './brands.js?v=119';
 
 // ---------------------------------------------------------------------------
 // État
@@ -259,40 +259,42 @@ let focusId = null; // resto mis en avant par la liste du bas
 function updateClusters() {
   for (const c of clusterMarkers) c.remove();
   clusterMarkers.length = 0;
+  // Grille fixée sur la carte (coordonnées du monde, pas de l'écran) : déplacer la carte sans zoomer ne change pas les groupes.
   const b = map.getBounds();
-  const padLng = (b.getEast() - b.getWest()) * 0.15, padLat = (b.getNorth() - b.getSouth()) * 0.15;
+  const padLng = (b.getEast() - b.getWest()) * 1.5, padLat = (b.getNorth() - b.getSouth()) * 1.5;
   const W = b.getWest() - padLng, E = b.getEast() + padLng, S = b.getSouth() - padLat, N = b.getNorth() + padLat;
   const cell = map.getZoom() < 9 ? CLUSTER_PX * 1.6 : CLUSTER_PX;
+  const ws = 512 * Math.pow(2, map.getZoom());
+  const wx = (lng) => (lng + 180) / 360 * ws;
+  const wy = (lat) => { const r = Math.sin(lat * Math.PI / 180); return (0.5 - Math.log((1 + r) / (1 - r)) / (4 * Math.PI)) * ws; };
   const cells = new Map();
   for (const e of state.establishments.values()) {
     if (e.lng < W || e.lng > E || e.lat < S || e.lat > N || !passesFilter(e)) continue;
-    const p = map.project([e.lng, e.lat]);
-    const k = Math.floor(p.x / cell) + ':' + Math.floor(p.y / cell);
+    const x = wx(e.lng), y = wy(e.lat);
+    const cx = Math.floor(x / cell), cy = Math.floor(y / cell), k = cx + ':' + cy;
     let g = cells.get(k);
-    if (!g) cells.set(k, g = []);
-    g.push(e);
+    if (!g) cells.set(k, g = { m: [], sx: 0, sy: 0, cx, cy, k });
+    g.m.push(e); g.sx += x; g.sy += y;
   }
-  // Fusion des groupes voisins (deux cases côte à côte ne doivent pas se chevaucher)
-  const groups = [...cells.values()].map((m) => {
-    let x = 0, y = 0;
-    for (const e of m) { const p = map.project([e.lng, e.lat]); x += p.x; y += p.y; }
-    return { m, x: x / m.length, y: y / m.length };
-  });
-  groups.sort((a, b2) => b2.m.length - a.m.length);
-  for (let i = 0; i < groups.length; i++) {
-    const a = groups[i];
-    if (!a) continue;
-    for (let j = i + 1; j < groups.length; j++) {
-      const g = groups[j];
-      if (!g || Math.hypot(a.x - g.x, a.y - g.y) >= cell) continue;
+  // Fusion des groupes voisins trop proches (ordre fixe : le plus gros d'abord, puis la case)
+  const groups = [...cells.values()];
+  groups.forEach((g) => { g.x = g.sx / g.m.length; g.y = g.sy / g.m.length; });
+  groups.sort((g1, g2) => g2.m.length - g1.m.length || (g1.k < g2.k ? -1 : 1));
+  for (const a of groups) {
+    if (a.dead) continue;
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+      if (!dx && !dy) continue;
+      const g = cells.get((a.cx + dx) + ':' + (a.cy + dy));
+      if (!g || g.dead || g === a || g.m.length > a.m.length || (g.m.length === a.m.length && g.k < a.k)) continue;
+      if (Math.hypot(a.x - g.x, a.y - g.y) >= cell) continue;
       const n = a.m.length + g.m.length;
       a.x = (a.x * a.m.length + g.x * g.m.length) / n; a.y = (a.y * a.m.length + g.y * g.m.length) / n;
       a.m = a.m.concat(g.m);
-      groups[j] = null;
+      g.dead = true;
     }
   }
   const shown = new Set();
-  for (const members of groups.filter(Boolean).map((g) => g.m)) {
+  for (const members of groups.filter((g) => !g.dead).map((g) => g.m)) {
     if (members.length === 1) {
       const e = members[0];
       const m = state.markers.get(e.id) || makeMarker(e);
@@ -1477,8 +1479,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=118" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=118) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=119" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=119) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1562,7 +1564,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=118" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=119" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
