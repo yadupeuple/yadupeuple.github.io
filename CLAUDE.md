@@ -114,6 +114,15 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   + bulle « Ta zone : Moselle / Mulhouse / Carcassonne » ; « Aller à » dans les Filtres. Bandeau « Pas de connexion » + Réessayer.
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
 
+## Objectif et croissance (dit par Alexis le 15/11/2026)
+But : aller au national (voire plus), pas seulement local ; pas forcément en vivre. Leviers : TikTok (compte « reportages » 13k, public français),
+partenariats, affiches QR code, bouche-à-oreille. Fait en v116 : aperçu des liens partagés (balises Open Graph + icons/og.png,
+outils/og_image.py), bouton « Inviter un ami » sur l'écran « Merci » après un signalement, installation sur l'écran d'accueil
+(Réglages + écran « Merci » ; Android : fenêtre du navigateur, iPhone : explications), robots.txt + sitemap.xml.
+Au changement de nom de domaine : mettre à jour APP_URL (js/app.js), les balises og:/canonical (index.html), robots.txt, sitemap.xml.
+Idées proposées, pas encore décidées : tous les restos de France d'un coup (import OpenStreetMap), pages Google par ville / resto,
+bilan automatique du lundi.
+
 ## Charte graphique
 Bleu nuit `#0B1F3A`, turquoise `#14B8A6`, blanc, touche jaune-orangé `#F5A524`.
 Affluence : calme `#22C55E`, modéré `#EAB308`, animé `#F97316`, max `#EF4444`, aucune info `#9CA3AF`.

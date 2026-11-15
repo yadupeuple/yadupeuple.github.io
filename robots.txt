@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /demo.html
+Sitemap: https://yadupeuple.github.io/sitemap.xml

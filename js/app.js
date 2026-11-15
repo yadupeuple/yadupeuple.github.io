@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=115';
+import { api, DEMO } from './api.js?v=116';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=115';
+} from './config.js?v=116';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=115';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=115';
-import { BRAND_PATHS } from './brands.js?v=115';
+} from './levels.js?v=116';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=116';
+import { BRAND_PATHS } from './brands.js?v=116';
 
 // ---------------------------------------------------------------------------
 // État
@@ -622,6 +622,34 @@ const ICON = {
 };
 
 // ---------------------------------------------------------------------------
+// Installer l'appli sur l'écran d'accueil (ceux qui l'installent reviennent bien plus souvent)
+// ---------------------------------------------------------------------------
+let installEvent = null;
+window.addEventListener('beforeinstallprompt', (ev) => { ev.preventDefault(); installEvent = ev; });
+window.addEventListener('appinstalled', () => { installEvent = null; toast("Appli installée ✅ Retrouve-la sur ton écran d'accueil."); });
+const isStandalone = () => window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function canInstall() { return !isStandalone() && (!!installEvent || isIos() || /Android/.test(navigator.userAgent)); }
+async function installApp() {
+  if (installEvent) {
+    const ev = installEvent; installEvent = null;
+    ev.prompt();
+    try { await ev.userChoice; } catch {}
+    return;
+  }
+  const steps = isIos()
+    ? ['Ouvre cette page dans <b>Safari</b>.', 'Touche le bouton <b>Partager</b> (le carré avec une flèche vers le haut).', 'Choisis <b>Sur l\'écran d\'accueil</b>, puis <b>Ajouter</b>.']
+    : ['Touche les <b>3 points</b> en haut à droite du navigateur.', 'Choisis <b>Ajouter à l\'écran d\'accueil</b> (ou <b>Installer l\'application</b>).', 'Valide avec <b>Installer</b>.'];
+  openSheet('install', `
+    <div class="sheet-head">
+      <div class="grow"><h2>L'appli sur ton écran d'accueil</h2><div class="sub">Une icône comme une vraie appli, sans passer par un store.</div></div>
+      <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+    </div>
+    <ol class="gps-steps">${steps.map((t) => `<li>${t}</li>`).join('')}</ol>`);
+  $('#btn-close').onclick = closeSheet;
+}
+
+// ---------------------------------------------------------------------------
 // Partage (WhatsApp, Snapchat, Facebook, Instagram via le menu du téléphone…)
 // ---------------------------------------------------------------------------
 const APP_URL = 'https://yadupeuple.github.io/';
@@ -1054,10 +1082,14 @@ function showReportResult(id, res) {
       <p>${res.points > 0 ? 'Ton info aide les prochains clients à éviter la foule.' : "Plus de points pour ce resto dans l'heure, mais ton info compte quand même."}</p>
       ${badges ? `<div style="margin:10px 0">Nouveau badge : ${badges}</div>` : ''}
     </div>
-    <button class="btn btn-dark" id="btn-done">Voir la fiche</button>
+    <button class="btn btn-primary" id="btn-result-share">${ICON.share}Inviter un ami</button>
+    ${canInstall() ? `<button class="btn btn-ghost" id="btn-result-install" style="margin-top:8px">📲 Mettre l'appli sur mon écran d'accueil</button>` : ''}
+    <button class="btn btn-dark" id="btn-done" style="margin-top:8px">Voir la fiche</button>
   `;
   openSheet('result', html);
   $('#btn-done').onclick = () => openDetail(id);
+  $('#btn-result-share').onclick = () => openShare();
+  const ri = $('#btn-result-install'); if (ri) ri.onclick = installApp;
   refreshProfile();
   openDetailRefreshOnly(id);
 }
@@ -1402,8 +1434,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=115" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=115) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=116" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=116) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
   // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
   banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
@@ -1487,7 +1519,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=115" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=116" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1614,6 +1646,9 @@ function settingsHtml(resto = null) {
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>
 
+    ${canInstall() ? `<div class="section-title">L'appli sur ton téléphone</div>
+    <button type="button" class="btn btn-ghost" id="btn-install">📲 Mettre l'appli sur mon écran d'accueil</button>` : ''}
+
     ${state.profile?.ref_code ? `<div class="section-title">Mon code de parrainage</div>
     <div class="my-code">
       <div class="mc-code" aria-label="Mon code">${esc(state.profile.ref_code)}</div>
@@ -1666,6 +1701,7 @@ function bindSettings(body, resto = null) {
   };
   const sc = $('#btn-share-code', body);
   if (sc) sc.onclick = () => openShare();
+  const ins = $('#btn-install'); if (ins) ins.onclick = installApp;
   const of = $('#offer-form', body);
   if (of) {
     const send = async (o) => {
