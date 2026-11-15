@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=128';
+import { api, DEMO } from './api.js?v=129';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=128';
+} from './config.js?v=129';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=128';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=128';
-import { BRAND_PATHS } from './brands.js?v=128';
+} from './levels.js?v=129';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=129';
+import { BRAND_PATHS } from './brands.js?v=129';
 
 // ---------------------------------------------------------------------------
 // État
@@ -884,7 +884,7 @@ async function refineRoute(e, p) {
     routeCache.set(key, r);
     const dist = $('#route-dist'), time = $('#route-time');
     if (dist && time && state.selectedId === e.id) {
-      dist.innerHTML = `<span class="emo">📍</span>${fmtDistance(r.m)}`;
+      dist.innerHTML = `<span class="emo emo-pin">📍</span>${fmtDistance(r.m)}`;
       time.innerHTML = `<span class="emo">🚗</span>${fmtDuration(r.min)} de trajet`;
     }
     const sub = document.querySelector(`#cards .card[data-id="${e.id}"] .card-dist`);
@@ -895,13 +895,13 @@ async function refineRoute(e, p) {
 function routeHtml(e) {
   const p = myPosition();
   if (!p) {
-    return `<div class="route"><button type="button" class="chip chip-btn" id="btn-route-gps"><span class="emo">📍</span>Voir le temps de trajet</button>${goHtml(e)}</div>`;
+    return `<div class="route"><button type="button" class="chip chip-btn" id="btn-route-gps"><span class="emo emo-pin">📍</span>Voir le temps de trajet</button>${goHtml(e)}</div>`;
   }
   const d = distanceM(p.lat, p.lng, e.lat, e.lng);
   const real = d > 150 ? cachedRoute(e, p) : null;
   const r = real || estimateRoute(d, ROUTE);
   const approx = real ? '' : '≈ ';
-  const parts = [`<span class="chip" id="route-dist"><span class="emo">📍</span>${d > 150 ? approx + fmtDistance(r.m) : fmtDistance(d)}</span>`];
+  const parts = [`<span class="chip" id="route-dist"><span class="emo emo-pin">📍</span>${d > 150 ? approx + fmtDistance(r.m) : fmtDistance(d)}</span>`];
   if (d > 150) {
     parts.push(`<span class="chip" id="route-time"><span class="emo">🚗</span>${approx}${fmtDuration(r.min)} de trajet</span>`);
     if (!real) setTimeout(() => refineRoute(e, p), 0);
@@ -917,7 +917,7 @@ function routeHtml(e) {
 // « S'y rendre » : ouvre Google Maps (l'appli si elle est installée) en itinéraire voiture.
 function goHtml(e) {
   const url = `https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lng}&travelmode=driving`;
-  return `<a class="chip chip-go" href="${url}" target="_blank" rel="noopener" id="btn-go"><span class="emo">🧭</span>S'y rendre</a>`;
+  return `<a class="chip chip-go" href="${url}" target="_blank" rel="noopener" id="btn-go"><span class="emo emo-flat">🧭</span>S'y rendre</a>`;
 }
 
 // Resto dont la fiche est affichée : quand on la redessine (jour du graphique, rafraîchissement…), on garde la position de défilement.
@@ -1513,8 +1513,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=128" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=128) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=129" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=129) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 15/11/2026, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1522,7 +1522,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=128" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=129" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1534,7 +1534,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=128" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=129" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒 À gagner' : (BADGE_NAMES[c.requires_badge] || 'Badge')) : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1610,7 +1610,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=128" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=129" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1628,7 +1628,7 @@ async function badgesHtml() {
   const fams = [...BADGE_FAMILIES, ...[...new Set(rows.map((b) => b.family))].filter((f) => !known.includes(f)).map((f) => [f, f])];
   const active = rows.filter((b) => b.is_active);
   const locked = rows.filter((b) => !b.is_active);
-  let html = '<p class="badge-rule">🏅 +1 point par badge · 🎉 +10 points par catégorie complète</p>';
+  let html = '<div class="badge-rule rule-grid"><span>🏅</span><span>+1 point par badge</span><span>🎉</span><span>+10 points par catégorie complète</span></div>';
   for (const [fam, label] of fams) {
     const list = active.filter((b) => b.family === fam).sort((a, b2) => (b2.earned - a.earned));
     if (!list.length) continue;

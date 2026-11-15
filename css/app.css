@@ -623,3 +623,6 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .hint-go .hint-grid { display: grid; grid-template-columns: 22px 1fr; column-gap: 4px; row-gap: 2px; align-items: center; }
 .hint-go .hint-grid > span:nth-child(odd) { text-align: center; }
 .hint-go .hint-grid small { font-size: 12.5px; font-weight: 600; color: #0F766E; }
+.emo.emo-pin { transform: translateY(0.04em); }
+.rule-grid { display: grid; grid-template-columns: 24px 1fr; column-gap: 6px; row-gap: 4px; align-items: center; }
+.rule-grid > span:nth-child(odd) { text-align: center; }
