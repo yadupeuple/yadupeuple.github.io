@@ -82,9 +82,11 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Parrainage : code à 6 caractères créé pour chaque compte (profiles.ref_code, unique grâce au trigger ensure_ref_code), affiché dans Réglages (Copier / Partager) ; lien ?p=CODE ; au 1er signalement validé du filleul (trigger sur reports) parrain +20 (max 10/30 j),
   filleul +10 ; badges 1, 10, 30 filleuls. Réglages dans app_settings (referral_*).
 - Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.
-  Avatars (30) et bannières (17, dont 2 au niveau 1) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
+  Avatars (30) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
   et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
-  Table customizations (is_active) ; paliers 1, 5, 10 … 50, 60 … 100 ; bannière en bandeau entier en haut du profil (pas en fond : trop flou), thèmes alternés d'un palier à l'autre.
+  Bannières = 10 rubans (15/11/2026, planche ChatGPT, outils/rubans_sheet.py → icons/banners/ruban_*.webp) qui portent le pseudo sous l'avatar ;
+  niveaux 1 (bleu, vert), 5, 10, 20, 30, 40, 50, 70, 100 ; anciennes bannières désactivées. Badges gagnés utilisables en image de profil
+  (customizations.requires_badge, contrôlé par set_customization ; supabase/2026-11-15_rubans_avatars_badges.sql).
 - Points des badges (ajoutés aux points normaux) : +1 par badge, +10 quand une catégorie (badges actifs) est complète
   (trigger sur user_badges, table badge_family_bonus, réglages badge_points / badge_family_bonus).
 - Partenaires (12/11/2026) : tables partners (owner_id = compte du restaurateur, founder, tagline, lien https, téléphone),

@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=121';
-import { createDemoApi } from './demo.js?v=121';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=122';
+import { createDemoApi } from './demo.js?v=122';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -94,7 +94,7 @@ function createSupabaseApi() {
     // Horaires d'ouverture de tous les restos (table opening_hours). {} si absente.
     // Catalogue des avatars et bannières proposés par l'appli (avec niveau requis).
     async customizations() {
-      const { data, error } = await sb.from('customizations').select('kind,code,value,min_level').eq('is_active', true).order('sort_order');
+      const { data, error } = await sb.from('customizations').select('kind,code,value,min_level,requires_badge').eq('is_active', true).order('sort_order');
       return error ? [] : data;
     },
     setCustomization: (kind, code) => rpc('set_customization', { p_kind: kind, p_code: code }),

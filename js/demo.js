@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=121';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=121';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=122';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=122';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -42,7 +42,7 @@ function withStatus(e, lat, lng) {
 export function createDemoApi() {
   let user = null;
   const listeners = [];
-  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'nuit' };
+  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'ruban_bleu' };
   const favorites = new Set(['1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42']);
   const demoPartner = { id: '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42', founder: true, tagline: 'Restaurant de démonstration', link_url: 'https://exemple.fr', link_label: 'Voir le menu', phone: '03 82 00 00 00',
     offer: { title: '-10 % sur le menu', details: 'Sur présentation de l\'appli en caisse.', only_when_calm: true, ends_at: new Date(Date.now() + 5 * 3600e3).toISOString() } };
@@ -119,27 +119,37 @@ export function createDemoApi() {
         ['avatar', 'diamant', 'icons/avatars/diamant.webp', 80],
         ['avatar', 'couronne', 'icons/avatars/couronne.webp', 90],
         ['avatar', 'fusee', 'icons/avatars/fusee.webp', 100],
-        ['banner', 'nuit', 'icons/banners/nuit.webp', 1],
-        ['banner', 'ciel', 'icons/banners/ciel.webp', 1],
-        ['banner', 'plage', 'icons/banners/plage.webp', 5],
-        ['banner', 'ville', 'icons/banners/ville.webp', 10],
-        ['banner', 'foret', 'icons/banners/foret.webp', 15],
-        ['banner', 'confettis', 'icons/banners/confettis.webp', 20],
-        ['banner', 'hiver', 'icons/banners/hiver.webp', 25],
-        ['banner', 'geometrique', 'icons/banners/geometrique.webp', 30],
-        ['banner', 'automne', 'icons/banners/automne.webp', 35],
-        ['banner', 'sunset', 'icons/banners/sunset.webp', 40],
-        ['banner', 'montagne', 'icons/banners/montagne.webp', 45],
-        ['banner', 'vagues', 'icons/banners/vagues.webp', 50],
-        ['banner', 'printemps', 'icons/banners/printemps.webp', 60],
-        ['banner', 'retro', 'icons/banners/retro.webp', 70],
-        ['banner', 'tropical', 'icons/banners/tropical.webp', 80],
-        ['banner', 'phare', 'icons/banners/phare.webp', 90],
-        ['banner', 'espace', 'icons/banners/espace.webp', 100],
-      ].map(([kind, code, value, min_level]) => ({ kind, code, value, min_level }));
+        ['banner', 'ruban_bleu', 'icons/banners/ruban_bleu.webp', 1],
+        ['banner', 'ruban_vert', 'icons/banners/ruban_vert.webp', 1],
+        ['banner', 'ruban_rose', 'icons/banners/ruban_rose.webp', 5],
+        ['banner', 'ruban_outils', 'icons/banners/ruban_outils.webp', 10],
+        ['banner', 'ruban_argent', 'icons/banners/ruban_argent.webp', 20],
+        ['banner', 'ruban_or', 'icons/banners/ruban_or.webp', 30],
+        ['banner', 'ruban_rouge', 'icons/banners/ruban_rouge.webp', 40],
+        ['banner', 'ruban_trophee', 'icons/banners/ruban_trophee.webp', 50],
+        ['banner', 'ruban_obsidienne', 'icons/banners/ruban_obsidienne.webp', 70],
+        ['banner', 'ruban_royal', 'icons/banners/ruban_royal.webp', 100],
+        ['avatar', 'badge_testeur', 'icons/badges/testeur.webp', 1, 'testeur'],
+        ['avatar', 'badge_v1', 'icons/badges/v1.webp', 1, 'v1'],
+        ['avatar', 'badge_v10', 'icons/badges/v10.webp', 1, 'v10'],
+        ['avatar', 'badge_v50', 'icons/badges/v50.webp', 1, 'v50'],
+        ['avatar', 'badge_v100', 'icons/badges/v100.webp', 1, 'v100'],
+        ['avatar', 'badge_v250', 'icons/badges/v250.webp', 1, 'v250'],
+        ['avatar', 'badge_v500', 'icons/badges/v500.webp', 1, 'v500'],
+        ['avatar', 'badge_drive10', 'icons/badges/drive10.webp', 1, 'drive10'],
+        ['avatar', 'badge_explorer', 'icons/badges/explorer.webp', 1, 'explorer'],
+        ['avatar', 'badge_explorer10', 'icons/badges/explorer10.webp', 1, 'explorer10'],
+        ['avatar', 'badge_tour_zone', 'icons/badges/tour_zone.webp', 1, 'tour_zone'],
+        ['avatar', 'badge_tour_zone6', 'icons/badges/tour_zone6.webp', 1, 'tour_zone6'],
+        ['avatar', 'badge_tour_zone10', 'icons/badges/tour_zone10.webp', 1, 'tour_zone10'],
+        ['avatar', 'badge_ref1', 'icons/badges/ref1.webp', 1, 'ref1'],
+        ['avatar', 'badge_ref10', 'icons/badges/ref10.webp', 1, 'ref10'],
+        ['avatar', 'badge_ref30', 'icons/badges/ref30.webp', 1, 'ref30'],
+      ].map(([kind, code, value, min_level, requires_badge = null]) => ({ kind, code, value, min_level, requires_badge }));
     },
     async setCustomization(kind, code) {
       await wait();
+      if (code.startsWith('badge_') && !profile.badges.includes(code.slice(6))) return { ok: false, message: "Gagne d'abord ce badge pour l'utiliser." };
       if (kind === 'avatar') profile.avatar = code; else profile.banner = code;
       return { ok: true };
     },

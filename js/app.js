@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=121';
+import { api, DEMO } from './api.js?v=122';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=121';
+} from './config.js?v=122';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=121';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=121';
-import { BRAND_PATHS } from './brands.js?v=121';
+} from './levels.js?v=122';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=122';
+import { BRAND_PATHS } from './brands.js?v=122';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1109,7 +1109,9 @@ function openReport(id, presetService) {
 const BADGE_NAMES = {
   v1: 'Premier signalement', v10: '5 signalements', v50: '10 signalements', v100: '25 signalements',
   v250: '50 signalements', v500: '100 signalements', drive10: 'Éclaireur du Drive',
-  explorer: 'Explorateur', tour_zone: 'Tour de la zone', testeur: 'Testeur fondateur',
+  explorer: 'Explorateur', explorer10: 'Fin gourmet', tour_zone: 'Tour de la zone', tour_zone6: 'Globe-trotteur',
+  tour_zone10: 'Routard du burger', testeur: 'Testeur fondateur', ref1: 'Parrain', ref10: 'Ambassadeur',
+  ref30: 'Légende du bouche-à-oreille', coup_de_feu: 'Coup de feu', regulier: 'Régulier', fiable: 'Fiable', oeil_lynx: 'Œil de lynx',
 };
 
 function showReportResult(id, res) {
@@ -1443,14 +1445,11 @@ async function renderAccount(tab = 'profil') {
     </div>
     ${tab === 'profil' ? `
     <div class="profile-card">
-      <div class="profile-banner" style="${custom.banner(p.banner)}"></div>
-      <div class="profile-top">
+      <div class="profile-head">
         <button class="avatar" id="btn-custom" aria-label="Personnaliser mon profil">${custom.avatar(p.avatar) || esc((p.pseudo || '?').slice(0, 1).toUpperCase())}<span class="avatar-edit">✏️</span></button>
-        <div class="grow">
-          <div class="pseudo">${esc(p.pseudo)}</div>
-          <div class="lvl">Niveau ${p.level ?? 1} · ${esc(p.level_name)}</div>
-          ${p.member_since ? `<div class="since">Membre depuis ${memberSince(p.member_since)}</div>` : ''}
-        </div>
+        ${custom.ribbon(p.banner, p.pseudo)}
+        <div class="lvl">Niveau ${p.level ?? 1} · ${esc(p.level_name)}</div>
+        ${p.member_since ? `<div class="since">Membre depuis ${memberSince(p.member_since)}</div>` : ''}
       </div>
       <div class="progress"><div style="width:${pct}%"></div></div>
       <small>${p.points} points${p.next_level_at ? ` · encore ${p.next_level_at - p.points} pour le niveau suivant` : ' · niveau maximum 🎉'}</small>
@@ -1469,7 +1468,7 @@ async function renderAccount(tab = 'profil') {
       </div>
       <button class="btn btn-primary ref-btn" id="btn-refer">Inviter des amis</button>
     </div>
-    <button class="btn btn-ghost" id="btn-custom2">🎨 Personnaliser mon image et ma bannière</button>` : ''}
+    <button class="btn btn-ghost" id="btn-custom2">🎨 Personnaliser mon image et mon ruban</button>` : ''}
     <div id="tab-body">${tab === 'profil' ? '' : '<div class="spinner"></div>'}</div>
   `);
   $('#btn-close').onclick = closeSheet;
@@ -1505,32 +1504,45 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=121" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=121) center/cover` : v; },
-  avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img'); },
-  // Bannière affichée en bandeau entier (non rognée, donc nette) en haut de la carte de profil.
-  banner(code) { const b = this.find('banner', code); return b ? `background:${this.bg(b.value)}` : ''; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=122" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=122) center/cover` : v; },
+  avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
+  // Bannière = ruban qui porte le pseudo (rubans du 15/11/2026, découpés tels quels).
+  ribbon(code, pseudo) {
+    const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
+    const dark = /argent/.test(b?.code || '');
+    return `<div class="ribbon ${dark ? 'dark' : ''}">${b ? `<img src="${b.value}?v=122" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+  },
 };
 async function openCustomize() {
   await custom.load();
   const p = state.profile || {};
   const lvl = p.level || 1;
+  const mine = new Set((p.badges || []).map((b) => (typeof b === 'string' ? b : b.code)));
   const cell = (c) => {
-    const locked = lvl < c.min_level;
+    const needBadge = c.requires_badge && !mine.has(c.requires_badge);
+    const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-banner" style="background:${custom.bg(c.value)}"></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=122" alt=""></span>`;
+    const label = c.requires_badge ? (needBadge ? '🔒 À gagner' : (BADGE_NAMES[c.requires_badge] || 'Badge')) : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
-      ${inner}<span class="cz-lock">${locked ? '🔒 ' : ''}Niv. ${c.min_level}</span></button>`;
+      ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
   };
+  const avatars = custom.list.filter((c) => c.kind === 'avatar' && !c.requires_badge);
+  const badgeAv = custom.list.filter((c) => c.kind === 'avatar' && c.requires_badge)
+    .sort((a, b) => (mine.has(b.requires_badge) - mine.has(a.requires_badge)));
   openSheet('custom', `
     <div class="sheet-head">
       <button class="round-btn" id="btn-back" aria-label="Retour">${ICON.back}</button>
-      <div class="grow"><h2>Personnaliser mon profil</h2><div class="sub">Niveau ${lvl} · de nouvelles images se débloquent aux niveaux 5, 10, 15… jusqu'à 100.</div></div>
+      <div class="grow"><h2>Personnaliser mon profil</h2><div class="sub">Niveau ${lvl} · rubans et images se débloquent en montant de niveau, et avec tes badges.</div></div>
     </div>
+    <div class="section-title">Ruban (porte ton pseudo)</div>
+    <div class="cz-grid banners">${custom.list.filter((c) => c.kind === 'banner').map(cell).join('')}</div>
     <div class="section-title">Image de profil</div>
-    <div class="cz-grid avatars">${custom.list.filter((c) => c.kind === 'avatar').map(cell).join('')}</div>
-    <div class="section-title">Bannière</div>
-    <div class="cz-grid banners">${custom.list.filter((c) => c.kind === 'banner').map(cell).join('')}</div>`);
+    <div class="cz-grid avatars">${avatars.map(cell).join('')}</div>
+    ${badgeAv.length ? `<div class="section-title">Mes badges en image de profil</div>
+    <p class="muted" style="font-size:12.5px;margin:-4px 0 8px">Chaque badge gagné peut devenir ton image de profil.</p>
+    <div class="cz-grid avatars">${badgeAv.map(cell).join('')}</div>` : ''}`);
   $('#btn-back').onclick = () => renderAccount('profil');
   $('#sheet-body').querySelectorAll('.cz:not(.locked)').forEach((b) => b.onclick = async () => {
     const r = await api.setCustomization(b.dataset.kind, b.dataset.code).catch((e) => ({ ok: false, message: e.message }));
@@ -1554,14 +1566,11 @@ async function openPublicProfile(pseudo, back) {
       <div class="grow"><h2>Profil</h2></div>
     </div>
     <div class="profile-card">
-      <div class="profile-banner" style="${custom.banner(p.banner)}"></div>
-      <div class="profile-top">
+      <div class="profile-head">
         <span class="avatar">${custom.avatar(p.avatar)}</span>
-        <div class="grow">
-          <div class="pseudo">${esc(p.pseudo)}</div>
-          <div class="lvl">Niveau ${p.level} · ${esc(p.level_name)}</div>
-          <div class="since">Membre depuis ${memberSince(p.member_since)}</div>
-        </div>
+        ${custom.ribbon(p.banner, p.pseudo)}
+        <div class="lvl">Niveau ${p.level} · ${esc(p.level_name)}</div>
+        <div class="since">Membre depuis ${memberSince(p.member_since)}</div>
       </div>
       <div class="stats">
         <div><strong>${p.points}</strong><span>points</span></div>
@@ -1590,7 +1599,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=121" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=122" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];

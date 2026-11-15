@@ -597,3 +597,15 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .emo.emo-flat { transform: translateY(-0.02em); }
 .bar.bar-wait { background: #E5E7EB; animation: barwait 1s ease-in-out infinite alternate; }
 @keyframes barwait { from { opacity: .45; } to { opacity: 1; } }
+/* Profil : avatar au centre, ruban qui porte le pseudo */
+.profile-head { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; padding-top: 4px; }
+.profile-head .avatar { width: 84px; height: 84px; background: var(--navy); box-shadow: 0 0 0 3px #fff, 0 4px 14px rgba(11,31,58,.25); position: relative; }
+.ribbon { position: relative; width: min(100%, 330px); margin-top: -6px; filter: drop-shadow(0 3px 6px rgba(11,31,58,.18)); }
+.ribbon img { display: block; width: 100%; height: auto; }
+.ribbon span { position: absolute; left: 22%; right: 22%; top: 50%; transform: translateY(-38%); font-weight: 900; font-size: clamp(15px, 5.2vw, 21px); line-height: 1.1; color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,.45), 0 0 6px rgba(0,0,0,.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .2px; }
+.ribbon.dark span { color: var(--navy); text-shadow: 0 1px 0 rgba(255,255,255,.6); }
+.profile-head .lvl { margin-top: 2px; }
+.cz-ribbon { display: block; width: 100%; }
+.cz-ribbon img { display: block; width: 100%; height: auto; }
+.avatar-img.is-badge, .cz-img[src*="badges/"] { border-radius: 0; object-fit: contain; }
+.avatar .avatar-img.is-badge { width: 92%; height: 92%; margin: 4%; }
