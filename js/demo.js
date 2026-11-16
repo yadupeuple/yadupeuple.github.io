@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=149';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=149';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=150';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=150';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -66,6 +66,11 @@ export function createDemoApi() {
     async sendMagicLink() { await wait(); },
 
     async listEstablishments() { await wait(); return DEMO_ESTABLISHMENTS.map((e) => ({ ...e })); },
+    async statusesInBox(s, w, n, e) {
+      await wait();
+      return DEMO_ESTABLISHMENTS.filter((x) => x.lat >= s && x.lat <= n && x.lng >= w && x.lng <= e)
+        .map((x) => withStatus(x)).map((x) => ({ id: x.id, status_salle: x.status_salle, status_drive: x.status_drive }));
+    },
     async nearby(lat, lng, radius = 5000, limit = 50) {
       await wait();
       return DEMO_ESTABLISHMENTS.map((e) => withStatus(e, lat, lng))

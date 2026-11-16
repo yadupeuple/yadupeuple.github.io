@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=149';
+import { api, DEMO } from './api.js?v=150';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=149';
+} from './config.js?v=150';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=149';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=149';
-import { BRAND_PATHS } from './brands.js?v=149';
+} from './levels.js?v=150';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=150';
+import { BRAND_PATHS } from './brands.js?v=150';
 
 // ---------------------------------------------------------------------------
 // État
@@ -399,46 +399,57 @@ async function loadEstablishments() {
   renderCards();
 }
 
-// Les statuts arrivent par la fonction « restos proches » (rayon max 5 km).
-// On ne demande que les restos de la zone affichée (pas toute la France) ; au-delà d'un zoom large, rien.
-const MAX_STATUS_CALLS = 25;
-function coverPoints() {
-  if (map.getZoom() < 9) return [];
-  const b = map.getBounds();
-  const left = [...state.establishments.values()].filter((e) => b.contains([e.lng, e.lat]));
-  if (state.selectedId && state.establishments.has(state.selectedId)) left.unshift(state.establishments.get(state.selectedId));
-  const points = [];
-  while (left.length && points.length < MAX_STATUS_CALLS) {
-    const c = left[0];
-    points.push(c);
-    for (let i = left.length - 1; i >= 0; i--) {
-      if (distanceM(c.lat, c.lng, left[i].lat, left[i].lng) <= 4800) left.splice(i, 1);
-    }
-  }
-  return points;
+// Statuts : un seul appel par zone (get_statuses_in_box, 2° × 3° max, la base décide).
+// On charge la zone affichée élargie, et on précharge autour de l'utilisateur dès l'ouverture :
+// en dézoomant, les pastilles ont déjà leur couleur (plus de gris en attendant).
+const BOX_MAX = { lat: 2, lng: 3 };
+const loadedBoxes = []; // { s, w, n, e, t }
+function viewBox() {
+  if (map.getZoom() < 7) return null;
+  const b = map.getBounds(); const c = map.getCenter();
+  const dl = Math.min((b.getNorth() - b.getSouth()) / 2 * 1.4, BOX_MAX.lat / 2);
+  const dg = Math.min((b.getEast() - b.getWest()) / 2 * 1.4, BOX_MAX.lng / 2);
+  return { s: c.lat - dl, n: c.lat + dl, w: c.lng - dg, e: c.lng + dg };
+}
+function aroundBox(lat, lng) { return { s: lat - 0.6, n: lat + 0.6, w: lng - 0.9, e: lng + 0.9 }; }
+function boxCovered(x) {
+  const now = Date.now();
+  return loadedBoxes.some((b) => now - b.t < REFRESH_MS && b.s <= x.s && b.n >= x.n && b.w <= x.w && b.e >= x.e);
 }
 let statusTimer;
-map.on('moveend', () => { clearTimeout(statusTimer); statusTimer = setTimeout(() => refreshStatuses(), 700); });
+map.on('moveend', () => { clearTimeout(statusTimer); statusTimer = setTimeout(() => refreshStatuses(), 400); });
 
-let refreshing = false;
-async function refreshStatuses() {
-  if (refreshing || !state.establishments.size) return;
-  refreshing = true;
+const inflight = new Set();
+async function loadBox(x) {
+  const key = [x.s, x.w, x.n, x.e].map((v) => v.toFixed(2)).join(',');
+  if (inflight.has(key)) return;
+  inflight.add(key);
   try {
-    const [results] = await Promise.all([Promise.allSettled(coverPoints().map((p) => api.nearby(p.lat, p.lng, 5000, 50))), loadPartners()]);
-    for (const r of results) {
-      if (r.status !== 'fulfilled' || !r.value) continue;
-      for (const row of r.value) {
-        const e = state.establishments.get(row.id);
-        if (e) { e.status_salle = row.status_salle; e.status_drive = row.status_drive; }
-      }
+    const rows = await api.statusesInBox(x.s, x.w, x.n, x.e).catch(() => null);
+    if (!rows) return;
+    for (const row of rows) {
+      const e = state.establishments.get(row.id);
+      if (e) { e.status_salle = row.status_salle; e.status_drive = row.status_drive; }
     }
+    loadedBoxes.push({ ...x, t: Date.now() });
+    while (loadedBoxes.length > 12) loadedBoxes.shift();
     renderMarkers();
     renderCards();
     if (state.sheetView === 'detail' && state.selectedId) renderDetail(state.selectedId);
   } finally {
-    refreshing = false;
+    inflight.delete(key);
   }
+}
+// Précharge autour de la position (ou du dernier endroit regardé) avant même la plongée d'entrée.
+function preloadAround(lat, lng) { const x = aroundBox(lat, lng); if (!boxCovered(x)) loadBox(x); }
+async function refreshStatuses(force = false) {
+  if (!state.establishments.size) return;
+  const x = viewBox();
+  const sel = state.selectedId && state.establishments.get(state.selectedId);
+  const jobs = [loadPartners()];
+  if (x && (force || !boxCovered(x))) jobs.push(loadBox(x));
+  else if (!x && sel) jobs.push(loadBox(aroundBox(sel.lat, sel.lng)));
+  await Promise.all(jobs);
 }
 
 // ---------------------------------------------------------------------------
@@ -1491,7 +1502,7 @@ async function renderAccount(tab = 'profil') {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=149" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=150" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1536,8 +1547,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=149" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=149) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=150" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=150) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1545,7 +1556,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=149" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=150" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1557,7 +1568,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=149" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=150" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1633,7 +1644,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=149" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=150" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1997,7 +2008,9 @@ let firstFix = true;
 function watchGps() {
   if (!navigator.geolocation) return;
   navigator.geolocation.watchPosition((p) => {
+    const first = !state.gps;
     state.gps = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
+    if (first) preloadAround(state.gps.lat, state.gps.lng);
     renderMe();
     if (firstFix && state.sheetView === 'detail' && state.selectedId) renderDetail(state.selectedId);
     if (firstFix && !testPosition() && introDone) {
@@ -2095,6 +2108,7 @@ async function start() {
   $('#offline').hidden = true;
   renderMe();
   watchGps();
+  { const p = myPosition() || savedView(); if (p) preloadAround(p.lat, p.lng); }
   const deep = new URLSearchParams(location.search).get('r');
   if (deep && state.establishments.has(deep)) {
     // Lien partagé vers un resto : on ouvre directement sa fiche.
@@ -2108,7 +2122,7 @@ async function start() {
     introFly();
   }
   await refreshStatuses();
-  setInterval(() => { if (!document.hidden) refreshStatuses(); }, REFRESH_MS);
+  setInterval(() => { if (!document.hidden) refreshStatuses(true); }, REFRESH_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStatuses(); });
 }
 

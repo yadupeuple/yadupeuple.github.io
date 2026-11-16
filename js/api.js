@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=149';
-import { createDemoApi } from './demo.js?v=149';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=150';
+import { createDemoApi } from './demo.js?v=150';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -84,6 +84,7 @@ function createSupabaseApi() {
       }
       return all;
     },
+    statusesInBox: (s, w, n, e) => rpc('get_statuses_in_box', { p_south: s, p_west: w, p_north: n, p_east: e }),
     nearby: (lat, lng, radius = 5000, limit = 50) =>
       rpc('get_nearby_establishments', { p_lat: lat, p_lng: lng, p_radius_m: radius, p_limit: limit }),
     search: (q, lat = null, lng = null) =>

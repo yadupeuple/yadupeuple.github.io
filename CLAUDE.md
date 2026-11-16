@@ -39,6 +39,7 @@ Fonctions appelées par l'appli (RPC) :
 | Fonction | Sans compte | Rôle |
 |---|---|---|
 | get_nearby_establishments(p_lat, p_lng, p_radius_m ≤ 5000, p_limit ≤ 50) | oui | restos proches + statuts |
+| get_statuses_in_box(p_south, p_west, p_north, p_east) | oui | statuts de tous les restos d'une zone (2° × 3° max, 1000 max ; v150) |
 | search_establishments(p_query ≥ 2 car., p_lat, p_lng, p_limit) | oui | recherche + statuts |
 | get_service_status(p_establishment, p_service) | oui | statut d'un service |
 | get_history(p_establishment, p_service, p_limit ≤ 5) | oui | 5 derniers signalements anonymes de moins de 12 h (app_settings history_max_hours) |
@@ -126,7 +127,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   KFC et Subway ajoutés le 15/11 depuis OpenStreetMap (supabase/2026-11-15_kfc_subway.sql : +368 KFC, +307 Subway, source 'osm',
   villes/rues via geo.api.gouv.fr et api-adresse.data.gouv.fr ; KFC sans info = Drive sauf centre-ville).
 - Carte (v117) : pastilles créées seulement pour les restos à l'écran, regroupement par grille + fusion des groupes voisins ;
-  statuts demandés seulement pour la zone affichée (zoom ≥ 9, 25 appels max) ; chargement par pages de 1000 (limite Supabase).
+  statuts : v150, un seul appel get_statuses_in_box pour la zone affichée élargie (zoom ≥ 7) + préchargement ±0,6° lat / ±0,9° lng autour de la position (ou du dernier endroit regardé) dès l'ouverture, cache 60 s (supabase/2026-11-16_statuts_zone.sql) ; chargement par pages de 1000 (limite Supabase).
   Plus de zones : sans GPS, la carte s'ouvre sur le dernier endroit regardé (localStorage ydp_view), sinon France entière
   + bulle « Tous les fast-foods de France sont là. 🔍 Ma ville » (ouvre la recherche, qui cherche aussi par ville).
   Bandeau « Pas de connexion » + Réessayer.
