@@ -609,7 +609,10 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 @keyframes barwait { from { opacity: .45; } to { opacity: 1; } }
 /* Profil : avatar au centre, ruban qui porte le pseudo */
 .profile-head { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; padding-top: 4px; }
-.profile-head .avatar { width: 84px; height: 84px; background: var(--navy); box-shadow: 0 0 0 3px #fff, 0 4px 14px rgba(11,31,58,.25); position: relative; z-index: 2; }
+.profile-head .avatar { width: 108px; height: 108px; background: transparent; box-shadow: none; position: relative; z-index: 2; }
+.profile-head .avatar-img { filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
+.profile-head .avatar .avatar-img.is-badge { width: 100%; height: 100%; margin: 0; }
+.profile-head .avatar-edit { right: 2px; bottom: 2px; }
 .ribbon { position: relative; z-index: 1; width: min(100%, 330px); margin-top: 10px; filter: drop-shadow(0 3px 6px rgba(11,31,58,.18)); }
 .ribbon img { display: block; width: 100%; height: auto; }
 .ribbon span { position: absolute; left: 21%; right: 21%; top: var(--ty, 46%); transform: translateY(-50%); text-align: center; font-weight: 900; font-size: clamp(15px, 5.2vw, 21px); line-height: 1.15; color: #fff; letter-spacing: .3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 3px 2px;
