@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=140';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=140';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=141';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=141';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -42,7 +42,7 @@ function withStatus(e, lat, lng) {
 export function createDemoApi() {
   let user = null;
   const listeners = [];
-  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'ruban_bleu' };
+  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'ruban_ciel' };
   const favorites = new Set(['1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42']);
   const demoPartner = { id: '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42', founder: true, tagline: 'Restaurant de démonstration', link_url: 'https://exemple.fr', link_label: 'Voir le menu', phone: '03 82 00 00 00',
     offer: { title: '-10 % sur le menu', details: 'Sur présentation de l\'appli en caisse.', only_when_calm: true, ends_at: new Date(Date.now() + 5 * 3600e3).toISOString() } };
@@ -119,16 +119,25 @@ export function createDemoApi() {
         ['avatar', 'diamant', 'icons/avatars/diamant.webp', 80],
         ['avatar', 'couronne', 'icons/avatars/couronne.webp', 90],
         ['avatar', 'fusee', 'icons/avatars/fusee.webp', 100],
-        ['banner', 'ruban_bleu', 'icons/banners/ruban_bleu.webp', 1],
-        ['banner', 'ruban_vert', 'icons/banners/ruban_vert.webp', 1],
-        ['banner', 'ruban_rose', 'icons/banners/ruban_rose.webp', 5],
-        ['banner', 'ruban_outils', 'icons/banners/ruban_outils.webp', 10],
-        ['banner', 'ruban_argent', 'icons/banners/ruban_argent.webp', 20],
-        ['banner', 'ruban_or', 'icons/banners/ruban_or.webp', 30],
-        ['banner', 'ruban_rouge', 'icons/banners/ruban_rouge.webp', 40],
-        ['banner', 'ruban_trophee', 'icons/banners/ruban_trophee.webp', 50],
-        ['banner', 'ruban_obsidienne', 'icons/banners/ruban_obsidienne.webp', 70],
-        ['banner', 'ruban_royal', 'icons/banners/ruban_royal.webp', 100],
+        ['banner', 'ruban_ciel', 'icons/banners/ruban_ciel.webp', 1],
+        ['banner', 'ruban_bonbon', 'icons/banners/ruban_bonbon.webp', 1],
+        ['banner', 'ruban_turquoise', 'icons/banners/ruban_turquoise.webp', 1],
+        ['banner', 'ruban_orange', 'icons/banners/ruban_orange.webp', 1],
+        ['banner', 'ruban_violet', 'icons/banners/ruban_violet.webp', 3],
+        ['banner', 'ruban_laurier', 'icons/banners/ruban_laurier.webp', 5],
+        ['banner', 'ruban_nuit', 'icons/banners/ruban_nuit.webp', 8],
+        ['banner', 'ruban_vache', 'icons/banners/ruban_vache.webp', 10],
+        ['banner', 'ruban_damier', 'icons/banners/ruban_damier.webp', 12],
+        ['banner', 'ruban_flammes', 'icons/banners/ruban_flammes.webp', 15],
+        ['banner', 'ruban_fleurs', 'icons/banners/ruban_fleurs.webp', 20],
+        ['banner', 'ruban_coeur', 'icons/banners/ruban_coeur.webp', 25],
+        ['banner', 'ruban_flocon', 'icons/banners/ruban_flocon.webp', 30],
+        ['banner', 'ruban_engrenage', 'icons/banners/ruban_engrenage.webp', 40],
+        ['banner', 'ruban_etoile_or', 'icons/banners/ruban_etoile_or.webp', 50],
+        ['banner', 'ruban_diamant', 'icons/banners/ruban_diamant.webp', 60],
+        ['banner', 'ruban_flamme_violet', 'icons/banners/ruban_flamme_violet.webp', 70],
+        ['banner', 'ruban_etoile_violet', 'icons/banners/ruban_etoile_violet.webp', 85],
+        ['banner', 'ruban_couronne', 'icons/banners/ruban_couronne.webp', 100],
         // badge testeur caché jusqu'au lancement (beta_badge_visible)
         //        ['avatar', 'badge_testeur', 'icons/badges/testeur.webp', 1, 'testeur'],
         ['avatar', 'badge_v1', 'icons/badges/v1.webp', 1, 'v1'],

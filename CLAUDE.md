@@ -86,8 +86,12 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.
   Avatars (30) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
   et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
-  Bannières = 10 rubans (15/11/2026, planche ChatGPT, outils/rubans_sheet.py ; ombre grise et liseré retirés (v125 : vrai fond blanc + épluchage des gris + trous gris non bouchés) ; pseudo placé par ruban et contour de sa couleur (custom.RIB dans app.js) → icons/banners/ruban_*.webp) qui portent le pseudo sous l'avatar ;
-  niveaux 1 (bleu, vert), 5, 10, 20, 30, 40, 50, 70, 100 ; anciennes bannières désactivées. Badges gagnés utilisables en image de profil
+  Bannières = 19 rubans (16/11/2026, v141, planches ChatGPT d'Alexis outils/src/rubans_sheet2.png + rubans_sheet3.png, découpe
+  outils/rubans_sheet2.py, sans ornement au milieu de la bande ; supabase/2026-11-16_nouveaux_rubans.sql) qui portent le pseudo sous l'avatar
+  (hauteur + contour par ruban : custom.RIB dans app.js). Niveaux : 1 (ciel, bonbon, turquoise, orange), 3 violet, 5 laurier, 8 nuit,
+  10 vache, 12 damier, 15 flammes, 20 fleurs, 25 cœur, 30 flocon, 40 engrenage, 50 étoile or, 60 diamant, 70 flamme violette,
+  85 étoile violette, 100 couronne rouge. Les 10 rubans du 15/11 et les anciennes bannières sont désactivés (fichiers gardés).
+  Badges gagnés utilisables en image de profil
   (customizations.requires_badge, contrôlé par set_customization ; supabase/2026-11-15_rubans_avatars_badges.sql).
 - Points des badges (ajoutés aux points normaux) : +1 par badge, +10 quand une catégorie (badges actifs) est complète
   (trigger sur user_badges, table badge_family_bonus, réglages badge_points / badge_family_bonus).
