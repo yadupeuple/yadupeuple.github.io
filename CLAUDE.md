@@ -59,7 +59,7 @@ Fonctions appelées par l'appli (RPC) :
 | submit_feedback(p_message 3-2000 car., p_context) | oui | avis / bug (Réglages > Donner mon avis) ; 10/jour par compte |
 
 Statut renvoyé : `{state, level, uncertain, wait, reliability, last_report_minutes, users_total, ...}`
-- state : `recent` (≤ 30 min) · `a_confirmer` (30-60 min) · `estimation` (habitudes, ≥ 3 jours et 3 personnes)
+- state : `ferme` (hors horaires d'ouverture, is_open_now = false, v131 : pas de niveau, ni suggestion « plus calme ») · `recent` (≤ 30 min) · `a_confirmer` (30-60 min) · `estimation` (habitudes, ≥ 3 jours et 3 personnes)
   · `theorique` (courbe horaire type, fonction theory_level) · `aucune_info`
 - level : `calme` · `modere` · `frequente` · `tres_frequente`
 - uncertain = true → afficher « Fréquentation incertaine »

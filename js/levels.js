@@ -29,6 +29,7 @@ export function levelInfo(level) {
 // Statut → { level, info, line, isLive }
 export function describeStatus(st) {
   if (!st) return { level: null, info: NO_INFO, line: 'Aucune info pour le moment', isLive: false };
+  if (st.state === 'ferme') return { level: null, info: { ...NO_INFO, label: 'Fermé' }, line: 'Fermé en ce moment', isLive: false, closed: true };
   if (st.uncertain) {
     return {
       level: null,
