@@ -124,6 +124,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Plus de zones : sans GPS, la carte s'ouvre sur le dernier endroit regardé (localStorage ydp_view), sinon France entière
   + bulle « Tous les fast-foods de France sont là. 🔍 Ma ville » (ouvre la recherche, qui cherche aussi par ville).
   Bandeau « Pas de connexion » + Réessayer.
+  v133 : au chargement, fond bleu (html.booting) tant qu'on ne sait pas s'il faut l'accueil ou la carte ; pastilles masquées
+  jusqu'à la plongée d'entrée (apparaissent pendant le zoom, dès 7,5) ; vue large = seulement les restos à ≤ 100 km du centre (MAX_RADIUS_KM).
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
   Relevé en masse (15/11/2026, tous les restos) : outils/gmaps_batch.js dans le Chrome d'Alexis → import.gmaps_raw (trigger → popular_times),
   supabase/2026-11-15_courbes_google_france.sql. Terminé le 16/11 : 3 621 restos sur 4 248 ont une vraie courbe ; 87 marqués « fermé » par Google,
