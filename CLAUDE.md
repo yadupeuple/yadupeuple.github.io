@@ -134,7 +134,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   villes/rues via geo.api.gouv.fr et api-adresse.data.gouv.fr ; KFC sans info = Drive sauf centre-ville).
 - Carte (v117) : pastilles créées seulement pour les restos à l'écran, regroupement par grille + fusion des groupes voisins ;
   statuts : v150, un seul appel get_statuses_in_box pour la zone affichée élargie (zoom ≥ 7) + préchargement ±0,6° lat / ±0,9° lng autour de la position (ou du dernier endroit regardé) dès l'ouverture, cache 60 s (supabase/2026-11-16_statuts_zone.sql) ; chargement par pages de 1000 (limite Supabase).
-  Plus de zones : sans GPS, la carte s'ouvre sur le dernier endroit regardé (localStorage ydp_view), sinon France entière
+  Plus de zones : à l'ouverture, toujours sur la position si la localisation est autorisée (v154 : position récente du téléphone + attente jusqu'à 6 s) ;
+  sans GPS, la carte s'ouvre sur le dernier endroit regardé (localStorage ydp_view), sinon France entière
   + bulle « Tous les fast-foods de France sont là. 🔍 Ma ville » (ouvre la recherche, qui cherche aussi par ville).
   Bandeau « Pas de connexion » + Réessayer.
   v133 : au chargement, fond bleu (html.booting) tant qu'on ne sait pas s'il faut l'accueil ou la carte ; pastilles masquées
