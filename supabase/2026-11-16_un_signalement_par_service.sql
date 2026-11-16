@@ -37,3 +37,7 @@ $n$  select max(r.created_at) into prev_at
   if position('wait_min' in d) = 0 then raise exception 'remplacement non appliqué'; end if;
   execute d;
 end $$;
+
+-- 16/11/2026 16:20, accord d'Alexis : suppression des 2 signalements en double (0 point)
+-- de Maylixela au McDonald's Fameck (salle 16:10, Drive 16:13).
+delete from public.reports where id in ('fa3b2883-2bc0-4a69-8b22-11246b123af4','42a4aecb-1c54-45ab-b072-25e68e9c7044');
