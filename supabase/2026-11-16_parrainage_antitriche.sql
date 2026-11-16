@@ -189,6 +189,7 @@ begin
   end if;
   return new;
 end $$;
+revoke all on function public.block_disposable_email() from public, anon, authenticated;
 drop trigger if exists block_disposable_email on auth.users;
 create trigger block_disposable_email before insert on auth.users
   for each row execute function public.block_disposable_email();

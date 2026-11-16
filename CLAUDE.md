@@ -88,8 +88,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Anti-triche (16/11/2026, v153, supabase/2026-11-16_parrainage_antitriche.sql) : plus de plafond (referral_max_30d = 0 = illimité) ;
   identifiant anonyme du téléphone (localStorage ydp_device → register_device → table user_devices) : filleul sur le même téléphone que son
   parrain ou qu'un autre filleul du même parrain → aucun point, profiles.referral_blocked = 'same_device' ; e-mails jetables refusés
-  (table blocked_email_domains, email_allowed() vérifié par l'appli avant l'inscription ; trigger block_disposable_email sur auth.users
-  EN ATTENTE : sa création demande une confirmation dans Supabase).
+  (table blocked_email_domains, email_allowed() vérifié par l'appli avant l'inscription ; trigger block_disposable_email sur auth.users,
+  actif depuis le 16/11 au soir).
 - Niveaux 1 à 100 : points ≈ 12 × (niveau − 1)^1,46 (niv. 2 = 10, 10 = 300, 50 = 3 575, 100 = 10 000) ; titres tous les 10 niveaux.
   Avatars (30) : images choisies par Alexis (planches ChatGPT du 12/11/2026), découpées telles quelles
   et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
