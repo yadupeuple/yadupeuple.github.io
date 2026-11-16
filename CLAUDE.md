@@ -43,7 +43,7 @@ Fonctions appelées par l'appli (RPC) :
 | search_establishments(p_query ≥ 2 car., p_lat, p_lng, p_limit) | oui | recherche + statuts |
 | get_service_status(p_establishment, p_service) | oui | statut d'un service |
 | get_history(p_establishment, p_service, p_limit ≤ 5) | oui | 5 derniers signalements anonymes de moins de 12 h (app_settings history_max_hours) |
-| get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 10 + moi, avec avatar) |
+| get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 100 = app_settings ranking_top + moi, avec avatar ; ligne « ma place » en bas, v151) |
 | get_public_profile(p_pseudo) | oui | profil public d'un joueur : jamais d'e-mail, de contact ni de lieu |
 | calmer_nearby_info(p_id) | oui | {id, name, distance_m, label} : resto plus calme **le plus proche** (≤ 5 km, v125), cliquable sur la fiche, avec « ‹ Retour à … » ; ancienne calmer_nearby (texte) gardée |
 | submit_report(p_establishment, p_service, p_level, p_wait, p_lat, p_lng, p_accuracy_m) | non | envoyer un signalement |

@@ -423,6 +423,12 @@ html.booting body > *:not(#welcome) { visibility: hidden; }
 /* Profil : ancienneté sur sa ligne ; classement avec images ; profil public */
 .profile-card .since { color: #CBD5E1; font-size: 13px; margin-top: 2px; }
 .lb-row { cursor: pointer; }
+.lb-me { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 14px; border-radius: 16px; background: var(--navy); color: #fff; }
+.lb-me .t { font-weight: 800; }
+.lb-me .s { font-size: 12.5px; opacity: .8; }
+.lb-me .lb-av { flex: none; }
+.lb-me .grow { flex: 1; min-width: 0; }
+.lb-me-rank { font-size: 22px; font-weight: 900; color: #5EEAD4; white-space: nowrap; }
 .lb-av { width: 38px; height: 38px; flex: none; border-radius: 50%; overflow: hidden; background: #E6F7F5; }
 .lb-av .avatar-img { width: 100%; height: 100%; }
 .pub-badges { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -462,7 +468,9 @@ input, textarea, select, [contenteditable="true"] { caret-color: auto; }
 /* Profil plein écran : couvre aussi la zone qui apparaît quand la barre du navigateur se replie ;
    bas de l'écran (barre du téléphone) en bleu nuit comme le haut */
 .sheet.full { bottom: auto; height: 100vh; height: 100lvh; }
-.sheet.full .sheet-body { padding-bottom: calc(40px + var(--safe-bottom)); }
+.sheet.full .sheet-body { padding-bottom: calc(40px + 100lvh - 100svh + var(--safe-bottom)); }
+/* plein écran (100lvh) : la barre d'adresse du navigateur cache le bas → on remonte la flèche ↓ d'autant */
+.sheet.full .scroll-hint.down { bottom: calc(14px + 100lvh - 100svh + var(--safe-bottom)); }
 html.sheet-full, html.sheet-full body { background: #0B1F3A; }
 html.sheet-full #map, html.sheet-full .cards, html.sheet-full .backdrop { visibility: hidden; }
 #btn-settings { font-size: 18px; }
