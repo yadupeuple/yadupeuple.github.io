@@ -73,7 +73,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Gris = aucune info.
 - Drive : nombre de voitures (0-2, 3-5, 6-8, 9+), pas de minutes.
 - Carte consultable sans compte ; compte + pseudonyme pour signaler (donner envie, ne pas obliger).
-- Signalement à moins de 100 m ; points 10 puis 5 puis 0 dans la même heure et le même resto
+- Signalement à moins de 100 m ; points 10 puis 5 puis 1 (mise à jour, app_settings points_update, 16/11/2026 ; avant 0) dans la même heure et le même resto
   (salle + Drive ensemble) ; un même service d'un même resto : 1 signalement toutes les 30 min par compte
   (app_settings min_gap_seconds = 1800, message « Tu pourras le refaire dans X min », 16/11/2026) ; tout est contrôlé par submit_report.
 - Restos sans Drive (has_drive = false) : rien de ce qui touche au Drive ne s'affiche.
