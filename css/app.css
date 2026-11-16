@@ -660,3 +660,18 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 
 .beta-note { display: flex; gap: 10px; align-items: flex-start; background: #EEF2FF; border: 1.5px solid #A5B4FC; color: #1E3A8A; border-radius: 14px; padding: 10px 12px; margin-bottom: 10px; font-size: 13.5px; line-height: 1.35; }
 .beta-note > span { font-size: 20px; line-height: 1; }
+
+/* Podium du mois dernier (Classement > Ce mois-ci) */
+.podium { background: linear-gradient(180deg, #0B1F3A, #16345F); border-radius: 18px; padding: 12px 10px 0; margin-bottom: 12px; color: #fff; overflow: hidden; }
+.podium-t { font-weight: 900; text-align: center; margin-bottom: 8px; }
+.podium-row { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: end; gap: 6px; }
+.pod { border: 0; background: none; color: #fff; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 0; cursor: pointer; min-width: 0; }
+.pod-medal { font-size: 20px; line-height: 1; }
+.pod .pod-av { width: 48px; height: 48px; }
+.pod-1 .pod-av { width: 62px; height: 62px; }
+.pod-name { font-weight: 800; font-size: 13px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pod-pts { font-size: 11.5px; opacity: .8; }
+.pod-step { width: 100%; margin-top: 4px; border-radius: 10px 10px 0 0; background: rgba(255,255,255,.14); font-weight: 900; font-size: 20px; display: grid; place-items: center; }
+.pod-1 .pod-step { height: 54px; background: #F5A524; color: #0B1F3A; }
+.pod-2 .pod-step { height: 40px; background: #CBD5E1; color: #0B1F3A; }
+.pod-3 .pod-step { height: 30px; background: #D97706; color: #fff; }

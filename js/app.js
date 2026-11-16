@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=151';
+import { api, DEMO } from './api.js?v=152';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=151';
+} from './config.js?v=152';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=151';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=151';
-import { BRAND_PATHS } from './brands.js?v=151';
+} from './levels.js?v=152';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=152';
+import { BRAND_PATHS } from './brands.js?v=152';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1474,7 +1474,7 @@ async function renderAccount(tab = 'profil') {
   openSheet('account', `
     <div class="sheet-head">
       <div class="grow"><h2>${tab === 'reglages' ? 'Réglages' : 'Mon compte'}</h2></div>
-      <button class="round-btn" id="btn-custom" aria-label="Personnaliser mon image et mon ruban">✏️</button>
+      <button class="round-btn" id="btn-custom" aria-label="Personnaliser mon image et mon ruban">🎨</button>
       <button class="round-btn ${tab === 'reglages' ? 'on' : ''}" id="btn-settings" aria-label="Réglages">⚙️</button>
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
@@ -1502,7 +1502,7 @@ async function renderAccount(tab = 'profil') {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=151" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=152" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1547,8 +1547,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=151" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=151) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=152" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=152) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1556,7 +1556,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=151" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=152" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1568,7 +1568,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=151" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=152" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1644,7 +1644,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=151" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=152" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1697,8 +1697,24 @@ async function renderLeaderboard(body, city = null, scope = 'month') {
     <div class="beta-slot"></div>
     <div id="lb-prize"><div class="prize prize-soon"><span class="prize-ico">🎁</span><div><div class="prize-t">Des récompenses arrivent bientôt</div>
       <div class="prize-s">Les meilleurs du classement gagneront des cadeaux offerts par nos restos partenaires. Tes points comptent déjà : continue à signaler !</div></div></div></div>
+    <div id="lb-podium"></div>
     <div id="lb-list"><div class="spinner"></div></div>`;
   fillBeta(body);
+  // Podium du mois dernier (rien s'il n'y a eu personne).
+  if (scope === 'month') api.lastMonthPodium().then((rows) => {
+    const box = document.querySelector('#lb-podium');
+    if (!box || !rows?.length) return;
+    const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    const m = MOIS[Number(String(rows[0].mois || '').slice(5, 7)) - 1] || 'le mois dernier';
+    const order = [rows[1], rows[0], rows[2]].filter(Boolean);
+    box.innerHTML = `<div class="podium"><div class="podium-t">🏆 Podium de ${m}</div><div class="podium-row">${order.map((r) => `
+      <button type="button" class="pod pod-${r.rang}" data-pseudo="${esc(r.pseudo)}">
+        <span class="pod-medal">${['🥇', '🥈', '🥉'][r.rang - 1]}</span>
+        <span class="lb-av pod-av">${custom.avatar(r.avatar)}</span>
+        <span class="pod-name">${esc(r.pseudo)}</span><span class="pod-pts">${r.points} pts</span>
+        <span class="pod-step">${r.rang}</span></button>`).join('')}</div></div>`;
+    box.querySelectorAll('.pod').forEach((b) => b.onclick = () => openPublicProfile(b.dataset.pseudo, () => renderAccount('classement')));
+  }).catch(() => {});
   // Lot du mois offert par un partenaire (rien ne s'affiche s'il n'y en a pas).
   if (scope === 'month') api.monthlyPrize().then((pz) => {
     const box = document.querySelector('#lb-prize');
