@@ -145,7 +145,8 @@ Phase de test ouverte : badge « Testeur fondateur » (code testeur, famille Sp�
 tant que app_settings.beta_open = 1 ; bouton « Donner mon avis / signaler un bug » dans Réglages (table feedback).
 **Badge caché jusqu'au lancement** (15/11, v124, supabase/2026-11-15_badge_testeur_cache.sql) : enregistré dans user_badges mais invisible
 (progression, profils), sans points, image de profil désactivée, tant que app_settings.beta_badge_visible = 0 (fonction badge_hidden).
-Recrutement de 20 à 50 testeurs (surtout Moselle) via TikTok et l'entourage, durée ~3 semaines.
+Badge « Régulier » actif depuis le 16/11 (kind 'weeks' : 4 semaines d'affilée avec ≥ 1 signalement validé, report_week_streak ;
+supabase/2026-11-16_badge_regulier.sql). Recrutement de 50 testeurs, priorité Thionville-Metz puis Mulhouse via TikTok et l'entourage, durée ~3 semaines.
 
 ## Charte graphique
 Bleu nuit `#0B1F3A`, turquoise `#14B8A6`, blanc, touche jaune-orangé `#F5A524`.

@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=134';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=134';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=135';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=135';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -224,6 +224,7 @@ export function createDemoApi() {
         ['tour_zone10', 'Variété', 'Routard du burger', 'Signaler dans 10 villes différentes', false, 1, 10],
         ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 3 villes différentes', false, 1, 3],
         ['fiable', 'Fiabilité', 'Fiable', 'Avoir 10 signalements confirmés', null, null, null],
+        ['regulier', 'Moments', 'Régulier', 'Faire au moins 1 signalement par semaine pendant 4 semaines', false, 1, 4],
         ['coup_de_feu', 'Moments', 'Coup de feu', 'Signaler pendant un pic (12h-13h30 ou 19h-20h30)', null, null, null],
       ].map(([code, family, name, description, earned, cur, target]) => ({
         code, family, name, description, is_active: earned !== null, earned: !!earned, earned_at: null,
