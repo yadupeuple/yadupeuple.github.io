@@ -119,6 +119,7 @@ input, select, textarea { font: inherit; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
 .sheet-head { display: flex; align-items: flex-start; gap: 10px; margin: 6px 0 12px; }
+.sheet-head:has(> .grow > h2:only-child) { align-items: center; }
 .sheet-head h2 { margin: 0; font-size: 21px; line-height: 1.2; letter-spacing: -.01em; }
 .sheet-head .sub { color: var(--muted); font-size: 13.5px; margin-top: 3px; }
 .sheet-head .grow { flex: 1; min-width: 0; }
