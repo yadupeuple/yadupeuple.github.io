@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=152';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=152';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=153';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=153';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -256,6 +256,7 @@ export function createDemoApi() {
     // Lot du mois fictif en démo.
     async submitFeedback(m) { await wait(); return (m || '').trim().length < 3 ? { ok: false, message: 'Écris quelques mots 🙂' } : { ok: true, message: 'Merci, ton avis est bien arrivé ! (démo)' }; },
     async appFlags() { return { beta_open: true }; },
+    async registerDevice() {},
     async lastMonthPodium() { await wait(50); return [
       { rang: 1, pseudo: 'BurgerHunter', points: 412, avatar: 'dragon', mois: '2026-10' },
       { rang: 2, pseudo: 'DriveMaster', points: 260, avatar: 'voiture', mois: '2026-10' },

@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=152';
-import { createDemoApi } from './demo.js?v=152';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=153';
+import { createDemoApi } from './demo.js?v=153';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -8,6 +8,7 @@ class ApiError extends Error {}
 
 function frenchAuthError(err) {
   const m = (err?.message || '').toLowerCase();
+  if (m.includes('database error saving new user') || m.includes('jetable')) return 'Les adresses e-mail temporaires ne sont pas acceptées. Utilise ton adresse habituelle.';
   if (m.includes('invalid login')) return 'E-mail ou mot de passe incorrect.';
   if (m.includes('already registered') || m.includes('already been registered')) return 'Un compte existe déjà avec cet e-mail.';
   if (m.includes('password') && (m.includes('6') || m.includes('short') || m.includes('weak'))) return 'Mot de passe trop court ou trop simple (6 caractères minimum).';
@@ -47,6 +48,9 @@ function createSupabaseApi() {
       return data.user;
     },
     async signUp(email, password, pseudo) {
+      // Adresses jetables refusées (liste dans la base : blocked_email_domains).
+      const ok = await rpc('email_allowed', { p_email: email }).catch(() => true);
+      if (ok === false) throw new ApiError('Les adresses e-mail temporaires ne sont pas acceptées. Utilise ton adresse habituelle.');
       const { data, error } = await sb.auth.signUp({ email, password, options: { data: { pseudo } } });
       if (error) throw new ApiError(frenchAuthError(error));
       if (!data.session) {
@@ -125,6 +129,7 @@ function createSupabaseApi() {
     partners: () => rpc('get_partners'),
     monthlyPrize: () => rpc('get_monthly_prize'),
     lastMonthPodium: () => rpc('get_last_month_podium'),
+    registerDevice: (d) => rpc('register_device', { p_device: d }).catch(() => {}),
     appFlags: () => rpc('get_app_flags'),
     submitFeedback: (message, context) => rpc('submit_feedback', { p_message: message, p_context: context }),
     partnerTrack: (id, kind) => rpc('partner_track', { p_establishment: id, p_kind: kind }).catch(() => {}),
