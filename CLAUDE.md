@@ -73,8 +73,9 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Gris = aucune info.
 - Drive : nombre de voitures (0-2, 3-5, 6-8, 9+), pas de minutes.
 - Carte consultable sans compte ; compte + pseudonyme pour signaler (donner envie, ne pas obliger).
-- Signalement à moins de 100 m ; points 10 puis 5 puis 1 (mise à jour, app_settings points_update, 16/11/2026 ; avant 0) dans la même heure et le même resto
-  (salle + Drive ensemble) ; un même service d'un même resto : 1 signalement toutes les 30 min par compte
+- Signalement à moins de 100 m ; points par compte, par resto et par jour (heure de Paris, salle + Drive ensemble) : 10 puis 5, puis 1 par mise à jour
+  (points_update) pour 4 mises à jour max (max_update_points_per_day), puis 0 avec capped = true et message « Tu es là depuis un moment… »
+  (16/11/2026, supabase/2026-11-16_points_par_jour.sql) ; un même service d'un même resto : 1 signalement toutes les 30 min par compte
   (app_settings min_gap_seconds = 1800, message « Tu pourras le refaire dans X min », 16/11/2026) ; tout est contrôlé par submit_report.
 - Restos sans Drive (has_drive = false) : rien de ce qui touche au Drive ne s'affiche.
 - Trajet estimé (13/11/2026, calé sur Google Maps) : route = vol d'oiseau × 1,3 en local → × 1,5 au-delà de 100 km ;
