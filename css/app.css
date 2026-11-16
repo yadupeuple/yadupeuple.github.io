@@ -631,3 +631,6 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .emo.emo-pin { transform: translateY(0.04em); }
 .rule-grid { display: grid; grid-template-columns: 24px 1fr; column-gap: 6px; row-gap: 4px; align-items: center; }
 .rule-grid > span:nth-child(odd) { text-align: center; }
+
+.beta-note { display: flex; gap: 10px; align-items: flex-start; background: #EEF2FF; border: 1.5px solid #A5B4FC; color: #1E3A8A; border-radius: 14px; padding: 10px 12px; margin-bottom: 10px; font-size: 13.5px; line-height: 1.35; }
+.beta-note > span { font-size: 20px; line-height: 1; }

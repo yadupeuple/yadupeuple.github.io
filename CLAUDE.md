@@ -145,6 +145,8 @@ bilan automatique du lundi.
 ## Testeurs (15/11/2026, supabase/2026-11-15_testeurs_avis.sql)
 Phase de test ouverte : badge « Testeur fondateur » (code testeur, famille Spécial, kind 'beta') donné au 1er signalement validé
 tant que app_settings.beta_open = 1 ; bouton « Donner mon avis / signaler un bug » dans Réglages (table feedback).
+Bandeau 🧪 « Version test : points et badges remis à zéro au lancement… » dans Profil et Classement tant que beta_open = 1
+(RPC get_app_flags, v140, supabase/2026-11-16_bandeau_version_test.sql) + ligne dans cgu.html (à retirer au lancement).
 **Badge caché jusqu'au lancement** (15/11, v124, supabase/2026-11-15_badge_testeur_cache.sql) : enregistré dans user_badges mais invisible
 (progression, profils), sans points, image de profil désactivée, tant que app_settings.beta_badge_visible = 0 (fonction badge_hidden).
 Badge « Régulier » actif depuis le 16/11 (kind 'weeks' : 4 semaines d'affilée avec ≥ 1 signalement validé, report_week_streak ;

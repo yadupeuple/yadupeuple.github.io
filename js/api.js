@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=139';
-import { createDemoApi } from './demo.js?v=139';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=140';
+import { createDemoApi } from './demo.js?v=140';
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -123,6 +123,7 @@ function createSupabaseApi() {
     // Partenaires : liste publique, compteurs anonymes, espace du restaurateur.
     partners: () => rpc('get_partners'),
     monthlyPrize: () => rpc('get_monthly_prize'),
+    appFlags: () => rpc('get_app_flags'),
     submitFeedback: (message, context) => rpc('submit_feedback', { p_message: message, p_context: context }),
     partnerTrack: (id, kind) => rpc('partner_track', { p_establishment: id, p_kind: kind }).catch(() => {}),
     myRestaurant: () => rpc('get_my_restaurant'),
