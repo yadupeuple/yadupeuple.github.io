@@ -74,7 +74,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Drive : nombre de voitures (0-2, 3-5, 6-8, 9+), pas de minutes.
 - Carte consultable sans compte ; compte + pseudonyme pour signaler (donner envie, ne pas obliger).
 - Signalement à moins de 100 m ; points 10 puis 5 puis 0 dans la même heure et le même resto
-  (salle + Drive ensemble) ; tout est contrôlé par submit_report.
+  (salle + Drive ensemble) ; un même service d'un même resto : 1 signalement toutes les 30 min par compte
+  (app_settings min_gap_seconds = 1800, message « Tu pourras le refaire dans X min », 16/11/2026) ; tout est contrôlé par submit_report.
 - Restos sans Drive (has_drive = false) : rien de ce qui touche au Drive ne s'affiche.
 - Trajet estimé (13/11/2026, calé sur Google Maps) : route = vol d'oiseau × 1,3 en local → × 1,5 au-delà de 100 km ;
   15 premiers km à 46 km/h, le reste à 100 km/h (js/config.js ROUTE, estimateRoute dans levels.js). Durée en « 3 h 07 ».
