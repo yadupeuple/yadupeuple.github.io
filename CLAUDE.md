@@ -126,7 +126,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Bandeau « Pas de connexion » + Réessayer.
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
   Relevé en masse (15/11/2026, tous les restos) : outils/gmaps_batch.js dans le Chrome d'Alexis → import.gmaps_raw (trigger → popular_times),
-  supabase/2026-11-15_courbes_google_france.sql. Fonction temporaire public.import_gmaps_batch à supprimer à la fin (bas du fichier).
+  supabase/2026-11-15_courbes_google_france.sql. Terminé le 16/11 : 3 621 restos sur 4 248 ont une vraie courbe ; 87 marqués « fermé » par Google
+  (import.gmaps_raw.ferme, pas encore traités) ; fonction import_gmaps_batch désactivée (drop à faire).
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
 But : aller au national (voire plus), pas seulement local ; pas forcément en vivre. Leviers : TikTok (compte « reportages » 13k, public français),

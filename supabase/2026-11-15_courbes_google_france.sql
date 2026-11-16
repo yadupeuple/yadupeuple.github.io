@@ -39,3 +39,9 @@ begin
 end $fn$;
 drop trigger if exists gmaps_raw_apply on import.gmaps_raw;
 create trigger gmaps_raw_apply after insert or update on import.gmaps_raw for each row execute function import.gmaps_raw_apply();
+
+-- 16/11/2026 9 h 33 : relevé terminé (4 173 fiches, 3 546 courbes, 611 sans courbe Google, 87 « fermé » signalés par Google,
+-- 16 introuvables). Accès coupé : execute retiré à anon/authenticated + jeton remplacé par une valeur aléatoire
+-- (la suppression de la fonction reste à faire : drop function public.import_gmaps_batch(text, jsonb);).
+revoke execute on function public.import_gmaps_batch(text, jsonb) from anon, authenticated, public;
+update import.secrets set v = encode(gen_random_bytes(32), 'hex') where k = 'gmaps_batch';
