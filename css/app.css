@@ -298,6 +298,7 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 #share-native { display: flex; align-items: center; justify-content: center; gap: 8px; }
 #share-native svg, .round-btn svg { flex: none; }
 #share-native svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+.btn > svg { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
 /* Liste du bas : compteur + défilement libre */
 .cards { scroll-snap-type: x proximity; }
 .cards-count { flex: none; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 64px; padding: 8px; border-radius: var(--radius); background: var(--navy); color: #fff; font-weight: 800; font-size: 22px; box-shadow: var(--shadow); line-height: 1.1; }
