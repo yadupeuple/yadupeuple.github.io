@@ -29,9 +29,10 @@ select v.id::uuid, v.h::jsonb, 'google_maps', now() from (values
 ) v(id, h)
 on conflict (establishment_id) do update set hours = excluded.hours, source = excluded.source, updated_at = now();
 
--- 3 restos confirmés « Définitivement fermé » sur leur fiche Google (déjà repérés le matin, statut lisible cette fois) :
--- suppression approuvée par Alexis (« s'ils sont réellement fermés on les supprime »).
+-- Suppression approuvée par Alexis (16/11, « pour les restaurants sans infos on les supprime aussi ») :
+-- les 3 confirmés « Définitivement fermé » sur Google + les 21 restos toujours sans horaires (aucun horaire sur Google).
 delete from public.establishments e
-where e.id in ('cd9cc8f6-732f-4f08-b00c-ee084b0280a1','3bc68f35-63fb-4988-a24c-8ae058948e69','d6c1a419-7b84-4020-a662-2ece285bc055')
+where (e.id in ('cd9cc8f6-732f-4f08-b00c-ee084b0280a1','3bc68f35-63fb-4988-a24c-8ae058948e69','d6c1a419-7b84-4020-a662-2ece285bc055')
+       or public.is_open_now(e.id) is null)
   and not exists (select 1 from public.reports r where r.establishment_id = e.id)
   and not exists (select 1 from public.favorites f where f.establishment_id = e.id);

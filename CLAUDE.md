@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (4 180 en France métropolitaine depuis le 15/11/2026, dont les 95 relevés à la main en Moselle, Mulhouse, Carcassonne ; lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
+Tables : establishments (4 156 en France métropolitaine depuis le 15/11/2026, dont les 95 relevés à la main en Moselle, Mulhouse, Carcassonne ; lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
 user_badges, levels (100), app_settings, feedback (avis, lecture réservée à Supabase), customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
@@ -127,7 +127,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
   Relevé en masse (15/11/2026, tous les restos) : outils/gmaps_batch.js dans le Chrome d'Alexis → import.gmaps_raw (trigger → popular_times),
   supabase/2026-11-15_courbes_google_france.sql. Terminé le 16/11 : 3 621 restos sur 4 248 ont une vraie courbe ; 87 marqués « fermé » par Google,
-  revérifiés : 68 supprimés le 16/11 (supabase/2026-11-16_restos_fermes.sql, accord d'Alexis), 19 gardés ; fonction import_gmaps_batch désactivée (drop à faire).
+  revérifiés : 68 supprimés le 16/11 (supabase/2026-11-16_restos_fermes.sql, accord d'Alexis), 19 gardés ; 24 sans horaires ou fermés supprimés + 24 horaires ajoutés (supabase/2026-11-16_horaires_manquants.sql) ; tous les restos ont des horaires ; fonction import_gmaps_batch désactivée (drop à faire).
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
 But : aller au national (voire plus), pas seulement local ; pas forcément en vivre. Leviers : TikTok (compte « reportages » 13k, public français),
