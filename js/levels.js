@@ -189,11 +189,20 @@ export function levelFromPercent(v) {
 // isoDow (1 = lundi … 7 = dimanche) -> jour Google (0 = dimanche)
 export const gDay = (isoDow) => isoDow % 7;
 // Heures d'une journée dans l'ordre du graphique : 5 h -> 23 h puis 0 h -> 4 h (fin de soirée)
-export function dayHours(profile, day) {
+// Le resto est-il ouvert pendant l'heure k (5…28 ; ≥ 24 = après minuit) du jour `day` ? null si horaires inconnus.
+export function openDuringHour(oh, day, k) {
+  if (!Array.isArray(oh) || oh.length !== 7) return null;
+  const a = k * 60, b = a + 60;
+  if ((oh[day] || []).some(([x, y]) => x < b && y > a)) return true;
+  // heures 0-4 h de la colonne précédente : plages de la veille qui débordent (déjà couvertes ci-dessus si k ≥ 24)
+  return false;
+}
+export function dayHours(profile, day, oh) {
   const out = [];
   for (let k = 5; k < 29; k++) {
     const h = k % 24;
-    const v = profile[day * 24 + h];
+    let v = profile ? profile[day * 24 + h] : null;
+    if (openDuringHour(oh, day, k) === false) v = null; // fermé : pas de barre
     out.push({ h, k, v: v == null ? null : Number(v) });
   }
   // On coupe les heures sans affluence au début et à la fin
