@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=174';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=174';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=175';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=175';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -165,6 +165,9 @@ export function createDemoApi() {
         ['avatar', 'badge_drive10', 'icons/badges/drive10.webp', 1, 'drive10'],
         ['avatar', 'badge_explorer', 'icons/badges/explorer.webp', 1, 'explorer'],
         ['avatar', 'badge_explorer10', 'icons/badges/explorer10.webp', 1, 'explorer10'],
+        ['avatar', 'badge_explorer15', 'icons/badges/explorer15.webp', 1, 'explorer15'],
+        ['avatar', 'badge_explorer20', 'icons/badges/explorer20.webp', 1, 'explorer20'],
+        ['avatar', 'badge_explorer30', 'icons/badges/explorer30.webp', 1, 'explorer30'],
         ['avatar', 'badge_tour_zone', 'icons/badges/tour_zone.webp', 1, 'tour_zone'],
         ['avatar', 'badge_tour_zone6', 'icons/badges/tour_zone6.webp', 1, 'tour_zone6'],
         ['avatar', 'badge_tour_zone10', 'icons/badges/tour_zone10.webp', 1, 'tour_zone10'],
@@ -249,7 +252,10 @@ export function createDemoApi() {
         ['explorer', 'Variété', 'Explorateur', 'Signaler dans 5 restaurants différents', false, 4, 5],
         ['ref1', 'Parrainage', 'Parrain', 'Parrainer 1 ami', true, 1, 1],
         ['ref10', 'Parrainage', 'Ambassadeur', 'Parrainer 10 amis', false, 2, 10],
-        ['explorer10', 'Variété', 'Fin gourmet', 'Signaler dans 10 restaurants différents', false, 4, 10],
+        ['explorer10', 'Variété', 'Gastronome', 'Signaler dans 10 restaurants différents', false, 4, 10],
+        ['explorer15', 'Variété', 'Cartographe', 'Signaler dans 15 restaurants différents', false, 4, 15],
+        ['explorer20', 'Variété', 'Grand voyageur', 'Signaler dans 20 restaurants différents', false, 4, 20],
+        ['explorer30', 'Variété', 'Voyageur international', 'Signaler dans 30 restaurants différents', false, 4, 30],
         ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 5 villes différentes', false, 1, 5],
         ['tour_zone6', 'Variété', 'Voyageur', 'Signaler dans 10 villes différentes', false, 1, 10],
         ['tour_zone10', 'Variété', 'Globe-trotteur', 'Signaler dans 20 villes différentes', false, 1, 20],
