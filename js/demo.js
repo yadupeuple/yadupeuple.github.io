@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=158';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=158';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=159';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=159';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -221,7 +221,9 @@ export function createDemoApi() {
       const d = distanceM(r.lat, r.lng, e.lat, e.lng);
       if (d > 100) return { ok: false, error: 'too_far', message: "Vous êtes trop loin de l'établissement pour signaler.", distance_m: Math.round(d), limit_m: 100 };
       profile.points += 10;
-      return { ok: true, points: 10, window_pos: 1, new_badges: profile.badges.includes('explorer') ? [] : ['explorer'] };
+      const nb = ['explorer', 'v50'].filter((b) => !profile.badges.includes(b));
+      profile.badges.push(...nb);
+      return { ok: true, points: 10, window_pos: 1, new_badges: nb };
     },
     async myProfile() { await wait(); return user ? { ...profile } : null; },
     async badgesProgress() {

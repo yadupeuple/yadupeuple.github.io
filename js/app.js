@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=158';
+import { api, DEMO } from './api.js?v=159';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=158';
+} from './config.js?v=159';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=158';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=158';
-import { BRAND_PATHS } from './brands.js?v=158';
+} from './levels.js?v=159';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=159';
+import { BRAND_PATHS } from './brands.js?v=159';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1153,14 +1153,12 @@ const BADGE_NAMES = {
 };
 
 function showReportResult(id, res) {
-  const badges = (res.new_badges || []).map((b) => `<span class="badge-new">🏅 ${esc(BADGE_NAMES[b] || b)}</span>`).join('');
   const html = `
     <div class="result">
       <div style="font-size:42px">🙌</div>
       <h2 style="margin:6px 0">Merci, c'est envoyé !</h2>
       <div class="big">${res.points > 0 ? `+${res.points} point${res.points > 1 ? 's' : ''}` : 'Merci !'}</div>
       <p>${res.capped ? 'Tu es là depuis un moment : ton info compte toujours, mais plus de points ici aujourd\'hui.' : res.window_pos > 2 ? 'Merci pour la mise à jour, ton info reste fraîche pour les prochains clients.' : 'Ton info aide les prochains clients à éviter la foule.'}</p>
-      ${badges ? `<div style="margin:10px 0">Nouveau badge : ${badges}</div>` : ''}
     </div>
     <button class="btn btn-primary" id="btn-result-share">${ICON.share}Inviter un ami</button>
     ${canInstall() ? `<button class="btn btn-ghost" id="btn-result-install" style="margin-top:8px">📲 Mettre l'appli sur mon écran d'accueil</button>` : ''}
@@ -1458,6 +1456,51 @@ let wantedPseudo = null;
 async function refreshProfile() {
   if (!state.user) { state.profile = null; return; }
   try { state.profile = await api.myProfile(); } catch {}
+  checkNewBadges();
+}
+
+// Animation « Nouveau badge » : compare les badges du profil à ceux déjà vus sur ce téléphone.
+// Plusieurs badges gagnés d'un coup → affichés l'un après l'autre.
+const badgeQueue = [];
+function checkNewBadges() {
+  const uid = state.user?.id, list = state.profile?.badges;
+  if (!uid || !Array.isArray(list)) return;
+  const key = `ydp_seen_badges_${uid}`;
+  const raw = store.get(key);
+  if (raw == null) { store.set(key, JSON.stringify(list)); return; } // 1re fois sur ce téléphone : rien à fêter
+  let seen; try { seen = JSON.parse(raw) || []; } catch { seen = []; }
+  const fresh = list.filter((b) => !seen.includes(b) && !badgeQueue.includes(b));
+  if (!fresh.length) return;
+  store.set(key, JSON.stringify([...new Set([...seen, ...fresh])]));
+  const wasIdle = !badgeQueue.length;
+  badgeQueue.push(...fresh);
+  if (wasIdle) setTimeout(showNextBadge, 700);
+}
+function showNextBadge() {
+  const code = badgeQueue[0];
+  if (!code) return;
+  const left = badgeQueue.length - 1;
+  const el = document.createElement('div');
+  el.className = 'badge-pop';
+  el.innerHTML = `
+    <div class="bp-card" role="dialog" aria-label="Nouveau badge">
+      <div class="bp-rays"></div>
+      <div class="bp-confetti">${Array.from({ length: 18 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</div>
+      <div class="bp-kicker">Nouveau badge débloqué !</div>
+      <div class="bp-img">${badgeImg(code)}</div>
+      <div class="bp-name">${esc(BADGE_NAMES[code] || code)}</div>
+      <div class="bp-sub">Retrouve-le dans Profil › Badges.</div>
+      <button type="button" class="btn btn-primary bp-btn">${left ? `Suivant (encore ${left})` : 'Super !'}</button>
+    </div>`;
+  document.body.appendChild(el);
+  try { navigator.vibrate?.([60, 40, 120]); } catch {}
+  requestAnimationFrame(() => el.classList.add('show'));
+  const next = () => {
+    el.classList.remove('show'); el.classList.add('hide');
+    setTimeout(() => { el.remove(); badgeQueue.shift(); if (badgeQueue.length) showNextBadge(); }, 260);
+  };
+  $('.bp-btn', el).onclick = next;
+  el.onclick = (ev) => { if (ev.target === el) next(); };
 }
 
 async function loadFavorites() {
@@ -1503,7 +1546,7 @@ async function renderAccount(tab = 'profil') {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=158" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=159" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1549,8 +1592,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=158" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=158) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=159" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=159) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1558,7 +1601,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=158" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=159" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1570,7 +1613,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=158" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=159" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1646,7 +1689,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=158" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=159" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];

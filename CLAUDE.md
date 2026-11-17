@@ -148,6 +148,10 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Réglages (17/11/2026, v157-158) : listes groupées (Mon compte : ligne Pseudo → petite page openPseudo, ligne « Inviter des amis » → partage du lien ?p=CODE, le code n'est plus affiché ; partenaire, L'appli, Compte) ; le Mode test (position fictive + affiches QR)
   est sorti des Réglages → bulle 🧪 à côté de 🎨 dans l'en-tête du compte, visible seulement pour le compte testeur (TEST_ACCOUNTS).
 
+- Badges (17/11/2026, v159) : images v50 (10 signalements) et v100 (25) inversées à la demande d'Alexis (fichiers échangés).
+  Animation « Nouveau badge débloqué ! » (checkNewBadges dans refreshProfile : compare profile.badges à localStorage ydp_seen_badges_<id> ;
+  1re fois sur un téléphone = rien ; plusieurs badges → l'un après l'autre, bouton « Suivant (encore N) »).
+
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
 But : aller au national (voire plus), pas seulement local ; pas forcément en vivre. Leviers : TikTok (compte « reportages » 13k, public français),
 partenariats, affiches QR code, bouche-à-oreille. Fait en v116 : aperçu des liens partagés (balises Open Graph + icons/og.png,
