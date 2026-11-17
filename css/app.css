@@ -687,3 +687,4 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .set-row.danger { color: #DC2626; }
 .set-row.danger .set-ico { background: #FEF2F2; }
 .set-chev svg { width: 18px; height: 18px; fill: none; stroke: #9CA3AF; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; display: block; }
+.set-val { font-size: 13.5px; font-weight: 600; color: var(--teal, #14B8A6); }

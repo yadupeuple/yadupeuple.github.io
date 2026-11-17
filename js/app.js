@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=157';
+import { api, DEMO } from './api.js?v=158';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=157';
+} from './config.js?v=158';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=157';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=157';
-import { BRAND_PATHS } from './brands.js?v=157';
+} from './levels.js?v=158';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=158';
+import { BRAND_PATHS } from './brands.js?v=158';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1503,7 +1503,7 @@ async function renderAccount(tab = 'profil') {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=157" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=158" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1549,8 +1549,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=157" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=157) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=158" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=158) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1558,7 +1558,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=157" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=158" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1570,7 +1570,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=157" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=158" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1646,7 +1646,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=157" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=158" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1801,20 +1801,11 @@ function myRestoHtml(r) {
 
 function settingsHtml(resto = null) {
   return `
-    <div class="section-title">Mon pseudo</div>
-    <form id="pseudo-form" style="display:flex;gap:8px">
-      <input class="select" style="flex:1;font-size:16px" name="pseudo" value="${esc(state.profile?.pseudo || '')}" minlength="3" maxlength="20">
-      <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
-    </form>
-
-
-    ${state.profile?.ref_code ? `<div class="section-title">Mon code de parrainage</div>
-    <div class="my-code">
-      <div class="mc-code" aria-label="Mon code">${esc(state.profile.ref_code)}</div>
-      <button type="button" class="btn btn-ghost mc-btn" id="btn-copy-code">Copier</button>
-      <button type="button" class="btn btn-primary mc-btn" id="btn-share-code">Partager</button>
+    <div class="section-title">Mon compte</div>
+    <div class="set-list">
+      <button type="button" class="set-row" id="btn-pseudo"><span class="set-ico">👤</span><span class="grow">Pseudo<small>${esc(state.profile?.pseudo || '')}</small></span><span class="set-val">Modifier</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>
+      ${state.profile?.ref_code ? `<button type="button" class="set-row" id="btn-invite"><span class="set-ico">🤝</span><span class="grow">Inviter des amis<small>+20 pts pour toi, +10 pour ton ami à son 1er signalement</small></span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>` : ''}
     </div>
-    <p class="muted mc-note">Ton ami saisit ce code dans son profil (ou ouvre ton lien) : +20 pts pour toi, +10 pour lui à son 1er signalement.</p>` : ''}
 
     ${resto ? myRestoHtml(resto) : `<details class="partner-card pc-fold">
       <summary class="pc-head"><span class="pc-ico">🍔</span><div class="grow"><div class="pc-title">Vous êtes restaurateur ?</div><div class="pc-sub">Devenez partenaire de Y'a du peuple ?</div></div><span class="pc-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
@@ -1852,14 +1843,8 @@ function settingsHtml(resto = null) {
 }
 
 function bindSettings(body, resto = null) {
-  const cp = $('#btn-copy-code', body);
-  if (cp) cp.onclick = async () => {
-    const code = state.profile?.ref_code || '';
-    try { await navigator.clipboard.writeText(code); toast('Code copié ✅'); }
-    catch { toast(`Ton code : ${code}`); }
-  };
-  const sc = $('#btn-share-code', body);
-  if (sc) sc.onclick = () => openShare();
+  const iv = $('#btn-invite', body); if (iv) iv.onclick = () => openShare();
+  $('#btn-pseudo', body).onclick = () => openPseudo();
   const ins = $('#btn-install'); if (ins) ins.onclick = installApp;
   const fb = $('#btn-feedback'); if (fb) fb.onclick = () => openFeedback();
   const of = $('#offer-form', body);
@@ -1877,13 +1862,6 @@ function bindSettings(body, resto = null) {
     const clr = $('#offer-clear', body);
     if (clr) clr.onclick = () => send({ title: '' });
   }
-  $('#pseudo-form', body).onsubmit = async (ev) => {
-    ev.preventDefault();
-    const v = String(new FormData(ev.target).get('pseudo') || '').trim();
-    const r = await api.changePseudo(v);
-    if (r === 'ok') { toast('Pseudo modifié ✅'); renderAccount('reglages'); }
-    else toast(r === 'Pseudo deja pris' ? 'Ce pseudo est déjà pris.' : r === 'Le pseudo doit faire 3 a 20 caracteres' ? 'Le pseudo doit faire de 3 à 20 caractères.' : r);
-  };
   $('#btn-export', body).onclick = async () => {
     try {
       const data = await api.exportMyData();
@@ -1905,6 +1883,32 @@ function bindSettings(body, resto = null) {
       if (r?.ok) { await api.signOut(); closeSheet(); toast('Compte supprimé'); }
       else toast('Suppression impossible pour le moment.');
     };
+  };
+}
+
+// Changer de pseudo (petite page à part, ouverte depuis Réglages)
+function openPseudo() {
+  openSheet('pseudo', `
+    <div class="sheet-head">
+      <button class="round-btn" id="btn-back" aria-label="Retour">${ICON.back}</button>
+      <div class="grow"><h2>Mon pseudo</h2><div class="sub">C'est le nom affiché dans le classement.</div></div>
+      <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+    </div>
+    <form id="pseudo-form">
+      <input class="select" style="width:100%;font-size:17px" name="pseudo" value="${esc(state.profile?.pseudo || '')}" minlength="3" maxlength="20" autocomplete="off">
+      <p class="muted" style="font-size:12.5px;margin:6px 0 12px">De 3 à 20 caractères.</p>
+      <button class="btn btn-primary">Enregistrer</button>
+    </form>`);
+  $('#btn-close').onclick = closeSheet;
+  $('#btn-back').onclick = () => renderAccount('reglages');
+  setTimeout(() => $('#pseudo-form input')?.focus(), 80);
+  $('#pseudo-form').onsubmit = async (ev) => {
+    ev.preventDefault();
+    const v = String(new FormData(ev.target).get('pseudo') || '').trim();
+    if (v === state.profile?.pseudo) { renderAccount('reglages'); return; }
+    const r = await api.changePseudo(v);
+    if (r === 'ok') { toast('Pseudo modifié ✅'); renderAccount('reglages'); }
+    else toast(r === 'Pseudo deja pris' ? 'Ce pseudo est déjà pris.' : r === 'Le pseudo doit faire 3 a 20 caracteres' ? 'Le pseudo doit faire de 3 à 20 caractères.' : r);
   };
 }
 
