@@ -746,3 +746,5 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .set-card .set-sep { height: 1px; background: #99F6E4; margin: 14px 0; }
 #btn-logout { margin-bottom: 8px; }
 .set-resto { margin: 14px 0; }
+/* Classement : ma place reste collée en bas de l'écran pendant qu'on fait défiler (v186) */
+.lb-me { position: sticky; bottom: calc(10px + var(--safe-bottom)); z-index: 3; box-shadow: 0 6px 20px rgba(11,31,58,.35); }
