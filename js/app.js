@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=162';
+import { api, DEMO } from './api.js?v=163';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=162';
+} from './config.js?v=163';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=162';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=162';
-import { BRAND_PATHS } from './brands.js?v=162';
+} from './levels.js?v=163';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=163';
+import { BRAND_PATHS } from './brands.js?v=163';
 
 // ---------------------------------------------------------------------------
 // État
@@ -71,6 +71,8 @@ const map = new maplibregl.Map({
   center: DEFAULT_CENTER,
   zoom: DEFAULT_ZOOM,
   attributionControl: false,
+  fadeDuration: 0, // tuiles et noms affichés tout de suite (pas de fondu de 300 ms à chaque zoom)
+  maxTileCacheSize: 400,
   dragRotate: false,
   pitchWithRotate: false,
 });
@@ -263,8 +265,9 @@ map.on('zoom', () => {
 });
 const clusterMarkers = [];
 let focusId = null; // resto mis en avant par la liste du bas
+const clusterCache = new Map(); // groupes déjà dessinés, réutilisés tant qu'ils ne changent pas (zoom plus fluide)
 function updateClusters() {
-  for (const c of clusterMarkers) c.remove();
+  const prevClusters = new Map(clusterCache); clusterCache.clear();
   clusterMarkers.length = 0;
   // Grille fixée sur la carte (coordonnées du monde, pas de l'écran) : déplacer la carte sans zoomer ne change pas les groupes.
   const b = map.getBounds();
@@ -276,7 +279,7 @@ function updateClusters() {
   const wy = (lat) => { const r = Math.sin(lat * Math.PI / 180); return (0.5 - Math.log((1 + r) / (1 - r)) / (4 * Math.PI)) * ws; };
   const cells = new Map();
   // Restos affichés seulement une fois l'animation d'entrée lancée vers la position (sinon l'écran se remplit d'un coup)
-  if (!markersOn) { for (const [, m] of state.markers) if (m.onMap) { m.marker.remove(); m.onMap = false; } return; }
+  if (!markersOn) { for (const c of prevClusters.values()) c.remove(); for (const [, m] of state.markers) if (m.onMap) { m.marker.remove(); m.onMap = false; } return; }
   for (const e of state.establishments.values()) {
     if (e.lng < W || e.lng > E || e.lat < S || e.lat > N || !passesFilter(e)) continue;
     const x = wx(e.lng), y = wy(e.lat);
@@ -318,6 +321,9 @@ function updateClusters() {
     // couleur = resto le plus chargé du groupe
     let worst = describeStatus(mainStatus(members[0])).info;
     for (const e of members) { const i = describeStatus(mainStatus(e)).info; if (i.rank > worst.rank) worst = i; }
+    const ckey = members.map((m) => m.id).sort().join(',') + '|' + worst.color + '|' + (members.some((m) => m.id === focusId) ? 'f' : '');
+    const old = prevClusters.get(ckey);
+    if (old) { prevClusters.delete(ckey); old.setLngLat([lng, lat]); clusterCache.set(ckey, old); clusterMarkers.push(old); continue; }
     const el = document.createElement('button');
     el.type = 'button';
     el.className = 'pill cluster' + (members.some((m) => m.id === focusId) ? ' focus' : '');
@@ -325,8 +331,10 @@ function updateClusters() {
     el.setAttribute('aria-label', `${members.length} restaurants`);
     el.innerHTML = `<span class="dot" style="background:${worst.color}"></span>${members.length}`;
     el.addEventListener('click', (ev) => { ev.stopPropagation(); openCluster(members); });
-    clusterMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).addTo(map));
+    const cm = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).addTo(map);
+    clusterCache.set(ckey, cm); clusterMarkers.push(cm);
   }
+  for (const c of prevClusters.values()) c.remove();
   // Les pastilles hors écran ou regroupées sont retirées de la carte (moins d'éléments = carte fluide)
   for (const [id, m] of state.markers) {
     if (!shown.has(id) && m.onMap) { m.marker.remove(); m.onMap = false; }
@@ -388,13 +396,30 @@ function renderMe() {
 // ---------------------------------------------------------------------------
 // Données : restos + statuts
 // ---------------------------------------------------------------------------
+// Liste des restos gardée sur le téléphone (24 h) : à l'ouverture suivante la carte s'affiche tout de suite,
+// puis la liste est remise à jour en arrière-plan.
+const EST_CACHE = 'ydp_est_cache_v1';
+const EST_FIELDS = ['id', 'name', 'brand', 'city', 'address', 'lat', 'lng', 'has_dine_in', 'has_drive'];
+function cachedEstablishments() {
+  if (DEMO) return false;
+  try {
+    const c = JSON.parse(localStorage.getItem(EST_CACHE) || 'null');
+    if (!c || Date.now() - c.t > 24 * 3600e3 || !Array.isArray(c.rows)) return false;
+    for (const a of c.rows) { const r = {}; EST_FIELDS.forEach((f, i) => { r[f] = a[i]; }); state.establishments.set(r.id, r); }
+    if (c.hours) state.hours = c.hours;
+    return state.establishments.size > 0;
+  } catch { return false; }
+}
 async function loadEstablishments() {
   const [rows, hours] = await Promise.all([
     api.listEstablishments(),
     api.openingHours ? api.openingHours().catch(() => ({})) : {},
   ]);
   state.hours = hours || {};
+  const ids = new Set(rows.map((r) => r.id));
+  for (const id of [...state.establishments.keys()]) if (!ids.has(id)) { state.markers.get(id)?.marker.remove(); state.markers.delete(id); state.establishments.delete(id); }
   for (const r of rows) state.establishments.set(r.id, { ...state.establishments.get(r.id), ...r });
+  if (!DEMO) try { localStorage.setItem(EST_CACHE, JSON.stringify({ t: Date.now(), rows: rows.map((r) => EST_FIELDS.map((f) => r[f])), hours: state.hours })); } catch {}
   renderMarkers();
   renderCards();
 }
@@ -1567,7 +1592,7 @@ async function renderAccount(tab = 'profil') {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=162" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=163" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1613,8 +1638,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=162" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=162) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=163" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=163) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1622,7 +1647,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=162" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=163" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1634,7 +1659,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=162" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=163" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1710,7 +1735,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=162" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=163" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -2104,11 +2129,11 @@ function introFly() {
     markersOn = true; // les pastilles apparaîtront pendant la plongée
     if (p) {
       firstFix = false;
-      map.flyTo({ center: [p.lng, p.lat], zoom: 13.5, duration: 2600, curve: 1.6, essential: true });
+      map.flyTo({ center: [p.lng, p.lat], zoom: 13.5, duration: 1900, curve: 1.42, essential: true });
     } else if (state.establishments.size) {
       // Sans GPS : dernier endroit regardé, sinon la France entière + bulle « Ma ville ».
       const v = savedView();
-      if (v) map.flyTo({ center: [v.lng, v.lat], zoom: v.zoom, duration: 2400, curve: 1.6, essential: true });
+      if (v) map.flyTo({ center: [v.lng, v.lat], zoom: v.zoom, duration: 1800, curve: 1.42, essential: true });
       else { map.fitBounds(FRANCE, { padding: { top: 80, bottom: 190, left: 20, right: 20 }, duration: 1600 }); setTimeout(zonePicker, 1800); setTimeout(showCards, 1800); }
     } else {
       showCards();
@@ -2232,7 +2257,12 @@ async function start() {
   document.documentElement.classList.remove('booting'); // la carte ou l'accueil peut maintenant s'afficher
 
   try {
-    await loadEstablishments();
+    if (cachedEstablishments()) {
+      renderMarkers();
+      loadEstablishments().catch(() => {}); // mise à jour en arrière-plan
+    } else {
+      await loadEstablishments();
+    }
   } catch (err) {
     showOffline(navigator.onLine === false ? 'Pas de connexion internet.' : (err.message || 'Impossible de charger les restaurants.'));
     return;

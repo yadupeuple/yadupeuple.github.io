@@ -151,6 +151,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Badges (17/11/2026, v159) : images v50 (10 signalements) et v100 (25) inversées à la demande d'Alexis (fichiers échangés).
   Animation « Nouveau badge débloqué ! » (checkNewBadges dans refreshProfile : compare profile.badges à localStorage ydp_seen_badges_<id> ;
   1re fois sur un téléphone = rien ; plusieurs badges → l'un après l'autre, bouton « Suivant (encore N) »).
+- Vitesse de la carte (17/11/2026, v163) : restos + horaires chargés par 5 pages en parallèle (pagesInParallel dans api.js) et gardés 24 h sur le téléphone (localStorage ydp_est_cache_v1, mis à jour en arrière-plan) ; fadeDuration 0, cache de tuiles 400 ; plongée d'entrée raccourcie (1,9 s) ; groupes de pastilles réutilisés pendant le zoom ; preconnect vers OpenFreeMap et Supabase.
 - Signalement (v160-162) : petit lexique « 💡 Comment choisir ? » repliable (fermé par défaut) sous les 4 choix (LEXIQUE dans app.js, textes salle / Drive) ; le choix fait ressort, les autres s'estompent.
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)

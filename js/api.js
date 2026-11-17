@@ -1,6 +1,18 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=162';
-import { createDemoApi } from './demo.js?v=162';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=163';
+import { createDemoApi } from './demo.js?v=163';
+
+// Charge une table par pages de 1000 : 5 pages en parallèle, puis la suite si besoin.
+async function pagesInParallel(page, first = 5) {
+  const out = [];
+  let from = 0;
+  for (;;) {
+    const batch = await Promise.all(Array.from({ length: first }, (_, k) => page(from + k * 1000)));
+    for (const d of batch) out.push(...d);
+    if (batch[batch.length - 1].length < 1000) return out;
+    from += first * 1000; first = 2;
+  }
+}
 
 export const DEMO = window.YDP_DEMO === true || new URLSearchParams(location.search).has('demo');
 
@@ -75,18 +87,14 @@ function createSupabaseApi() {
       if (error) throw new ApiError(frenchAuthError(error));
     },
 
-    // Tous les restos (par pages de 1000 : limite du serveur)
+    // Tous les restos (par pages de 1000 : limite du serveur). Les 5 premières pages partent en même temps
+    // (≈ 4 200 restos) : beaucoup plus rapide que page par page.
     async listEstablishments() {
-      const all = [];
-      for (let from = 0; ; from += 1000) {
-        const { data, error } = await sb.from('establishments')
-          .select('id,name,brand,city,address,lat,lng,has_dine_in,has_drive')
-          .order('id').range(from, from + 999);
-        if (error) throw new ApiError('Impossible de charger les restaurants.');
-        all.push(...data);
-        if (data.length < 1000) break;
-      }
-      return all;
+      const page = (from) => sb.from('establishments')
+        .select('id,name,brand,city,address,lat,lng,has_dine_in,has_drive')
+        .order('id').range(from, from + 999)
+        .then(({ data, error }) => { if (error) throw new ApiError('Impossible de charger les restaurants.'); return data; });
+      return pagesInParallel(page);
     },
     statusesInBox: (s, w, n, e) => rpc('get_statuses_in_box', { p_south: s, p_west: w, p_north: n, p_east: e }),
     nearby: (lat, lng, radius = 5000, limit = 50) =>
@@ -105,12 +113,9 @@ function createSupabaseApi() {
     setCustomization: (kind, code) => rpc('set_customization', { p_kind: kind, p_code: code }),
     async openingHours() {
       const out = {};
-      for (let from = 0; ; from += 1000) {
-        const { data, error } = await sb.from('opening_hours').select('establishment_id,hours').order('establishment_id').range(from, from + 999);
-        if (error || !data) return out;
-        for (const r of data) out[r.establishment_id] = r.hours;
-        if (data.length < 1000) break;
-      }
+      const page = (from) => sb.from('opening_hours').select('establishment_id,hours').order('establishment_id').range(from, from + 999)
+        .then(({ data, error }) => { if (error || !data) throw new Error('hours'); return data; });
+      try { for (const r of await pagesInParallel(page)) out[r.establishment_id] = r.hours; } catch {}
       return out;
     },
     // Courbe d'affluence habituelle (Google Maps) : 168 valeurs, jour 0 = dimanche. null si absente.
