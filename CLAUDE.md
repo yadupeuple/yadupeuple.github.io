@@ -29,7 +29,7 @@ Propriétaire : Alexis (ne code pas). Claude fait le code ; Alexis valide sur so
 - Le GPS du navigateur ne marche qu'en HTTPS (ou localhost).
 
 ## Base Supabase (projet « APP projet », ref ygekcpnsjbbdgtmlxdce, région eu-west-1)
-Tables : establishments (4 156 en France métropolitaine depuis le 15/11/2026, dont les 95 relevés à la main en Moselle, Mulhouse, Carcassonne ; lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (19),
+Tables : establishments (4 156 en France métropolitaine depuis le 15/11/2026, dont les 95 relevés à la main en Moselle, Mulhouse, Carcassonne ; lecture publique ; enseignes : McDonald's, Burger King, KFC, Quick, Subway, Buffalo Grill, O'Tacos, Starbucks, Flunch), reports, profiles, favorites, badges (21),
 user_badges, levels (100), app_settings, feedback (avis, lecture réservée à Supabase), customizations (avatars/bannières + niveau requis), partners, partner_offers, partner_stats,
 popular_times, opening_hours. Sécurité (RLS) active partout.
 Sécurité (12/11/2026, supabase/2026-11-12_securite_perf.sql) : aucune écriture directe dans les tables depuis l'appli
@@ -162,7 +162,9 @@ Bandeau 🧪 « Version test : points et badges remis à zéro au lancement… �
 **Badge caché jusqu'au lancement** (15/11, v124, supabase/2026-11-15_badge_testeur_cache.sql) : enregistré dans user_badges mais invisible
 (progression, profils), sans points, image de profil désactivée, tant que app_settings.beta_badge_visible = 0 (fonction badge_hidden).
 Badge « Régulier » actif depuis le 16/11 (kind 'weeks' : 4 semaines d'affilée avec ≥ 1 signalement validé, report_week_streak ;
-supabase/2026-11-16_badge_regulier.sql). Recrutement de 50 testeurs, priorité Thionville-Metz puis Mulhouse via TikTok et l'entourage, durée ~3 semaines.
+supabase/2026-11-16_badge_regulier.sql). Badges « Fidèle » (8 semaines) et « Inarrêtable » (12 semaines) ajoutés le 17/11 (v155,
+supabase/2026-11-17_badges_regulier_8_12.sql, images outils/src/badges_semaines/semaines_4 et _6 ; les 5 autres de la planche en réserve ;
+règle d'Alexis : plus le badge est difficile, plus il est beau et détaillé). Recrutement de 50 testeurs, priorité Thionville-Metz puis Mulhouse via TikTok et l'entourage, durée ~3 semaines.
 
 ## Charte graphique
 Bleu nuit `#0B1F3A`, turquoise `#14B8A6`, blanc, touche jaune-orangé `#F5A524`.
