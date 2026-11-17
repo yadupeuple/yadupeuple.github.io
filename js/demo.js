@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=176';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=176';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=177';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=177';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -249,7 +249,7 @@ export function createDemoApi() {
         ['v10', 'Volume', '5 signalements', 'Faire 5 signalements', true, 5, 5],
         ['v50', 'Volume', '10 signalements', 'Faire 10 signalements', false, 7, 10],
         ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements Drive', false, 3, 10],
-        ['explorer20', 'Variété', 'Grand voyageur', 'Faire 20 signalements au Drive', false, 3, 20],
+        ['explorer20', 'Variété', 'Habitué du Drive', 'Faire 20 signalements au Drive', false, 3, 20],
         ['explorer', 'Variété', 'Explorateur', 'Signaler dans 5 restaurants différents', false, 4, 5],
         ['ref1', 'Parrainage', 'Parrain', 'Parrainer 1 ami', true, 1, 1],
         ['ref10', 'Parrainage', 'Ambassadeur', 'Parrainer 10 amis', false, 2, 10],

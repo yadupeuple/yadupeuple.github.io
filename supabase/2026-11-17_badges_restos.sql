@@ -25,3 +25,6 @@ update public.badges set sort_order = 9 where code = 'explorer';
 update public.badges set sort_order = 10 where code = 'explorer10';
 update public.badges set sort_order = 11 where code = 'explorer15';
 select public.award_badges(p.id) from public.profiles p;
+
+-- Renommé « Habitué du Drive » (Alexis, 17/11).
+update public.badges set name = 'Habitué du Drive' where code = 'explorer20';

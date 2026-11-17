@@ -169,7 +169,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   tour_zone10 « Globe-trotteur » (20 villes, monuments) ; paliers 5/10/20 depuis le 17/11 (avant 3/6/10) ; anciennes images dans outils/src/badges_villes_v1/.
 - Badges restaurants (17/11/2026, v175, supabase/2026-11-17_badges_restos.sql, planche d'Alexis outils/src/badges_restos.png,
   outils/badges_restos.py : cadenas retiré, anneau refait par rotation, cercle lisse) : Explorateur 5 (montagne), Gastronome 10 (toque, ex « Fin gourmet »),
-  Cartographe 15 (carte + boussole), Grand voyageur (route ; code explorer20 mais kind drive_reports : 20 signalements au Drive, rangé après « Éclaireur du Drive »), Voyageur international 30 (avion) ;
+  Cartographe 15 (carte + boussole), Habitué du Drive (route ; code explorer20 mais kind drive_reports : 20 signalements au Drive, rangé après « Éclaireur du Drive »), Voyageur international 30 (avion) ;
   anciennes images explorer/explorer10 dans outils/src/badges_restos_v1/.
 - Signalement (v160-162) : petit lexique « 💡 Comment choisir ? » repliable (fermé par défaut) sous les 4 choix (LEXIQUE dans app.js, textes salle / Drive) ; le choix fait ressort, les autres s'estompent.
 
