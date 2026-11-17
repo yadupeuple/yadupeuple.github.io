@@ -748,3 +748,7 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .set-resto { margin: 14px 0; }
 /* Classement : ma place reste collée en bas de l'écran pendant qu'on fait défiler (v186) */
 .lb-me { position: sticky; bottom: calc(10px + var(--safe-bottom)); z-index: 3; box-shadow: 0 6px 20px rgba(11,31,58,.35); }
+/* Ma place : barre collée tout en bas de l'écran (le collant compte depuis le bas du « padding » de la feuille, d'où le -40px) */
+.sheet.full .lb-me { bottom: -40px; margin-bottom: -40px; }
+.sheet.full .lb-me { margin-left: -18px; margin-right: -18px; border-radius: 20px 20px 0 0; padding: 12px 22px; box-shadow: 0 -6px 18px rgba(11,31,58,.22); }
+.sheet.full .lb-me::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: calc(var(--safe-bottom) + 2px); background: var(--navy); }
