@@ -151,7 +151,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Badges (17/11/2026, v159) : images v50 (10 signalements) et v100 (25) inversées à la demande d'Alexis (fichiers échangés).
   Animation « Nouveau badge débloqué ! » (checkNewBadges dans refreshProfile : compare profile.badges à localStorage ydp_seen_badges_<id> ;
   1re fois sur un téléphone = rien ; plusieurs badges → l'un après l'autre, bouton « Suivant (encore N) »).
-- Signalement (v160) : petit lexique « 💡 Comment choisir ? » sous les 4 choix (LEXIQUE dans app.js, textes salle / Drive) ; le choix fait ressort, les autres s'estompent.
+- Signalement (v160-162) : petit lexique « 💡 Comment choisir ? » repliable (fermé par défaut) sous les 4 choix (LEXIQUE dans app.js, textes salle / Drive) ; le choix fait ressort, les autres s'estompent.
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
 But : aller au national (voire plus), pas seulement local ; pas forcément en vivre. Leviers : TikTok (compte « reportages » 13k, public français),

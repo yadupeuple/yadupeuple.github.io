@@ -719,3 +719,11 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .lx-row .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-top: 4px; }
 .lexique.picked .lx-row { opacity: .45; }
 .lexique.picked .lx-row.on { opacity: 1; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.lexique { padding: 0; }
+.lexique > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; padding: 10px 12px; cursor: pointer; }
+.lexique > summary::-webkit-details-marker { display: none; }
+.lexique .pc-chev { width: 26px; height: 26px; background: #E5E7EB; }
+.lexique .pc-chev svg { stroke: #0B1F3A; width: 16px; height: 16px; }
+.lexique[open] .pc-chev { transform: rotate(180deg); }
+.lexique[open] { padding-bottom: 8px; }
+.lexique .lx-row { margin: 0 6px; }
