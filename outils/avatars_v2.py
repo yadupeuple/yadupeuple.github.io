@@ -10,9 +10,9 @@ ROOT = '/home/claude/yadupeuple/'
 sess = ort.InferenceSession('/home/claude/art/models/anime6b.onnx', providers=['CPUExecutionProvider'])
 P = Image.open(ROOT + 'outils/src/planche_profil_v2.png').convert('RGB')
 C = json.load(open(ROOT + 'outils/src/planche_profil_v2_bulles.json'))
-NO_RECENTER = {'montagne'}
+NO_RECENTER = set()
 COLOR_MASK = {'milkshake'}
-OUTLINE_ONLY = {'vacances'}   # tache abîmée au-dessus du palmier (planche) : on ne garde que ce qui est cerné de foncé   # verre transparent + bulles détachées : dessin repéré par ses couleurs   # paysage qui remplit la bulle
+OUTLINE_ONLY = {'vacances', 'montagne'}   # tache abîmée au-dessus du palmier (planche) : on ne garde que ce qui est cerné de foncé   # verre transparent + bulles détachées : dessin repéré par ses couleurs   # paysage qui remplit la bulle
 only = sys.argv[1:]
 
 def up4(img):
@@ -63,7 +63,8 @@ for code, (cx, cy, r) in C.items():
             dark = np.isin(ld, [i + 1 for i, v in enumerate(sz) if v >= sz.max() * 0.1])
         subj = ndimage.binary_fill_holes(ndimage.binary_closing(dark, iterations=3))
         if code not in OUTLINE_ONLY:
-            subj |= (rr < S / 2 * 0.93) & (((mx - mn) > 70) & ndimage.binary_dilation(subj, iterations=6))
+            shadow = (rgb[..., 2] > rgb[..., 0] + 40) & (rgb[..., 2] >= rgb[..., 1]) & (mn > 90)   # ombre bleue portée
+            subj |= (rr < S / 2 * 0.93) & ((mx - mn) > 70) & ~shadow & ndimage.binary_dilation(subj, iterations=6)
         subj = ndimage.binary_fill_holes(ndimage.binary_closing(subj, iterations=2))
         if code in COLOR_MASK:
             subj = (rr < S / 2 * 0.9) & (((mx - mn) > 70) | (mx < 150))
@@ -91,7 +92,7 @@ for code, (cx, cy, r) in C.items():
             base[ok] = (n2 / np.maximum(d2, 1e-6)[..., None])[ok]; hole &= ~ok
         base[hole] = med
         base = TURQ
-        soft = np.asarray(Image.fromarray((ndimage.binary_dilation(subj, iterations=1) * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(1.0))) / 255.0
+        soft = np.asarray(Image.fromarray((ndimage.binary_erosion(subj, iterations=1) * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(0.9))) / 255.0
         sh = lambda arr: np.roll(np.roll(arr, dy, 0), dx, 1)
         rgb = base * (1 - sh(soft)[..., None]) + sh(rgb) * sh(soft)[..., None]
     else:
