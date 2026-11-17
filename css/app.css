@@ -711,3 +711,11 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 @keyframes bp-pop { 0% { transform: scale(0) rotate(-25deg); } 60% { transform: scale(1.15) rotate(6deg); } 100% { transform: scale(1) rotate(0); } }
 @keyframes bp-burst { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) rotate(0); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-150px) rotate(220deg); } }
 @media (prefers-reduced-motion: reduce) { .bp-rays, .badge-pop.show .bp-img, .badge-pop.show .bp-confetti i { animation: none; } }
+
+/* Lexique sous les 4 choix du signalement */
+.lexique { margin: 10px 0 4px; padding: 10px 12px; background: #F8FAFC; border: 1px solid var(--line); border-radius: 14px; font-size: 13px; line-height: 1.35; color: #374151; }
+.lx-title { font-weight: 800; font-size: 13px; color: #0B1F3A; margin-bottom: 6px; }
+.lx-row { display: flex; gap: 8px; align-items: flex-start; padding: 4px 6px; border-radius: 8px; transition: opacity .2s, background .2s; }
+.lx-row .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-top: 4px; }
+.lexique.picked .lx-row { opacity: .45; }
+.lexique.picked .lx-row.on { opacity: 1; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
