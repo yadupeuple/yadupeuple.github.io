@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=156';
+import { api, DEMO } from './api.js?v=157';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=156';
+} from './config.js?v=157';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=156';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=156';
-import { BRAND_PATHS } from './brands.js?v=156';
+} from './levels.js?v=157';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=157';
+import { BRAND_PATHS } from './brands.js?v=157';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1474,6 +1474,7 @@ async function renderAccount(tab = 'profil') {
   openSheet('account', `
     <div class="sheet-head">
       <div class="grow"><h2>${tab === 'reglages' ? 'Réglages' : 'Mon compte'}</h2></div>
+      ${isTester() ? '<button class="round-btn" id="btn-test" aria-label="Mode test">🧪</button>' : ''}
       <button class="round-btn" id="btn-custom" aria-label="Personnaliser mon image et mon ruban">🎨</button>
       <button class="round-btn ${tab === 'reglages' ? 'on' : ''}" id="btn-settings" aria-label="Réglages">⚙️</button>
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
@@ -1502,7 +1503,7 @@ async function renderAccount(tab = 'profil') {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=156" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=157" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1518,6 +1519,7 @@ async function renderAccount(tab = 'profil') {
   $('#btn-settings').onclick = () => renderAccount(tab === 'reglages' ? 'profil' : 'reglages');
   const on = (sel, fn) => { const el = document.querySelector(sel); if (el) el.onclick = fn; };
   on('#btn-custom', () => openCustomize());
+  on('#btn-test', () => openTestTools());
   on('#btn-avatar', () => openCustomize());
   on('#btn-refer', () => openShare());
   const rf = document.querySelector('#ref-form');
@@ -1547,8 +1549,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=156" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=156) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=157" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=157) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1556,7 +1558,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=156" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=157" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1568,7 +1570,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=156" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=157" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1644,7 +1646,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=156" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=157" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
@@ -1798,16 +1800,13 @@ function myRestoHtml(r) {
 }
 
 function settingsHtml(resto = null) {
-  const t = testPosition();
   return `
-    <div class="section-title">Pseudo</div>
+    <div class="section-title">Mon pseudo</div>
     <form id="pseudo-form" style="display:flex;gap:8px">
       <input class="select" style="flex:1;font-size:16px" name="pseudo" value="${esc(state.profile?.pseudo || '')}" minlength="3" maxlength="20">
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>
 
-    ${canInstall() ? `<div class="section-title">L'appli sur ton téléphone</div>
-    <button type="button" class="btn btn-ghost" id="btn-install">📲 Mettre l'appli sur mon écran d'accueil</button>` : ''}
 
     ${state.profile?.ref_code ? `<div class="section-title">Mon code de parrainage</div>
     <div class="my-code">
@@ -1830,21 +1829,17 @@ function settingsHtml(resto = null) {
       <div class="pc-note">Les statuts d'affluence restent toujours neutres : un partenariat ne les modifie jamais.</div>
     </details>`}
 
-    ${isTester() ? `<div class="section-title">Mode test</div>
-    <p class="muted">Position fictive « latitude, longitude » pour tester sans être sur place. Vide = vrai GPS.</p>
-    <form id="test-form" style="display:flex;gap:8px">
-      <input class="select" style="flex:1;font-size:16px" name="pos" placeholder="49.3581, 6.1378" value="${t ? `${t.lat}, ${t.lng}` : ''}">
-      <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
-    </form>
-    <p><a class="link-btn" href="affiche.html" target="_blank" rel="noopener">🖨️ Affiches QR code des restaurants</a></p>` : ''}
-
-    <div class="section-title">Ton avis</div>
-    <button type="button" class="btn btn-primary" id="btn-feedback">💬 Donner mon avis / signaler un bug</button>
-    <p class="muted" style="font-size:12.5px;margin:6px 0 0">L'appli est en test : chaque remarque nous aide à l'améliorer.</p>
+    <div class="section-title">L'appli</div>
+    <div class="set-list">
+      ${canInstall() ? `<button type="button" class="set-row" id="btn-install"><span class="set-ico">📲</span><span class="grow">Mettre l'appli sur mon écran d'accueil</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>` : ''}
+      <button type="button" class="set-row" id="btn-feedback"><span class="set-ico">💬</span><span class="grow">Donner mon avis / signaler un bug<small>L'appli est en test : chaque remarque compte.</small></span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>
+    </div>
 
     <div class="section-title">Compte</div>
-    <button class="btn btn-ghost" id="btn-logout">Se déconnecter</button>
-    <button class="btn btn-danger" id="btn-delete">Supprimer mon compte</button>
+    <div class="set-list">
+      <button type="button" class="set-row" id="btn-logout"><span class="set-ico">🚪</span><span class="grow">Se déconnecter</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>
+      <button type="button" class="set-row danger" id="btn-delete"><span class="set-ico">🗑️</span><span class="grow">Supprimer mon compte</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>
+    </div>
     <div id="delete-box"></div>
     <div class="legal-foot">
       <div class="legal-grid">
@@ -1889,19 +1884,6 @@ function bindSettings(body, resto = null) {
     if (r === 'ok') { toast('Pseudo modifié ✅'); renderAccount('reglages'); }
     else toast(r === 'Pseudo deja pris' ? 'Ce pseudo est déjà pris.' : r === 'Le pseudo doit faire 3 a 20 caracteres' ? 'Le pseudo doit faire de 3 à 20 caractères.' : r);
   };
-  if ($('#test-form', body)) $('#test-form', body).onsubmit = (ev) => {
-    ev.preventDefault();
-    const v = String(new FormData(ev.target).get('pos') || '').trim();
-    if (!v) { store.set('ydp_test_pos', null); toast('Position de test désactivée'); }
-    else {
-      const [lat, lng] = v.split(',').map((x) => Number(x.trim()));
-      if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) { toast('Format attendu : 49.3581, 6.1378'); return; }
-      store.set('ydp_test_pos', `${lat},${lng}`);
-      toast('Position de test enregistrée');
-    }
-    renderMe();
-    renderCards();
-  };
   $('#btn-export', body).onclick = async () => {
     try {
       const data = await api.exportMyData();
@@ -1923,6 +1905,40 @@ function bindSettings(body, resto = null) {
       if (r?.ok) { await api.signOut(); closeSheet(); toast('Compte supprimé'); }
       else toast('Suppression impossible pour le moment.');
     };
+  };
+}
+
+// Outils de test (compte testeur seulement) : position fictive + affiches QR code
+function openTestTools() {
+  const t = testPosition();
+  openSheet('testtools', `
+    <div class="sheet-head">
+      <button class="round-btn" id="btn-back" aria-label="Retour">${ICON.back}</button>
+      <div class="grow"><h2>Mode test</h2><div class="sub">Visible seulement sur ton compte.</div></div>
+      <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+    </div>
+    <div class="section-title">Position fictive</div>
+    <p class="muted" style="margin:0 0 8px">« latitude, longitude » pour tester sans être sur place. Vide = vrai GPS.</p>
+    <form id="test-form" style="display:flex;gap:8px">
+      <input class="select" style="flex:1;font-size:16px" name="pos" placeholder="49.3581, 6.1378" value="${t ? `${t.lat}, ${t.lng}` : ''}">
+      <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
+    </form>
+    <div class="section-title">Affiches</div>
+    <div class="set-list"><a class="set-row" href="affiche.html" target="_blank" rel="noopener"><span class="set-ico">🖨️</span><span class="grow">Affiches QR code des restaurants</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></a></div>`);
+  $('#btn-close').onclick = closeSheet;
+  $('#btn-back').onclick = () => renderAccount();
+  $('#test-form').onsubmit = (ev) => {
+    ev.preventDefault();
+    const v = String(new FormData(ev.target).get('pos') || '').trim();
+    if (!v) { store.set('ydp_test_pos', null); toast('Position de test désactivée'); }
+    else {
+      const [lat, lng] = v.split(',').map((x) => Number(x.trim()));
+      if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) { toast('Format attendu : 49.3581, 6.1378'); return; }
+      store.set('ydp_test_pos', `${lat},${lng}`);
+      toast('Position de test enregistrée');
+    }
+    renderMe();
+    renderCards();
   };
 }
 

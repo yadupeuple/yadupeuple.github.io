@@ -145,6 +145,9 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   supabase/2026-11-15_courbes_google_france.sql. Terminé le 16/11 : 3 621 restos sur 4 248 ont une vraie courbe ; 87 marqués « fermé » par Google,
   revérifiés : 68 supprimés le 16/11 (supabase/2026-11-16_restos_fermes.sql, accord d'Alexis), 19 gardés ; 24 sans horaires ou fermés supprimés + 24 horaires ajoutés (supabase/2026-11-16_horaires_manquants.sql) ; tous les restos ont des horaires ; fonction import_gmaps_batch désactivée (drop à faire).
 
+- Réglages (17/11/2026, v157) : listes groupées (Mon pseudo, parrainage, partenaire, L'appli, Compte) ; le Mode test (position fictive + affiches QR)
+  est sorti des Réglages → bulle 🧪 à côté de 🎨 dans l'en-tête du compte, visible seulement pour le compte testeur (TEST_ACCOUNTS).
+
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
 But : aller au national (voire plus), pas seulement local ; pas forcément en vivre. Leviers : TikTok (compte « reportages » 13k, public français),
 partenariats, affiches QR code, bouche-à-oreille. Fait en v116 : aperçu des liens partagés (balises Open Graph + icons/og.png,

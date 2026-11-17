@@ -675,3 +675,15 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .pod-1 .pod-step { height: 54px; background: #F5A524; color: #0B1F3A; }
 .pod-2 .pod-step { height: 40px; background: #CBD5E1; color: #0B1F3A; }
 .pod-3 .pod-step { height: 30px; background: #D97706; color: #fff; }
+
+/* Réglages : listes groupées façon iPhone */
+.set-list { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.set-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 14px; background: none; border: 0; border-top: 1px solid var(--line); font: inherit; font-size: 15px; font-weight: 600; color: var(--ink); text-align: left; text-decoration: none; cursor: pointer; }
+.set-row:first-child { border-top: 0; }
+.set-row:active { background: #F3F4F6; }
+.set-row .grow { flex: 1; min-width: 0; }
+.set-row small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+.set-ico { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px; background: #F0FDFA; font-size: 18px; }
+.set-row.danger { color: #DC2626; }
+.set-row.danger .set-ico { background: #FEF2F2; }
+.set-chev svg { width: 18px; height: 18px; fill: none; stroke: #9CA3AF; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; display: block; }
