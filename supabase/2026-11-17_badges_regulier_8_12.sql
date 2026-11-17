@@ -1,6 +1,6 @@
 -- 17/11/2026 (demande d'Alexis) : 2 badges de régularité en plus (famille Moments, kind 'weeks').
 -- Fidèle : 8 semaines d'affilée ; Inarrêtable : 12 semaines. Images : planche d'Alexis
--- (outils/src/badges_semaines/semaines_4.png et _6.png, découpe outils/badge_detoure2.py) ; les 5 autres gardées en réserve.
+-- (outils/src/badges_semaines/semaines_7.png pour Fidèle, semaines_6.png pour Inarrêtable, découpe outils/badge_detoure2.py) ; les 5 autres gardées en réserve.
 update public.badges set sort_order = sort_order + 1000 where sort_order > 14;  -- sort_order unique : décalage en 2 temps
 update public.badges set sort_order = sort_order - 998 where sort_order > 1000;
 insert into public.badges(code, kind, name, family, is_active, threshold, sort_order, description) values

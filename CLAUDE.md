@@ -163,7 +163,7 @@ Bandeau 🧪 « Version test : points et badges remis à zéro au lancement… �
 (progression, profils), sans points, image de profil désactivée, tant que app_settings.beta_badge_visible = 0 (fonction badge_hidden).
 Badge « Régulier » actif depuis le 16/11 (kind 'weeks' : 4 semaines d'affilée avec ≥ 1 signalement validé, report_week_streak ;
 supabase/2026-11-16_badge_regulier.sql). Badges « Fidèle » (8 semaines) et « Inarrêtable » (12 semaines) ajoutés le 17/11 (v155,
-supabase/2026-11-17_badges_regulier_8_12.sql, images outils/src/badges_semaines/semaines_4 et _6 ; les 5 autres de la planche en réserve ;
+supabase/2026-11-17_badges_regulier_8_12.sql, images outils/src/badges_semaines/semaines_7 (Fidèle, choix d'Alexis) et _6 ; les 5 autres de la planche en réserve ;
 règle d'Alexis : plus le badge est difficile, plus il est beau et détaillé). Recrutement de 50 testeurs, priorité Thionville-Metz puis Mulhouse via TikTok et l'entourage, durée ~3 semaines.
 
 ## Charte graphique
