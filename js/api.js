@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=179';
-import { createDemoApi } from './demo.js?v=179';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=180';
+import { createDemoApi } from './demo.js?v=180';
 
 // Charge une table par pages de 1000 : 5 pages en parallèle, puis la suite si besoin.
 async function pagesInParallel(page, first = 5) {

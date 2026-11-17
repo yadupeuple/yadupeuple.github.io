@@ -10,3 +10,7 @@ update public.badges set threshold = 20, description = 'Signaler dans 20 villes 
 
 -- tour_zone6 renommé « Baroudeur » (trop proche de « Voyageur international », Alexis 17/11).
 update public.badges set name = 'Baroudeur' where code = 'tour_zone6';
+
+-- Échange demandé par Alexis (17/11) : 10 villes = Globe-trotteur (monuments), 20 villes = Baroudeur (avion) ; images échangées aussi.
+update public.badges set name = 'Globe-trotteur' where code = 'tour_zone6';
+update public.badges set name = 'Baroudeur' where code = 'tour_zone10';
