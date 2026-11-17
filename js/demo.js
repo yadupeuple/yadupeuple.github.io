@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=154';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=154';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=155';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=155';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -160,6 +160,9 @@ export function createDemoApi() {
         ['avatar', 'badge_ref1', 'icons/badges/ref1.webp', 1, 'ref1'],
         ['avatar', 'badge_ref10', 'icons/badges/ref10.webp', 1, 'ref10'],
         ['avatar', 'badge_ref30', 'icons/badges/ref30.webp', 1, 'ref30'],
+        ['avatar', 'badge_regulier', 'icons/badges/regulier.webp', 1, 'regulier'],
+        ['avatar', 'badge_regulier8', 'icons/badges/regulier8.webp', 1, 'regulier8'],
+        ['avatar', 'badge_regulier12', 'icons/badges/regulier12.webp', 1, 'regulier12'],
       ].map(([kind, code, value, min_level, requires_badge = null]) => ({ kind, code, value, min_level, requires_badge }));
     },
     async setCustomization(kind, code) {
@@ -239,6 +242,8 @@ export function createDemoApi() {
         ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 3 villes différentes', false, 1, 3],
         ['fiable', 'Fiabilité', 'Fiable', 'Avoir 10 signalements confirmés', null, null, null],
         ['regulier', 'Moments', 'Régulier', 'Faire au moins 1 signalement par semaine pendant 4 semaines', false, 1, 4],
+        ['regulier8', 'Moments', 'Fidèle', 'Faire au moins 1 signalement par semaine pendant 8 semaines', false, 1, 8],
+        ['regulier12', 'Moments', 'Inarrêtable', 'Faire au moins 1 signalement par semaine pendant 12 semaines', false, 1, 12],
         ['coup_de_feu', 'Moments', 'Coup de feu', 'Signaler pendant un pic (12h-13h30 ou 19h-20h30)', null, null, null],
       ].map(([code, family, name, description, earned, cur, target]) => ({
         code, family, name, description, is_active: earned !== null, earned: !!earned, earned_at: null,
