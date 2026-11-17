@@ -146,7 +146,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   supabase/2026-11-15_courbes_google_france.sql. Terminé le 16/11 : 3 621 restos sur 4 248 ont une vraie courbe ; 87 marqués « fermé » par Google,
   revérifiés : 68 supprimés le 16/11 (supabase/2026-11-16_restos_fermes.sql, accord d'Alexis), 19 gardés ; 24 sans horaires ou fermés supprimés + 24 horaires ajoutés (supabase/2026-11-16_horaires_manquants.sql) ; tous les restos ont des horaires ; fonction import_gmaps_batch désactivée (drop à faire).
 
-- Réglages (17/11/2026, v157-158) : listes groupées (Mon compte : ligne Pseudo → petite page openPseudo, ligne « Inviter des amis » → partage du lien ?p=CODE, le code n'est plus affiché ; partenaire, L'appli, Compte) ; le Mode test (position fictive + affiches QR)
+- Réglages (17/11/2026, v184) : cartes au style de l'appli : carte bleu nuit « Ton pseudo » (avatar + bouton Modifier → openPseudo), carte restaurateur, carte turquoise « Ton avis compte » (+ installation si possible), puis boutons Se déconnecter / Supprimer mon compte comme avant ; plus de parrainage ici (il est sur le profil) ; le Mode test (position fictive + affiches QR)
   est sorti des Réglages → bulle 🧪 à côté de 🎨 dans l'en-tête du compte, visible seulement pour le compte testeur (TEST_ACCOUNTS).
 
 - Badges (17/11/2026, v159) : images v50 (10 signalements) et v100 (25) inversées à la demande d'Alexis (fichiers échangés).

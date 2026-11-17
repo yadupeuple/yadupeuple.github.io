@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=183';
+import { api, DEMO } from './api.js?v=184';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=183';
+} from './config.js?v=184';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=183';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=183';
-import { BRAND_PATHS } from './brands.js?v=183';
+} from './levels.js?v=184';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=184';
+import { BRAND_PATHS } from './brands.js?v=184';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1611,7 +1611,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=183" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=184" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1668,8 +1668,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=183" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=183) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=184" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=184) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1677,7 +1677,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=183" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=184" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1689,7 +1689,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=183" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=184" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1769,7 +1769,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=183" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=184" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -1934,10 +1934,10 @@ function myRestoHtml(r) {
 
 function settingsHtml(resto = null) {
   return `
-    <div class="section-title">Mon compte</div>
-    <div class="set-list">
-      <button type="button" class="set-row" id="btn-pseudo"><span class="set-ico">👤</span><span class="grow">Pseudo<small>${esc(state.profile?.pseudo || '')}</small></span><span class="set-val">Modifier</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>
-      ${state.profile?.ref_code ? `<button type="button" class="set-row" id="btn-invite"><span class="set-ico">🤝</span><span class="grow">Inviter des amis<small>+20 pts pour toi, +10 pour ton ami à son 1er signalement</small></span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>` : ''}
+    <div class="set-pseudo">
+      <span class="set-av">${custom.avatar(state.profile?.avatar) || ''}</span>
+      <div class="grow"><div class="lbl">Ton pseudo</div><div class="val">${esc(state.profile?.pseudo || '')}</div></div>
+      <button type="button" class="set-edit" id="btn-pseudo">✏️ Modifier</button>
     </div>
 
     ${resto ? myRestoHtml(resto) : `<details class="partner-card pc-fold">
@@ -1953,17 +1953,17 @@ function settingsHtml(resto = null) {
       <div class="pc-note">Les statuts d'affluence restent toujours neutres : un partenariat ne les modifie jamais.</div>
     </details>`}
 
-    <div class="section-title">L'appli</div>
-    <div class="set-list">
-      ${canInstall() ? `<button type="button" class="set-row" id="btn-install"><span class="set-ico">📲</span><span class="grow">Mettre l'appli sur mon écran d'accueil</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>` : ''}
-      <button type="button" class="set-row" id="btn-feedback"><span class="set-ico">💬</span><span class="grow">Donner mon avis / signaler un bug<small>L'appli est en test : chaque remarque compte.</small></span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>
+    <div class="set-card">
+      ${canInstall() ? `<div class="set-block"><span class="set-big">📲</span><div class="grow"><div class="t">L'appli sur ton écran d'accueil</div><div class="s">Ouvre Y'a du peuple ? en un clic, comme une vraie appli.</div></div></div>
+      <button type="button" class="btn btn-primary" id="btn-install">Installer l'appli</button>
+      <div class="set-sep"></div>` : ''}
+      <div class="set-block"><span class="set-big">💬</span><div class="grow"><div class="t">Ton avis compte</div><div class="s">L'appli est en test : une idée, un bug ? Dis-le-nous.</div></div></div>
+      <button type="button" class="btn btn-primary" id="btn-feedback">Donner mon avis</button>
     </div>
 
     <div class="section-title">Compte</div>
-    <div class="set-list">
-      <button type="button" class="set-row" id="btn-logout"><span class="set-ico">🚪</span><span class="grow">Se déconnecter</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>
-      <button type="button" class="set-row danger" id="btn-delete"><span class="set-ico">🗑️</span><span class="grow">Supprimer mon compte</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></button>
-    </div>
+    <button class="btn btn-ghost" id="btn-logout">Se déconnecter</button>
+    <button class="btn btn-danger" id="btn-delete">Supprimer mon compte</button>
     <div id="delete-box"></div>
     <div class="legal-foot">
       <div class="legal-grid">
@@ -1976,7 +1976,6 @@ function settingsHtml(resto = null) {
 }
 
 function bindSettings(body, resto = null) {
-  const iv = $('#btn-invite', body); if (iv) iv.onclick = () => openShare();
   $('#btn-pseudo', body).onclick = () => openPseudo();
   const ins = $('#btn-install'); if (ins) ins.onclick = installApp;
   const fb = $('#btn-feedback'); if (fb) fb.onclick = () => openFeedback();
