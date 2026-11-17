@@ -5,7 +5,7 @@ import glob, os, shutil
 import numpy as np
 from PIL import Image
 from scipy import ndimage
-NOT_ROUND = {'regulier8', 'regulier12', 'testeur', 'tour_zone10'}  # dessins qui dépassent du rond
+NOT_ROUND = {'regulier8', 'regulier12', 'testeur', 'tour_zone', 'tour_zone6', 'tour_zone10'}  # dessins qui dépassent du rond
 for f in sorted(glob.glob('outils/src/badges_avant_ombre/*.webp')):
     code = os.path.basename(f)[:-5]
     im = Image.open(f).convert('RGBA'); a = np.asarray(im).astype(float)

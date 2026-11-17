@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=172';
+import { api, DEMO } from './api.js?v=173';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=172';
+} from './config.js?v=173';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=172';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=172';
-import { BRAND_PATHS } from './brands.js?v=172';
+} from './levels.js?v=173';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=173';
+import { BRAND_PATHS } from './brands.js?v=173';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1193,8 +1193,8 @@ const LEXIQUE = {
 const BADGE_NAMES = {
   v1: 'Premier signalement', v10: '5 signalements', v50: '10 signalements', v100: '25 signalements',
   v250: '50 signalements', v500: '100 signalements', drive10: 'Éclaireur du Drive',
-  explorer: 'Explorateur', explorer10: 'Fin gourmet', tour_zone: 'Tour de la zone', tour_zone6: 'Globe-trotteur',
-  tour_zone10: 'Routard du burger', testeur: 'Testeur fondateur', ref1: 'Parrain', ref10: 'Ambassadeur',
+  explorer: 'Explorateur', explorer10: 'Fin gourmet', tour_zone: 'Tour de la zone', tour_zone6: 'Voyageur',
+  tour_zone10: 'Globe-trotteur', testeur: 'Testeur fondateur', ref1: 'Parrain', ref10: 'Ambassadeur',
   ref30: 'Légende du bouche-à-oreille', coup_de_feu: 'Sentinelle', regulier: 'Régulier', regulier8: 'Fidèle', regulier12: 'Inarrêtable', fiable: 'Fiable', oeil_lynx: 'Œil de lynx',
 };
 
@@ -1592,7 +1592,7 @@ async function renderAccount(tab = 'profil') {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=172" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=173" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1638,8 +1638,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=172" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=172) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=173" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=173) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1647,7 +1647,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=172" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=173" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1659,7 +1659,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=172" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=173" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1730,7 +1730,7 @@ const BADGE_FAMILIES = [
 ];
 const BADGE_ICONS = {
   v1: '📍', v10: '🖐️', v50: '🔟', v100: '🥉', v250: '🥈', v500: '🥇',
-  drive10: '🚗', explorer: '🧭', explorer10: '🍽️', tour_zone: '🗺️', tour_zone6: '🏙️', tour_zone10: '🍔', testeur: '🧪',
+  drive10: '🚗', explorer: '🧭', explorer10: '🍽️', tour_zone: '🗺️', tour_zone6: '✈️', tour_zone10: '🌍', testeur: '🧪',
   ref1: '🤝', ref10: '📣', ref30: '👑',
   coup_de_feu: '🛡️', regulier: '📅', regulier8: '📅', regulier12: '📅', fiable: '⚡', oeil_lynx: '🦉',
 };
@@ -1739,7 +1739,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=172" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=173" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 async function badgesHtml() {
   const rows = await api.badgesProgress() || [];
