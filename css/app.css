@@ -745,3 +745,4 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .set-card .s { font-size: 13px; color: var(--muted); margin-top: 1px; line-height: 1.35; }
 .set-card .set-sep { height: 1px; background: #99F6E4; margin: 14px 0; }
 #btn-logout { margin-bottom: 8px; }
+.set-resto { margin: 14px 0; }
