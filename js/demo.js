@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=181';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=181';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=182';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=182';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -257,8 +257,8 @@ export function createDemoApi() {
         ['explorer15', 'Variété', 'Cartographe', 'Signaler dans 15 restaurants différents', false, 4, 15],
         ['explorer30', 'Variété', 'Voyageur international', 'Signaler dans 30 restaurants différents', false, 4, 30],
         ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 5 villes différentes', false, 1, 5],
-        ['tour_zone6', 'Variété', 'Globe-trotteur', 'Signaler dans 10 villes différentes', false, 1, 10],
-        ['tour_zone10', 'Variété', 'Baroudeur', 'Signaler dans 20 villes différentes', false, 1, 20],
+        ['tour_zone6', 'Variété', 'Baroudeur', 'Signaler dans 10 villes différentes', false, 1, 10],
+        ['tour_zone10', 'Variété', 'Globe-trotteur', 'Signaler dans 20 villes différentes', false, 1, 20],
         ['regulier', 'Moments', 'Régulier', 'Faire au moins 1 signalement par semaine pendant 4 semaines', false, 1, 4],
         ['regulier8', 'Moments', 'Fidèle', 'Faire au moins 1 signalement par semaine pendant 8 semaines', false, 1, 8],
         ['regulier12', 'Moments', 'Inarrêtable', 'Faire au moins 1 signalement par semaine pendant 12 semaines', false, 1, 12],

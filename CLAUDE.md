@@ -165,8 +165,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   60 montagne · 70 vacances · 80 diamant · 90 fusée · 100 couronne. Désactivées (fichiers gardés, outils/src/avatars_v1/) : cupcake, voiture,
   renard, chouette, ours, lion, médaille, licorne, dragon.
 - Badges villes (17/11/2026, v173, supabase/2026-11-17_badges_villes.sql) : nouvelles images (planche d'Alexis outils/src/badges_voyage.png,
-  outils/badges_voyage.py) : tour_zone « Tour de la zone » (5 villes, carte et repères), tour_zone6 « Globe-trotteur » (10 villes, avion),
-  tour_zone10 « Baroudeur » (20 villes, monuments) (noms échangés le 17/11 au soir, images à leur place d'origine) ; paliers 5/10/20 depuis le 17/11 (avant 3/6/10) ; anciennes images dans outils/src/badges_villes_v1/.
+  outils/badges_voyage.py) : tour_zone « Tour de la zone » (5 villes, carte et repères), tour_zone6 « Baroudeur » (10 villes, monuments),
+  tour_zone10 « Globe-trotteur » (20 villes, avion) (version finale validée par Alexis le 17/11 au soir) ; paliers 5/10/20 depuis le 17/11 (avant 3/6/10) ; anciennes images dans outils/src/badges_villes_v1/.
 - Badges restaurants (17/11/2026, v175, supabase/2026-11-17_badges_restos.sql, planche d'Alexis outils/src/badges_restos.png,
   outils/badges_restos.py : cadenas retiré, anneau refait par rotation, bord suivi angle par angle pour ôter le trait blanc) : Explorateur 5 (montagne), Gastronome 10 (toque, ex « Fin gourmet »),
   Cartographe 15 (carte + boussole), Habitué du Drive (route ; code explorer20 mais kind drive_reports : 20 signalements au Drive, rangé après « Éclaireur du Drive »), Voyageur international 30 (avion) ;

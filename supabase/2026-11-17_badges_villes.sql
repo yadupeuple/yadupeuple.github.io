@@ -14,3 +14,7 @@ update public.badges set name = 'Baroudeur' where code = 'tour_zone6';
 -- Échange demandé par Alexis (17/11) : 10 villes = Globe-trotteur (monuments), 20 villes = Baroudeur (avion) ; images échangées aussi.
 update public.badges set name = 'Globe-trotteur' where code = 'tour_zone6';
 update public.badges set name = 'Baroudeur' where code = 'tour_zone10';
+
+-- Version finale (Alexis, 17/11 21h47) : 10 villes = Baroudeur (monuments), 20 villes = Globe-trotteur (avion).
+update public.badges set name = 'Baroudeur' where code = 'tour_zone6';
+update public.badges set name = 'Globe-trotteur' where code = 'tour_zone10';
