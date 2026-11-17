@@ -16,3 +16,12 @@ insert into public.customizations (kind, code, value, min_level, sort_order, is_
   ('avatar', 'badge_explorer20', 'icons/badges/explorer20.webp', 1, 111, true, 'explorer20'),
   ('avatar', 'badge_explorer30', 'icons/badges/explorer30.webp', 1, 112, true, 'explorer30')
 on conflict (kind, code) do nothing;
+
+-- Correction d'Alexis : « Grand voyageur » = 20 signalements au Drive (pas 20 restaurants), placé juste après « Éclaireur du Drive ».
+update public.badges set kind = 'drive_reports', threshold = 20, description = 'Faire 20 signalements au Drive' where code = 'explorer20';
+update public.badges set sort_order = sort_order + 1000 where code in ('explorer20','explorer','explorer10','explorer15');
+update public.badges set sort_order = 8 where code = 'explorer20';
+update public.badges set sort_order = 9 where code = 'explorer';
+update public.badges set sort_order = 10 where code = 'explorer10';
+update public.badges set sort_order = 11 where code = 'explorer15';
+select public.award_badges(p.id) from public.profiles p;

@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=175';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=175';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=176';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=176';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -249,12 +249,12 @@ export function createDemoApi() {
         ['v10', 'Volume', '5 signalements', 'Faire 5 signalements', true, 5, 5],
         ['v50', 'Volume', '10 signalements', 'Faire 10 signalements', false, 7, 10],
         ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements Drive', false, 3, 10],
+        ['explorer20', 'Variété', 'Grand voyageur', 'Faire 20 signalements au Drive', false, 3, 20],
         ['explorer', 'Variété', 'Explorateur', 'Signaler dans 5 restaurants différents', false, 4, 5],
         ['ref1', 'Parrainage', 'Parrain', 'Parrainer 1 ami', true, 1, 1],
         ['ref10', 'Parrainage', 'Ambassadeur', 'Parrainer 10 amis', false, 2, 10],
         ['explorer10', 'Variété', 'Gastronome', 'Signaler dans 10 restaurants différents', false, 4, 10],
         ['explorer15', 'Variété', 'Cartographe', 'Signaler dans 15 restaurants différents', false, 4, 15],
-        ['explorer20', 'Variété', 'Grand voyageur', 'Signaler dans 20 restaurants différents', false, 4, 20],
         ['explorer30', 'Variété', 'Voyageur international', 'Signaler dans 30 restaurants différents', false, 4, 30],
         ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 5 villes différentes', false, 1, 5],
         ['tour_zone6', 'Variété', 'Voyageur', 'Signaler dans 10 villes différentes', false, 1, 10],
