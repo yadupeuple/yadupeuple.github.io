@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=167';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=167';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=168';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=168';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -242,11 +242,12 @@ export function createDemoApi() {
         ['tour_zone6', 'Variété', 'Globe-trotteur', 'Signaler dans 6 villes différentes', false, 1, 6],
         ['tour_zone10', 'Variété', 'Routard du burger', 'Signaler dans 10 villes différentes', false, 1, 10],
         ['tour_zone', 'Variété', 'Tour de la zone', 'Signaler dans 3 villes différentes', false, 1, 3],
-        ['fiable', 'Fiabilité', 'Fiable', 'Avoir 10 signalements confirmés', null, null, null],
         ['regulier', 'Moments', 'Régulier', 'Faire au moins 1 signalement par semaine pendant 4 semaines', false, 1, 4],
         ['regulier8', 'Moments', 'Fidèle', 'Faire au moins 1 signalement par semaine pendant 8 semaines', false, 1, 8],
         ['regulier12', 'Moments', 'Inarrêtable', 'Faire au moins 1 signalement par semaine pendant 12 semaines', false, 1, 12],
-        ['coup_de_feu', 'Moments', 'Coup de feu', 'Signaler pendant un pic (12h-13h30 ou 19h-20h30)', null, null, null],
+        ['fiable', 'Fiabilité', 'Fiable', 'Avoir 10 signalements confirmés par d’autres contributeurs', false, 3, 10],
+        ['coup_de_feu', 'Fiabilité', 'Sentinelle', 'Avoir 20 signalements confirmés par d’autres contributeurs', false, 3, 20],
+        ['oeil_lynx', 'Fiabilité', 'Œil de lynx', 'Avoir 50 signalements confirmés par d’autres contributeurs', false, 3, 50],
       ].map(([code, family, name, description, earned, cur, target]) => ({
         code, family, name, description, is_active: earned !== null, earned: !!earned, earned_at: null,
         current_value: cur, target_value: target,

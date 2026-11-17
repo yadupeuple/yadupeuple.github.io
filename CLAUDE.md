@@ -153,6 +153,10 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   1re fois sur un téléphone = rien ; plusieurs badges → l'un après l'autre, bouton « Suivant (encore N) »).
 - Vitesse de la carte (17/11/2026, v163) : restos + horaires chargés par 5 pages en parallèle (pagesInParallel dans api.js) et gardés 24 h sur le téléphone (localStorage ydp_est_cache_v1, mis à jour en arrière-plan) ; fadeDuration 0, cache de tuiles 400 ; plongée d'entrée raccourcie (1,9 s) ; groupes de pastilles réutilisés pendant le zoom ; preconnect vers OpenFreeMap et Supabase.
 - Images (17/11/2026, v166) : badges ronds détourés en cercle parfait et lisse, v167 (outils/badge_sans_ombre.py ; regulier8, regulier12, testeur, tour_zone10 non ronds = images d'origine ; originaux outils/src/badges_avant_ombre/) ; dessins des 30 avatars recentrés dans leur bulle (outils/avatar_centrer.py, dessin seulement déplacé, bulle reconstituée ; originaux outils/src/avatars_avant_centrage/).
+- Badges Fiabilité (17/11/2026, v168, supabase/2026-11-17_badges_fiabilite.sql) : les 3 derniers badges activés (kind 'confirmed') :
+  Fiable (10 signalements confirmés, image éclair), Sentinelle (code coup_de_feu, 20 confirmés, image bouclier ; remplace « pic d'affluence »),
+  Œil de lynx (50 confirmés, diamant). Confirmé = un autre compte signale le même resto + même service à 30 min près, niveau égal ou voisin
+  (confirmed_reports_count) ; trigger reports_award_confirmed : le badge tombe aussi quand c'est l'autre qui confirme.
 - Signalement (v160-162) : petit lexique « 💡 Comment choisir ? » repliable (fermé par défaut) sous les 4 choix (LEXIQUE dans app.js, textes salle / Drive) ; le choix fait ressort, les autres s'estompent.
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
