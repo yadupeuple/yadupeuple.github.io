@@ -28,3 +28,6 @@ select public.award_badges(p.id) from public.profiles p;
 
 -- Renommé « Habitué du Drive » (Alexis, 17/11).
 update public.badges set name = 'Habitué du Drive' where code = 'explorer20';
+
+-- Texte corrigé (Alexis, 17/11).
+update public.badges set description = 'Faire 10 signalements au Drive' where code = 'drive10';

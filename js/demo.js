@@ -248,7 +248,7 @@ export function createDemoApi() {
         // caché jusqu'au lancement : ['testeur', 'Spécial', 'Testeur fondateur', "A testé l'appli avant son lancement", true, 1, 1],
         ['v10', 'Volume', '5 signalements', 'Faire 5 signalements', true, 5, 5],
         ['v50', 'Volume', '10 signalements', 'Faire 10 signalements', false, 7, 10],
-        ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements Drive', false, 3, 10],
+        ['drive10', 'Variété', 'Éclaireur du Drive', 'Faire 10 signalements au Drive', false, 3, 10],
         ['explorer20', 'Variété', 'Habitué du Drive', 'Faire 20 signalements au Drive', false, 3, 20],
         ['explorer', 'Variété', 'Explorateur', 'Signaler dans 5 restaurants différents', false, 4, 5],
         ['ref1', 'Parrainage', 'Parrain', 'Parrainer 1 ami', true, 1, 1],
