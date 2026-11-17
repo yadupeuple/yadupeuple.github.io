@@ -10,21 +10,24 @@ for code in ['explorer', 'explorer10', 'explorer15', 'explorer20', 'explorer30']
     cx, cy, R = C[code]
     H, W = P.shape[:2]
     yy, xx = np.mgrid[0:H, 0:W]
-    lock = (abs(xx - cx) <= 64) & (yy >= cy + R - 40)
     rr = np.hypot(xx - cx, yy - cy); th = np.arctan2(yy - cy, xx - cx)
     img = P.copy()
-    sel = lock & (rr <= R + 2) & (rr >= R - 30)   # seulement l anneau (le cadenas ne touche que lui)
+    # Zone du cadenas (bas de l'anneau) : chaque pixel prend la couleur interpolée entre les deux bords de la zone,
+    # au même rayon (dégradé continu, aucune démarcation).
+    h = np.radians(25)
+    da = th - np.pi / 2
+    sel = (np.abs(da) < h) & (rr >= R - 36) & (rr <= R + 3)
     ys, xs = np.where(sel)
-    out = np.zeros((len(ys), 3)); wsum = np.zeros(len(ys))
-    for d in np.radians([-30, -26, 26, 30]):
-        t = th[ys, xs] + d; r = rr[ys, xs]
-        sx = cx + r * np.cos(t); sy = cy + r * np.sin(t)
-        v = np.dstack([ndimage.map_coordinates(P[..., c], [sy, sx], order=1) for c in range(3)])[0]
-        out += v; wsum += 1
-    img[ys, xs] = out / wsum[:, None]
-    # petit adoucissement de la zone refaite
-    sm = np.dstack([ndimage.gaussian_filter(img[..., c], 0.8) for c in range(3)])
-    img[sel] = sm[sel]
+    r = rr[ys, xs]; w = (da[ys, xs] + h) / (2 * h)
+    def samp(t0):
+        acc = 0
+        for dt in np.radians([0, 1, 2]):
+            t = t0 + dt * np.sign(t0 - np.pi / 2)
+            sx = cx + r * np.cos(t); sy = cy + r * np.sin(t)
+            acc = acc + np.dstack([ndimage.map_coordinates(P[..., c], [sy, sx], order=1) for c in range(3)])[0]
+        return acc / 3
+    L, Rr = samp(np.pi / 2 - h), samp(np.pi / 2 + h)
+    img[ys, xs] = L * (1 - w)[:, None] + Rr * w[:, None]
     # bord réel angle par angle (le cercle dessiné n'est pas parfait) : on s'arrête au dernier pixel coloré,
     # l'ombre claire sous le badge reste dehors (plus de trait blanc)
     mx_, mn_ = img.max(2), img.min(2)
@@ -37,7 +40,7 @@ for code in ['explorer', 'explorer10', 'explorer15', 'explorer20', 'explorer30']
             x = int(round(cx + d * np.cos(t))); y = int(round(cy + d * np.sin(t)))
             if solid[y, x]: e = d; break
         edge[k] = e
-    zone = np.abs(angs - np.pi / 2) < 0.42          # sous l'ancien cadenas : bord recalculé à partir des côtés
+    zone = np.abs(angs - np.pi / 2) < 0.47          # sous l'ancien cadenas : bord recalculé à partir des côtés
     left, right = np.where(~zone & (angs < np.pi / 2))[0][-6:], np.where(~zone & (angs > np.pi / 2))[0][:6]
     i0, i1 = left[-1], right[0]; e0, e1 = np.median(edge[left]), np.median(edge[right])
     edge[i0 + 1:i1] = np.linspace(e0, e1, i1 - i0 + 1)[1:-1]
