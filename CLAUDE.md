@@ -158,6 +158,12 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Fiable (10 signalements confirmés, image éclair), Sentinelle (code coup_de_feu, 20 confirmés, image bouclier ; remplace « pic d'affluence »),
   Œil de lynx (50 confirmés, diamant). Confirmé = un autre compte signale le même resto + même service à 30 min près, niveau égal ou voisin
   (confirmed_reports_count) ; trigger reports_award_confirmed : le badge tombe aussi quand c'est l'autre qui confirme.
+- Images de profil v2 (17/11/2026, v170, supabase/2026-11-17_images_profil_v2.sql) : planche de 40 images d'Alexis
+  (outils/src/planche_profil_v2.png) agrandie ×4 et recentrée (outils/avatars_v2.py, bulles bleu clair nettoyées) ; niveaux : 1 burger frites pizza soda
+  hotdog tacos glace café · 3 sandwich milkshake · 5 pop-corn donut · 8 pomme patte · 10 cœur musique · 15 étoile foot · 18 basket photo ·
+  20 chat chien · 25 panda arbre · 30 gamer cadeau · 35 trèfle éclair · 40 feu lunettes · 45 alien robot · 50 trophée · 55 ninja pirate ·
+  60 montagne · 70 vacances · 80 diamant · 90 fusée · 100 couronne. Désactivées (fichiers gardés, outils/src/avatars_v1/) : cupcake, voiture,
+  renard, chouette, ours, lion, médaille, licorne, dragon.
 - Signalement (v160-162) : petit lexique « 💡 Comment choisir ? » repliable (fermé par défaut) sous les 4 choix (LEXIQUE dans app.js, textes salle / Drive) ; le choix fait ressort, les autres s'estompent.
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
