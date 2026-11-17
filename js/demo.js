@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=168';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=168';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=169';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=169';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -100,6 +100,8 @@ export function createDemoApi() {
         ['avatar', 'soda', 'icons/avatars/soda.webp', 1],
         ['avatar', 'hotdog', 'icons/avatars/hotdog.webp', 1],
         ['avatar', 'tacos', 'icons/avatars/tacos.webp', 1],
+        ['avatar', 'glace', 'icons/avatars/glace.webp', 1],
+        ['avatar', 'cafe', 'icons/avatars/cafe.webp', 1],
         ['avatar', 'popcorn', 'icons/avatars/popcorn.webp', 5],
         ['avatar', 'donut', 'icons/avatars/donut.webp', 5],
         ['avatar', 'cupcake', 'icons/avatars/cupcake.webp', 10],
@@ -133,15 +135,16 @@ export function createDemoApi() {
         ['banner', 'ruban_nuit', 'icons/banners/ruban_nuit.webp', 8],
         ['banner', 'ruban_vache', 'icons/banners/ruban_vache.webp', 10],
         ['banner', 'ruban_damier', 'icons/banners/ruban_damier.webp', 12],
-        ['banner', 'ruban_flammes', 'icons/banners/ruban_flammes.webp', 15],
-        ['banner', 'ruban_fleurs', 'icons/banners/ruban_fleurs.webp', 20],
+        ['banner', 'ruban_flammes', 'icons/banners/ruban_flammes.webp', 14],
+        ['banner', 'ruban_vert', 'icons/banners/ruban_vert.webp', 16],
+        ['banner', 'ruban_engrenage', 'icons/banners/ruban_engrenage.webp', 20],
         ['banner', 'ruban_coeur', 'icons/banners/ruban_coeur.webp', 25],
-        ['banner', 'ruban_flocon', 'icons/banners/ruban_flocon.webp', 30],
-        ['banner', 'ruban_engrenage', 'icons/banners/ruban_engrenage.webp', 40],
-        ['banner', 'ruban_etoile_or', 'icons/banners/ruban_etoile_or.webp', 50],
+        ['banner', 'ruban_fleurs', 'icons/banners/ruban_fleurs.webp', 30],
+        ['banner', 'ruban_flocon', 'icons/banners/ruban_flocon.webp', 40],
+        ['banner', 'ruban_etoile_violet', 'icons/banners/ruban_etoile_violet.webp', 50],
         ['banner', 'ruban_diamant', 'icons/banners/ruban_diamant.webp', 60],
-        ['banner', 'ruban_flamme_violet', 'icons/banners/ruban_flamme_violet.webp', 70],
-        ['banner', 'ruban_etoile_violet', 'icons/banners/ruban_etoile_violet.webp', 85],
+        ['banner', 'ruban_etoile_or', 'icons/banners/ruban_etoile_or.webp', 70],
+        ['banner', 'ruban_flamme_violet', 'icons/banners/ruban_flamme_violet.webp', 85],
         ['banner', 'ruban_couronne', 'icons/banners/ruban_couronne.webp', 100],
         // badge testeur caché jusqu'au lancement (beta_badge_visible)
         //        ['avatar', 'badge_testeur', 'icons/badges/testeur.webp', 1, 'testeur'],

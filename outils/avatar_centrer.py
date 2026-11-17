@@ -5,7 +5,12 @@ import glob, os
 import numpy as np
 from PIL import Image, ImageFilter
 from scipy import ndimage
-for f in sorted(glob.glob('outils/src/avatars_avant_centrage/*.webp')):
+# Avatars de la planche 1 (bulle bleu clair) mis sur la bulle turquoise des autres (reprise de celle des tacos)
+BULLE_DE = {'glace': 'tacos', 'cafe': 'tacos'}
+bases = {}
+files = sorted(glob.glob('outils/src/avatars_avant_centrage/*.webp'))
+files.sort(key=lambda f: os.path.basename(f)[:-5] in BULLE_DE)   # les modèles d'abord
+for f in files:
     code = os.path.basename(f)[:-5]
     im = Image.open(f).convert('RGBA'); a = np.asarray(im).astype(float)
     H, W = a.shape[:2]; rgb, al = a[..., :3], a[..., 3]
@@ -17,6 +22,9 @@ for f in sorted(glob.glob('outils/src/avatars_avant_centrage/*.webp')):
     # fond de bulle = turquoise clair (vert et bleu forts, rouge plus faible)
     bg = (al > 128) & (g_ > 200) & (b_ > 200) & (g_ - r_ > 25) & (b_ - r_ > 25) & (abs(g_ - b_) < 35)
     subj = (al > 128) & ~bg & (rr < R * 0.92)
+    if code in BULLE_DE:   # bulle bleu clair : on ne garde que le dessin (couleurs vives ou traits foncés)
+        mx, mn = rgb.max(2), rgb.min(2)
+        subj = (al > 128) & (rr < R * 0.92) & (((mx - mn) > 70) | (mx < 160))
     subj = ndimage.binary_opening(subj, iterations=1)
     subj = ndimage.binary_closing(subj, iterations=2)
     subj = ndimage.binary_fill_holes(subj)
@@ -41,7 +49,9 @@ for f in sorted(glob.glob('outils/src/avatars_avant_centrage/*.webp')):
         hole_w &= d2 < 0.05
     base = np.where(bg[..., None], rgb, est)
     base = np.dstack([ndimage.gaussian_filter(base[..., c], 2.5) for c in range(3)])
-    soft = np.asarray(Image.fromarray((ndimage.binary_dilation(subj, iterations=1) * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(0.9))) / 255.0
+    bases[code] = base
+    if code in BULLE_DE: base = bases[BULLE_DE[code]]
+    soft = np.asarray(Image.fromarray(((subj if code in BULLE_DE else ndimage.binary_dilation(subj, iterations=1)) * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(0.9))) / 255.0
     sh = lambda arr: np.roll(np.roll(arr, dy, 0), dx, 1)
     s_rgb, s_soft = sh(rgb), sh(soft)[..., None]
     out = base * (1 - s_soft) + s_rgb * s_soft

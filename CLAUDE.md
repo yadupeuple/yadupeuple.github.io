@@ -95,9 +95,10 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
   Bannières = 19 rubans (16/11/2026, v141, planches ChatGPT d'Alexis outils/src/rubans_sheet2.png + rubans_sheet3.png, découpe
   outils/rubans_sheet2.py, sans ornement au milieu de la bande ; supabase/2026-11-16_nouveaux_rubans.sql) qui portent le pseudo sous l'avatar
-  (hauteur + contour par ruban : custom.RIB dans app.js). Niveaux : 1 (ciel, bonbon, turquoise, orange), 3 violet, 5 laurier, 8 nuit,
-  10 vache, 12 damier, 15 flammes, 20 fleurs, 25 cœur, 30 flocon, 40 engrenage, 50 étoile or, 60 diamant, 70 flamme violette,
-  85 étoile violette, 100 couronne rouge. Les 10 rubans du 15/11 et les anciennes bannières sont désactivés (fichiers gardés).
+  (hauteur + contour par ruban : custom.RIB dans app.js). Niveaux (revus le 17/11, v169, supabase/2026-11-17_rubans_niveaux_glace_cafe.sql) : 1 (ciel, bonbon, turquoise, orange), 3 violet, 5 laurier, 8 nuit,
+  10 vache, 12 damier, 14 flammes, 16 vert (feuilles, ancien ruban du 15/11 réactivé), 20 engrenage, 25 cœur, 30 fleurs, 40 flocon,
+  50 étoile violette, 60 diamant, 70 étoile or, 85 flamme violette, 100 couronne rouge. Images de profil Glace et Café ajoutées
+  au niveau 1 (planche 1, outils/extract.py, bulle turquoise reprise des tacos par outils/avatar_centrer.py). Les 10 rubans du 15/11 et les anciennes bannières sont désactivés (fichiers gardés).
   Badges gagnés utilisables en image de profil
   (customizations.requires_badge, contrôlé par set_customization ; supabase/2026-11-15_rubans_avatars_badges.sql).
 - Points des badges (ajoutés aux points normaux) : +1 par badge, +10 quand une catégorie (badges actifs) est complète
