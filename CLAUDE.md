@@ -43,7 +43,7 @@ Fonctions appelées par l'appli (RPC) :
 | search_establishments(p_query ≥ 2 car., p_lat, p_lng, p_limit) | oui | recherche + statuts |
 | get_service_status(p_establishment, p_service) | oui | statut d'un service |
 | get_history(p_establishment, p_service, p_limit ≤ 5) | oui | 5 derniers signalements anonymes de moins de 12 h (app_settings history_max_hours) |
-| get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 100 = app_settings ranking_top + moi, avec avatar ; ligne « ma place » = barre bleu nuit collée tout en bas de l'écran, pleine largeur, v187) |
+| get_ranking(p_scope 'month'|'all', p_city) | oui | classement du mois (remis à zéro le 1er) ou depuis le début (top 100 = app_settings ranking_top + moi, avec avatar ; ligne « ma place » = carte bleu nuit alignée sur les autres, collée à 10 px du bas visible de l'écran, même si la liste est courte (placeMyRank), v188 ; plus de bandeau « Version test » dans Classement) |
 | get_last_month_podium() | oui | top 3 du mois précédent (podium dans Classement > Ce mois-ci, rien s'il est vide ; v152) |
 | get_public_profile(p_pseudo) | oui | profil public d'un joueur : jamais d'e-mail, de contact ni de lieu |
 | calmer_nearby_info(p_id) | oui | {id, name, distance_m, label} : resto plus calme **le plus proche** (≤ 5 km, v125), cliquable sur la fiche, avec « ‹ Retour à … » ; ancienne calmer_nearby (texte) gardée |
@@ -188,7 +188,7 @@ bilan automatique du lundi.
 ## Testeurs (15/11/2026, supabase/2026-11-15_testeurs_avis.sql)
 Phase de test ouverte : badge « Testeur fondateur » (code testeur, famille Spécial, kind 'beta') donné au 1er signalement validé
 tant que app_settings.beta_open = 1 ; bouton « Donner mon avis / signaler un bug » dans Réglages (table feedback).
-Bandeau 🧪 « Version test : points et badges remis à zéro au lancement… » dans Profil et Classement tant que beta_open = 1
+Bandeau 🧪 « Version test : points et badges remis à zéro au lancement… » dans Profil (plus dans Classement depuis v188) tant que beta_open = 1
 (RPC get_app_flags, v140, supabase/2026-11-16_bandeau_version_test.sql) + ligne dans cgu.html (à retirer au lancement).
 **Badge caché jusqu'au lancement** (15/11, v124, supabase/2026-11-15_badge_testeur_cache.sql) : enregistré dans user_badges mais invisible
 (progression, profils), sans points, image de profil désactivée, tant que app_settings.beta_badge_visible = 0 (fonction badge_hidden).
