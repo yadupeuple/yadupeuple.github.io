@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=178';
+import { api, DEMO } from './api.js?v=179';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=178';
+} from './config.js?v=179';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=178';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=178';
-import { BRAND_PATHS } from './brands.js?v=178';
+} from './levels.js?v=179';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=179';
+import { BRAND_PATHS } from './brands.js?v=179';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1555,9 +1555,28 @@ async function loadFavorites() {
   try { (await api.myFavorites() || []).forEach((e) => state.favorites.add(e.id)); } catch {}
 }
 
-async function renderAccount(tab = 'profil') {
-  await custom.load();
-  await refreshProfile();
+// Onglets du compte : on affiche tout de suite ce qu'on a déjà (profil, badges, classement gardés en mémoire)
+// et on met à jour en arrière-plan ; seul le tout premier affichage attend le réseau.
+const acctCache = { badges: null, rank: {}, podium: null, fav: null };
+let acctSeq = 0;
+function prefetchAccount() {
+  if (!state.user) return;
+  api.badgesProgress().then((r) => { acctCache.badges = r || []; }).catch(() => {});
+  api.ranking('month', null).then((r) => { acctCache.rank.month = r || []; }).catch(() => {});
+  api.lastMonthPodium().then((r) => { acctCache.podium = r || []; }).catch(() => {});
+  api.myFavorites().then((r) => { acctCache.fav = r || []; }).catch(() => {});
+}
+async function renderAccount(tab = 'profil', opts = {}) {
+  const seq = ++acctSeq;
+  if (!custom.list.length) await custom.load();
+  if (!state.profile) await refreshProfile();
+  else if (!opts.fresh) {
+    const before = JSON.stringify(state.profile);
+    refreshProfile().then(() => {
+      if (seq === acctSeq && JSON.stringify(state.profile) !== before && state.sheetView === 'account' && !$('#sheet').hidden && tab === 'profil') renderAccount(tab, { fresh: true });
+    });
+  }
+  if (!opts.fresh && tab === 'profil') prefetchAccount();
   const p = state.profile || { pseudo: '…', points: 0, level_name: '', next_level_at: null };
   const pct = p.next_level_at ? Math.min(100, Math.round((p.points / p.next_level_at) * 100)) : 100;
   openSheet('account', `
@@ -1592,7 +1611,7 @@ async function renderAccount(tab = 'profil') {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=178" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=179" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1623,9 +1642,20 @@ async function renderAccount(tab = 'profil') {
   $('#sheet-body').querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => renderAccount(b.dataset.tab));
   const body = $('#tab-body');
   try {
-    if (tab === 'badges') body.innerHTML = await badgesHtml();
+    if (tab === 'badges') {
+      if (acctCache.badges) body.innerHTML = badgesHtml(acctCache.badges);
+      const rows = await api.badgesProgress() || [];
+      const changed = JSON.stringify(rows) !== JSON.stringify(acctCache.badges);
+      acctCache.badges = rows;
+      if (seq === acctSeq && (changed || !body.innerHTML.trim() || body.querySelector('.spinner'))) { const y = $('#sheet-body')?.scrollTop; body.innerHTML = badgesHtml(rows); if (y != null) $('#sheet-body').scrollTop = y; }
+    }
     if (tab === 'classement') { await renderLeaderboard(body); return; }
-    if (tab === 'favoris') { body.innerHTML = await favoritesHtml(); bindFavList(body); }
+    if (tab === 'favoris') {
+      if (acctCache.fav) { body.innerHTML = await favoritesHtml(true); bindFavList(body); }
+      const prev = JSON.stringify(acctCache.fav);
+      const html = await favoritesHtml();
+      if (seq === acctSeq && JSON.stringify(acctCache.fav) !== prev) { body.innerHTML = html; bindFavList(body); }
+    }
     if (tab === 'reglages') { const resto = await api.myRestaurant().catch(() => null); body.innerHTML = settingsHtml(resto); bindSettings(body, resto); }
   } catch (err) {
     body.innerHTML = `<p class="muted">${esc(err.message)}</p>`;
@@ -1638,8 +1668,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=178" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=178) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=179" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=179) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1647,7 +1677,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=178" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=179" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1659,7 +1689,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=178" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=179" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1739,10 +1769,9 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=178" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=179" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
-async function badgesHtml() {
-  const rows = await api.badgesProgress() || [];
+function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
   const item = (b) => {
     const prog = b.is_active && b.target_value ? Math.round((b.current_value / b.target_value) * 100) : 0;
@@ -1796,7 +1825,7 @@ async function renderLeaderboard(body, city = null, scope = 'month') {
     <div id="lb-list"><div class="spinner"></div></div>`;
   fillBeta(body);
   // Podium du mois dernier (rien s'il n'y a eu personne).
-  if (scope === 'month') api.lastMonthPodium().then((rows) => {
+  const drawPodium = (rows) => {
     const box = document.querySelector('#lb-podium');
     if (!box || !rows?.length) return;
     const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
@@ -1809,7 +1838,11 @@ async function renderLeaderboard(body, city = null, scope = 'month') {
         <span class="pod-name">${esc(r.pseudo)}</span><span class="pod-pts">${r.points} pts</span>
         <span class="pod-step">${r.rang}</span></button>`).join('')}</div></div>`;
     box.querySelectorAll('.pod').forEach((b) => b.onclick = () => openPublicProfile(b.dataset.pseudo, () => renderAccount('classement')));
-  }).catch(() => {});
+  };
+  if (scope === 'month') {
+    if (acctCache.podium) drawPodium(acctCache.podium);
+    api.lastMonthPodium().then((rows) => { if (JSON.stringify(rows) !== JSON.stringify(acctCache.podium)) { acctCache.podium = rows; drawPodium(rows); } }).catch(() => {});
+  }
   // Lot du mois offert par un partenaire (rien ne s'affiche s'il n'y en a pas).
   if (scope === 'month') api.monthlyPrize().then((pz) => {
     const box = document.querySelector('#lb-prize');
@@ -1822,7 +1855,8 @@ async function renderLeaderboard(body, city = null, scope = 'month') {
   }).catch(() => {});
   // Classement général uniquement (plus de filtre par ville) ; par région plus tard si l'appli s'étend.
   body.querySelectorAll('[data-scope]').forEach((b) => b.onclick = () => renderLeaderboard(body, null, b.dataset.scope));
-  const rows = await api.ranking(scope, city) || [];
+  const drawRank = (rows) => {
+  if (!$('#lb-list')) return;
   $('#lb-list').innerHTML = rows.length ? `<ul class="list">${rows.map((r) => `
     <li class="${r.is_me ? 'me-row' : ''} lb-row" data-pseudo="${esc(r.pseudo)}" role="button" tabindex="0">
     <span class="rank">${r.rang <= 3 ? ['🥇', '🥈', '🥉'][r.rang - 1] : r.rang}</span>
@@ -1836,10 +1870,16 @@ async function renderLeaderboard(body, city = null, scope = 'month') {
     ? `<div class="lb-me"><span class="lb-av">${custom.avatar(me.avatar)}</span><div class="grow"><div class="t">${esc(me.pseudo)}</div><div class="s">${me.points} pts</div></div><span class="lb-me-rank">${ord(me.rang)}</span></div>`
     : '<div class="lb-me"><div class="grow"><div class="t">Pas encore classé</div><div class="s">Fais un signalement pour entrer dans le classement !</div></div></div>');
   $('#lb-list').querySelectorAll('.lb-row').forEach((li) => li.onclick = () => openPublicProfile(li.dataset.pseudo, () => renderAccount('classement')));
+  };
+  const key = scope + '|' + (city || '');
+  if (acctCache.rank[key] || (!city && acctCache.rank[scope])) drawRank(acctCache.rank[key] || acctCache.rank[scope]);
+  const rows = await api.ranking(scope, city) || [];
+  if (JSON.stringify(rows) !== JSON.stringify(acctCache.rank[key] || (!city && acctCache.rank[scope]))) drawRank(rows);
+  acctCache.rank[key] = rows; if (!city) acctCache.rank[scope] = rows;
 }
 
-async function favoritesHtml() {
-  const rows = await api.myFavorites() || [];
+async function favoritesHtml(cached = false) {
+  const rows = cached ? acctCache.fav : (acctCache.fav = await api.myFavorites() || []);
   state.favorites = new Set(rows.map((r) => r.id));
   if (!rows.length) return '<p class="muted">Aucun favori. Touche l\'étoile ⭐ sur la fiche d\'un restaurant pour l\'ajouter.</p>';
   return `<ul class="list">${rows.map((r) => {
@@ -2052,6 +2092,7 @@ function deviceId() {
 async function onUserChanged(user) {
   const was = state.user?.id;
   state.user = user;
+  if (!user || user.id !== was) { acctCache.badges = null; acctCache.rank = {}; acctCache.podium = null; acctCache.fav = null; }
   $('#btn-account').classList.toggle('logged', !!user);
   if (user && user.id !== was) {
     const fromWelcome = !$('#welcome').hidden;
@@ -2060,6 +2101,7 @@ async function onUserChanged(user) {
     if (fromWelcome) introFly();
     store.set('ydp_seen_welcome', '1');
     api.registerDevice(deviceId()); // anti-triche parrainage : identifiant anonyme du téléphone
+    setTimeout(() => { custom.load().catch(() => {}); prefetchAccount(); }, 2500); // compte prêt avant qu'on l'ouvre
     await Promise.all([refreshProfile(), loadFavorites()]);
     if (wantedPseudo && state.profile && state.profile.pseudo !== wantedPseudo) {
       toast(`Pseudo « ${wantedPseudo} » déjà pris : tu peux le changer dans Réglages.`, 4500);
