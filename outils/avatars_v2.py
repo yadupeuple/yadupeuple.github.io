@@ -11,7 +11,8 @@ sess = ort.InferenceSession('/home/claude/art/models/anime6b.onnx', providers=['
 P = Image.open(ROOT + 'outils/src/planche_profil_v2.png').convert('RGB')
 C = json.load(open(ROOT + 'outils/src/planche_profil_v2_bulles.json'))
 NO_RECENTER = {'montagne'}
-COLOR_MASK = {'milkshake'}   # verre transparent + bulles détachées : dessin repéré par ses couleurs   # paysage qui remplit la bulle
+COLOR_MASK = {'milkshake'}
+OUTLINE_ONLY = {'vacances'}   # tache abîmée au-dessus du palmier (planche) : on ne garde que ce qui est cerné de foncé   # verre transparent + bulles détachées : dessin repéré par ses couleurs   # paysage qui remplit la bulle
 only = sys.argv[1:]
 
 def up4(img):
@@ -22,6 +23,18 @@ def up4(img):
     return Image.fromarray((np.clip(o, 0, 1) * 255 + .5).astype(np.uint8)[pad * 4:-pad * 4, pad * 4:-pad * 4])
 
 S = 320
+# Fond turquoise d'avant (bulle des anciennes images, reprise des tacos) : demande d'Alexis du 17/11
+def turquoise_base():
+    t = np.asarray(Image.open(ROOT + 'outils/src/avatars_avant_centrage/tacos.webp').convert('RGB').resize((S, S), Image.LANCZOS)).astype(float)
+    r_, g_, b_ = t[..., 0], t[..., 1], t[..., 2]
+    bgm = (g_ > 200) & (b_ > 200) & (g_ - r_ > 25) & (b_ - r_ > 25) & (abs(g_ - b_) < 35)
+    known = bgm.astype(float); num = t * known[..., None]
+    out = t.copy(); hole = ~bgm
+    for s_ in (6, 12, 24, 48, 96):
+        n2 = np.dstack([ndimage.gaussian_filter(num[..., c], s_) for c in range(3)]); d2 = ndimage.gaussian_filter(known, s_)
+        ok = hole & (d2 > 0.05); out[ok] = (n2 / np.maximum(d2, 1e-6)[..., None])[ok]; hole &= ~ok
+    return np.dstack([ndimage.gaussian_filter(out[..., c], 4) for c in range(3)])
+TURQ = turquoise_base()
 for code, (cx, cy, r) in C.items():
     if only and code not in only: continue
     m = 8
@@ -45,15 +58,23 @@ for code, (cx, cy, r) in C.items():
         mx, mn = rgb.max(2), rgb.min(2)
         # dessin = tout ce qui est entouré par son trait foncé (l'ombre bleue portée reste dehors)
         dark = (mx < 115) & (rr < S / 2 * 0.93)
+        if code in OUTLINE_ONLY:
+            ld, nd = ndimage.label(dark); sz = ndimage.sum(dark, ld, range(1, nd + 1))
+            dark = np.isin(ld, [i + 1 for i, v in enumerate(sz) if v >= sz.max() * 0.1])
         subj = ndimage.binary_fill_holes(ndimage.binary_closing(dark, iterations=3))
-        subj |= (rr < S / 2 * 0.93) & (((mx - mn) > 70) & ndimage.binary_dilation(subj, iterations=6))
+        if code not in OUTLINE_ONLY:
+            subj |= (rr < S / 2 * 0.93) & (((mx - mn) > 70) & ndimage.binary_dilation(subj, iterations=6))
         subj = ndimage.binary_fill_holes(ndimage.binary_closing(subj, iterations=2))
         if code in COLOR_MASK:
             subj = (rr < S / 2 * 0.9) & (((mx - mn) > 70) | (mx < 150))
             subj = ndimage.binary_fill_holes(ndimage.binary_closing(subj, iterations=3))
         lab, n = ndimage.label(subj)
         sizes = ndimage.sum(subj, lab, range(1, n + 1))
-        subj = np.isin(lab, [i + 1 for i, s_ in enumerate(sizes) if s_ >= max(60, sizes.max() * 0.02)])
+        subj = np.isin(lab, [i + 1 for i, s_ in enumerate(sizes) if s_ >= max(60, sizes.max() * (0.15 if code in OUTLINE_ONLY else 0.02))])
+        if code in OUTLINE_ONLY:   # retire les petits bouts accrochés (trait fin)
+            core = ndimage.binary_opening(subj, iterations=5)
+            l2, n2_ = ndimage.label(core); core = l2 == (np.argmax(ndimage.sum(core, l2, range(1, n2_ + 1))) + 1)
+            subj &= ndimage.binary_dilation(core, iterations=6) & (yy >= np.where(core)[0].min())
         sy, sx = np.where(subj)
         dx = round(S / 2 - (sx.min() + sx.max() + 1) / 2); dy = round(S / 2 - (sy.min() + sy.max() + 1) / 2)
         # bulle propre : couleur de fond lissée, sans ombre ni petites taches
@@ -69,7 +90,7 @@ for code, (cx, cy, r) in C.items():
             ok = hole & (d2 > 0.05)
             base[ok] = (n2 / np.maximum(d2, 1e-6)[..., None])[ok]; hole &= ~ok
         base[hole] = med
-        base = np.dstack([ndimage.gaussian_filter(base[..., c], 6) for c in range(3)])
+        base = TURQ
         soft = np.asarray(Image.fromarray((ndimage.binary_dilation(subj, iterations=1) * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(1.0))) / 255.0
         sh = lambda arr: np.roll(np.roll(arr, dy, 0), dx, 1)
         rgb = base * (1 - sh(soft)[..., None]) + sh(rgb) * sh(soft)[..., None]
