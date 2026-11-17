@@ -165,8 +165,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   60 montagne · 70 vacances · 80 diamant · 90 fusée · 100 couronne. Désactivées (fichiers gardés, outils/src/avatars_v1/) : cupcake, voiture,
   renard, chouette, ours, lion, médaille, licorne, dragon.
 - Badges villes (17/11/2026, v173, supabase/2026-11-17_badges_villes.sql) : nouvelles images (planche d'Alexis outils/src/badges_voyage.png,
-  outils/badges_voyage.py) : tour_zone « Tour de la zone » (3 villes, carte et repères), tour_zone6 « Voyageur » (6 villes, avion),
-  tour_zone10 « Globe-trotteur » (10 villes, monuments) ; anciennes images dans outils/src/badges_villes_v1/.
+  outils/badges_voyage.py) : tour_zone « Tour de la zone » (5 villes, carte et repères), tour_zone6 « Voyageur » (10 villes, avion),
+  tour_zone10 « Globe-trotteur » (20 villes, monuments) ; paliers 5/10/20 depuis le 17/11 (avant 3/6/10) ; anciennes images dans outils/src/badges_villes_v1/.
 - Signalement (v160-162) : petit lexique « 💡 Comment choisir ? » repliable (fermé par défaut) sous les 4 choix (LEXIQUE dans app.js, textes salle / Drive) ; le choix fait ressort, les autres s'estompent.
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)
