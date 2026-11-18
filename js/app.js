@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=197';
+import { api, DEMO } from './api.js?v=198';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=197';
+} from './config.js?v=198';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=197';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=197';
-import { BRAND_PATHS } from './brands.js?v=197';
+} from './levels.js?v=198';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=198';
+import { BRAND_PATHS } from './brands.js?v=198';
 
 // ---------------------------------------------------------------------------
 // État
@@ -81,7 +81,20 @@ map.touchZoomRotate.disableRotation();
 // replié par défaut ; un toucher affiche les crédits.
 map.addControl(new maplibregl.AttributionControl({ compact: true }), 'top-left');
 const foldAttrib = () => document.querySelectorAll('.maplibregl-ctrl-attrib').forEach((el) => el.classList.remove('maplibregl-compact-show'));
-map.on('load', foldAttrib);
+// Chronométrage du démarrage (ms depuis l'ouverture), gardé sur le téléphone : visible dans 🧪 Mode test.
+const perf = { t: {}, sw: !!navigator.serviceWorker?.controller, cached: false, welcome: false, saved: false };
+const mark = (k) => { if (perf.t[k] == null) perf.t[k] = Math.round(performance.now()); };
+function savePerf() {
+  if (perf.saved) return; perf.saved = true;
+  try {
+    const list = JSON.parse(localStorage.getItem('ydp_perf') || '[]');
+    list.unshift({ d: Date.now(), t: perf.t, sw: perf.sw, cached: perf.cached, welcome: perf.welcome, demo: DEMO, net: navigator.connection?.effectiveType || '' });
+    localStorage.setItem('ydp_perf', JSON.stringify(list.slice(0, 12)));
+  } catch {}
+}
+setTimeout(savePerf, 12000);
+map.on('load', () => { mark('style'); foldAttrib(); });
+map.once('idle', () => mark('idle'));
 map.on('styledata', foldAttrib);
 map.on('movestart', foldAttrib);
 map.on('styleimagemissing', (e) => { if (e.id === 'ydp-shield') addShieldImage(map); });
@@ -1585,9 +1598,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=197`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=198`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=197`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=198`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1646,7 +1659,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=197" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=198" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1703,8 +1716,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=197" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=197) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=198" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=198) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1712,7 +1725,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=197" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=198" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1724,7 +1737,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=197" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=198" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1804,7 +1817,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=197" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=198" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2082,6 +2095,19 @@ function openPseudo() {
 }
 
 // Outils de test (compte testeur seulement) : position fictive + affiches QR code
+function perfHtml() {
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem('ydp_perf') || '[]'); } catch {}
+  if (!list.length) return '<p class="muted" style="margin:0 0 8px">Rien encore : ouvre l\'appli quelques fois puis reviens ici.</p>';
+  const L = { user: 'compte', style: 'carte', est: 'restos', gps: 'GPS', fly: 'plongée', cards: 'liste', idle: 'tuiles', statuts: 'statuts' };
+  const sec = (v) => (v / 1000).toFixed(1).replace('.', ',');
+  return '<p class="muted" style="margin:0 0 8px">Secondes depuis l\'ouverture. Tuiles = carte entièrement dessinée.</p>' + list.map((r) => {
+    const d = new Date(r.d).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const marks = Object.entries(r.t).sort((a, b) => a[1] - b[1]).map(([k, v]) => `${L[k] || k} ${sec(v)}`).join(' · ');
+    const tags = [r.sw ? 'cache carte' : 'sans cache carte', r.cached ? 'restos en cache' : 'restos réseau', r.welcome ? 'accueil' : '', r.demo ? 'démo' : '', r.net].filter(Boolean).join(', ');
+    return `<div style="margin:0 0 10px;font-size:13px;line-height:1.4"><b>${d}</b> <span class="muted">(${tags})</span><br>${marks}</div>`;
+  }).join('');
+}
 function openTestTools() {
   const t = testPosition();
   openSheet('testtools', `
@@ -2096,6 +2122,8 @@ function openTestTools() {
       <input class="select" style="flex:1;font-size:16px" name="pos" placeholder="49.3581, 6.1378" value="${t ? `${t.lat}, ${t.lng}` : ''}">
       <button class="btn btn-dark" style="width:auto;padding:10px 16px">OK</button>
     </form>
+    <div class="section-title">⏱ Ouvertures récentes</div>
+    ${perfHtml()}
     <div class="section-title">Affiches</div>
     <div class="set-list"><a class="set-row" href="affiche.html" target="_blank" rel="noopener"><span class="set-ico">🖨️</span><span class="grow">Affiches QR code des restaurants</span><span class="set-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></span></a></div>`);
   $('#btn-close').onclick = closeSheet;
@@ -2188,6 +2216,7 @@ function showWelcome() {
 }
 
 function showCards() {
+  mark('cards'); setTimeout(savePerf, 2500);
   document.body.classList.remove('intro');
   renderCards();
 }
@@ -2208,6 +2237,7 @@ function introFly() {
       if (still >= 2 || Date.now() - started > 7000) { clearInterval(watch); showCards(); }
     }, 200);
     const p = myPosition();
+    mark('fly');
     markersOn = true; // les pastilles apparaîtront pendant la plongée
     if (p) {
       firstFix = false;
@@ -2244,6 +2274,7 @@ function watchGps() {
   navigator.geolocation.getCurrentPosition((p) => {
     if (state.gps) return;
     state.gps = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
+    mark('gps');
     preloadAround(state.gps.lat, state.gps.lng); renderMe();
   }, () => {}, { enableHighAccuracy: false, maximumAge: 600000, timeout: 4000 });
   navigator.geolocation.watchPosition((p) => {
@@ -2432,20 +2463,23 @@ async function start() {
   if (DEMO) $('#demo-banner').hidden = false;
   api.onAuthChange(onUserChanged);
   const user = await api.getUser().catch(() => null);
+  mark('user');
   onUserChanged(user).catch(() => {}); // profil et favoris se chargent en parallèle : on n'attend plus avant de lancer la carte
   document.body.classList.add('intro'); // liste du bas cachée jusqu'à la fin de l'animation
   // Départ de la plongée : au-dessus du dernier endroit regardé (tuiles déjà chargées pendant le démarrage),
   // sinon vue lointaine sur la France (première ouverture).
   { const sv = savedView(); map.jumpTo(sv ? { center: [sv.lng, sv.lat], zoom: 10 } : FAR_VIEW); }
-  if (!user) showWelcome(); // écran d'accueil à chaque ouverture tant qu'on n'est pas connecté
+  if (!user) { perf.welcome = true; showWelcome(); } // écran d'accueil à chaque ouverture tant qu'on n'est pas connecté
   document.documentElement.classList.remove('booting'); // la carte ou l'accueil peut maintenant s'afficher
 
   try {
     if (cachedEstablishments()) {
+      perf.cached = true; mark('est');
       renderMarkers();
       loadEstablishments().catch(() => {}); // mise à jour en arrière-plan
     } else {
       await loadEstablishments();
+      mark('est');
     }
   } catch (err) {
     showOffline(navigator.onLine === false ? 'Pas de connexion internet.' : (err.message || 'Impossible de charger les restaurants.'));
@@ -2468,6 +2502,7 @@ async function start() {
     introFly();
   }
   await refreshStatuses();
+  mark('statuts');
   setInterval(() => { if (!document.hidden) refreshStatuses(true); }, REFRESH_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStatuses(); });
 }
