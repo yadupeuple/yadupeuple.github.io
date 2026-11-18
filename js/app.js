@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=194';
+import { api, DEMO } from './api.js?v=195';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=194';
+} from './config.js?v=195';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=194';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=194';
-import { BRAND_PATHS } from './brands.js?v=194';
+} from './levels.js?v=195';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=195';
+import { BRAND_PATHS } from './brands.js?v=195';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1100,7 +1100,7 @@ async function toggleFav(id) {
     const msg = await api.toggleFavorite(id);
     if (msg === 'Ajoute aux favoris') state.favorites.add(id);
     else if (msg === 'Retire des favoris') state.favorites.delete(id);
-    toast(msg === 'Ajoute aux favoris' ? 'Ajouté aux favoris ⭐' : msg === 'Retire des favoris' ? 'Retiré des favoris' : msg);
+    toast(msg === 'Ajoute aux favoris' ? (pushSupported() && Notification.permission === 'default' && !store.get('ydp_push_hint') ? (store.set('ydp_push_hint', '1'), 'Ajouté ⭐ Active les alertes dans Réglages 🔔') : 'Ajouté aux favoris ⭐') : msg === 'Retire des favoris' ? 'Retiré des favoris' : msg);
     if (state.sheetView === 'detail') renderDetail(id);
   } catch (err) { toast(err.message); }
 }
@@ -1585,9 +1585,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=194`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=195`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=194`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=195`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1646,7 +1646,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=194" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=195" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1703,8 +1703,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=194" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=194) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=195" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=195) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1712,7 +1712,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=194" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=195" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1724,7 +1724,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=194" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=195" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1804,7 +1804,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=194" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=195" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -1978,6 +1978,7 @@ function settingsHtml(resto = null) {
       <div class="set-block"><span class="set-big">📲</span><div class="grow"><div class="t">L'appli sur ton écran d'accueil</div><div class="s">Ouvre Y'a du peuple ? en un clic, comme une vraie appli.</div></div></div>
       <button type="button" class="btn btn-primary" id="btn-install">Installer l'appli</button>
     </div>` : ''}
+    ${pushCardHtml()}
     <div class="set-card">
       <div class="set-block"><span class="set-big">💬</span><div class="grow"><div class="t">Ton avis compte</div><div class="s">L'appli est en test : une idée, un bug ? Dis-le-nous.</div></div></div>
       <button type="button" class="btn btn-primary" id="btn-feedback">Donner mon avis</button>
@@ -2014,6 +2015,7 @@ function bindSettings(body, resto = null) {
   $('#btn-pseudo', body).onclick = () => openPseudo();
   const ins = $('#btn-install'); if (ins) ins.onclick = installApp;
   const fb = $('#btn-feedback'); if (fb) fb.onclick = () => openFeedback();
+  bindPushCard(body);
   const of = $('#offer-form', body);
   if (of) {
     const send = async (o) => {
@@ -2289,6 +2291,73 @@ function maybeNudge() {
   setTimeout(close, 20000);
 }
 setInterval(maybeNudge, 15000);
+
+// ---------------------------------------------------------------------------
+// Alertes « c'est calme » sur les favoris (notifications push, 18/11/2026)
+// La base décide qui prévient et quand (8 h-22 h, 1 par resto et par jour, 3 par jour max) ; l'appli abonne ou désabonne.
+// ---------------------------------------------------------------------------
+const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+function b64ToUint8(b64) {
+  const pad = '='.repeat((4 - (b64.length % 4)) % 4);
+  const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+}
+async function pushSub() {
+  const reg = await navigator.serviceWorker.getRegistration();
+  return reg ? reg.pushManager.getSubscription() : null;
+}
+function pushCardHtml() {
+  if (!state.user) return '';
+  if (!pushSupported()) {
+    return isIos() && !isStandalone()
+      ? `<div class="set-card"><div class="set-block"><span class="set-big">🔔</span><div class="grow"><div class="t">Alertes sur tes favoris</div><div class="s">Pour les recevoir sur iPhone, installe d'abord l'appli sur ton écran d'accueil.</div></div></div></div>`
+      : '';
+  }
+  return `<div class="set-card" id="push-card">
+    <div class="set-block"><span class="set-big">🔔</span><div class="grow"><div class="t">Alertes sur tes favoris</div><div class="s" id="push-sub">Reçois une notif quand un de tes restos favoris est calme (pas plus de 3 par jour).</div></div></div>
+    <button type="button" class="btn btn-primary" id="btn-push" disabled>…</button>
+  </div>`;
+}
+async function bindPushCard(body) {
+  const btn = $('#btn-push', body); if (!btn) return;
+  const sub = $('#push-sub', body);
+  const paint = async () => {
+    const perm = Notification.permission;
+    const s = perm === 'granted' ? await pushSub().catch(() => null) : null;
+    if (perm === 'denied') { btn.hidden = true; sub.textContent = 'Les notifications sont bloquées pour cette appli : autorise-les dans les réglages du téléphone.'; return; }
+    btn.hidden = false; btn.disabled = false;
+    btn.textContent = s ? 'Désactiver les alertes' : 'Activer les alertes';
+    btn.className = s ? 'btn btn-ghost' : 'btn btn-primary';
+    btn.dataset.on = s ? '1' : '';
+  };
+  btn.onclick = async () => {
+    btn.disabled = true;
+    try {
+      if (btn.dataset.on) {
+        const s = await pushSub();
+        if (s) { await api.deletePushSubscription(s.endpoint).catch(() => {}); await s.unsubscribe().catch(() => {}); }
+        toast('Alertes désactivées');
+      } else {
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') { toast('Notifications refusées'); }
+        else {
+          const key = await api.pushPublicKey();
+          if (!key) throw new Error('Alertes pas encore disponibles, réessaie plus tard.');
+          const reg = await navigator.serviceWorker.ready;
+          const s = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToUint8(key) });
+          const r = await api.savePushSubscription(s.toJSON());
+          if (r && r.ok === false) throw new Error('Impossible d\'activer les alertes.');
+          toast('Alertes activées 🔔');
+        }
+      }
+    } catch (err) { toast(err.message || 'Impossible d\'activer les alertes.'); }
+    paint();
+  };
+  paint();
+}
+if (!DEMO && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
 // Demande la localisation : fenêtre du navigateur si possible, sinon explications pour la réactiver.
 function gpsHelp(kind) {
   const ua = navigator.userAgent;

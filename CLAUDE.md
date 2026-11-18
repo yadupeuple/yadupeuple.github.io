@@ -59,6 +59,7 @@ Fonctions appelées par l'appli (RPC) :
 | get_my_restaurant() | non | espace du restaurateur : chiffres 30 j + son offre |
 | set_partner_offer(p_title, p_details, p_hours ≤ 168, p_only_when_calm) | non | publier / retirer (titre vide) son offre du jour |
 | submit_feedback(p_message 3-2000 car., p_context) | oui | avis / bug (Réglages > Donner mon avis) ; 10/jour par compte |
+| get_push_public_key(), save_push_subscription(endpoint, p256dh, auth), delete_push_subscription(endpoint) | non | alertes favoris (notifications) : clé publique, abonner / désabonner ce téléphone |
 
 Statut renvoyé : `{state, level, uncertain, wait, reliability, last_report_minutes, users_total, ...}`
 - state : `ferme` (hors horaires d'ouverture, is_open_now = false, v131 : pas de niveau, ni suggestion « plus calme ») · `recent` (≤ 30 min) · `a_confirmer` (30-60 min) · `estimation` (habitudes, ≥ 3 jours et 3 personnes)
@@ -112,7 +113,12 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Lot du mois : bandeau 🏆 dans « Classement > Ce mois-ci » quand un lot existe pour le mois en cours ; sinon (et dans « Depuis le début ») encart 🎁 « Des récompenses arrivent bientôt » (v123).
 - Affiche QR code : `affiche.html?r=ID` (A4, imprimable / PDF) ; QR → `?r=ID&src=affiche`. Bibliothèque vendor/qrcode.js (qrcode-generator, MIT).
   Lien dans « Mon restaurant » et dans le Mode test.
-- Alerte « c'est calme + offre » aux favoris : à faire avec les notifications.
+- Alertes « c'est calme » sur les favoris (18/11/2026, v195, supabase/2026-11-18_alertes_favoris.sql, fonction Edge supabase/functions/send-calm-alert) :
+  Réglages > carte « Alertes sur tes favoris » (Activer / Désactiver, pushCardHtml / bindPushCard dans app.js ; sw.js = service worker, uniquement notifications, pas de cache).
+  Tables push_subscriptions, push_log, push_config (RLS sans règle, aucun accès depuis l'appli). Déclencheur reports_push_calm : signalement « calme » sur un resto qui a des favoris,
+  sauf s'il était déjà calme depuis < 60 min (push_quiet_minutes) → appelle la fonction Edge (secret partagé hook_secret en base) → push_targets décide : abonné, favori, pas l'auteur,
+  8 h-22 h Paris (push_hour_from / push_hour_to), 1 alerte par resto et par jour, 3 par compte et par jour (push_max_per_day). Clés VAPID créées par la fonction Edge et gardées dans push_config (jamais dans l'appli).
+  Sur iPhone : seulement si l'appli est installée sur l'écran d'accueil. Pas encore : offre partenaire dans la notif. **Pas testé de bout en bout sur un vrai téléphone** (testé : base, fonction Edge init, écran Réglages en démo).
 - Filtres (bouton entre la loupe et le profil) : affluence (4 niveaux ; « aucune info » retiré le 13/11/2026), enseignes, « Avec Drive » ;
   s'appliquent à la carte et à la liste du bas, gardés sur le téléphone (localStorage ydp_filters).
 - Contact : contact.yadupeuple@gmail.com
@@ -210,7 +216,7 @@ liens sur l'accueil et en bas des Réglages. À refaire en version « profession
 partenaires paient ou qu'Alexis crée une micro-entreprise.
 
 ## Plus tard (idées validées, pas encore faites)
-Alertes « C'est calme » sur les favoris (notifications) · statuts de fiabilité (Nouveau venu →
+statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · mode nuit/jour dans Réglages (Auto / Clair / Sombre ; carte à assombrir par filtre, couleurs en dur à repasser ; mis de côté le 18/11) · défis et missions · page partenaire payante · stores Apple/Google.
 Badges : images ChatGPT d'Alexis (icons/badges/*.webp), découpées telles quelles : planche 1 (outils/badges_sheet.py)
 + v10, drive10, explorer10, ref1, tour_zone refaits le 12/11/2026, tour_zone6 (Globe-trotteur) le 14/11 (outils/badges_sheet2.py) ; tour_zone10 « Routard du burger » (10 villes, 14/11, outils/badge_detoure.py) ; testeur (loupe + insecte, 15/11, badge_detoure.py) ; en réserve : outils/src/badge_fusee_reserve.png (fusée, pour un futur badge « lancement ») ; ne pas redessiner ; gris tant que non gagnés ;

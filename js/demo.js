@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=194';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=194';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=195';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=195';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -271,6 +271,9 @@ export function createDemoApi() {
       }));
     },
     async changePseudo(p) { await wait(); if (p.length < 3 || p.length > 20) return 'Le pseudo doit faire 3 a 20 caracteres'; profile.pseudo = p; return 'ok'; },
+    async pushPublicKey() { await wait(); return null; },
+    async savePushSubscription() { await wait(); return { ok: true }; },
+    async deletePushSubscription() { await wait(); return { ok: true }; },
     async toggleFavorite(id) {
       await wait();
       if (!user) return 'Connexion requise';

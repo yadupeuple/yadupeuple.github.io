@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=194';
-import { createDemoApi } from './demo.js?v=194';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=195';
+import { createDemoApi } from './demo.js?v=195';
 
 // Charge une table par pages de 1000 : 5 pages en parallèle, puis la suite si besoin.
 async function pagesInParallel(page, first = 5) {
@@ -146,6 +146,9 @@ function createSupabaseApi() {
     setReferrer: (code) => rpc('set_referrer', { p_code: code }),
     toggleFavorite: (id) => rpc('toggle_favorite', { est: id }),
     myFavorites: () => rpc('my_favorites'),
+    pushPublicKey: () => rpc('get_push_public_key'),
+    savePushSubscription: (s) => rpc('save_push_subscription', { p_endpoint: s.endpoint, p_p256dh: s.keys.p256dh, p_auth: s.keys.auth }),
+    deletePushSubscription: (endpoint) => rpc('delete_push_subscription', { p_endpoint: endpoint || null }),
     exportMyData: () => rpc('export_my_data'),
     deleteMyAccount: () => rpc('delete_my_account'),
   };
