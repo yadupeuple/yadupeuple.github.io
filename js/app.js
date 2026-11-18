@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=201';
+import { api, DEMO } from './api.js?v=202';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=201';
+} from './config.js?v=202';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=201';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=201';
-import { BRAND_PATHS } from './brands.js?v=201';
+} from './levels.js?v=202';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=202';
+import { BRAND_PATHS } from './brands.js?v=202';
 
 // ---------------------------------------------------------------------------
 // État
@@ -355,7 +355,21 @@ function updateClusters() {
   }
   applyZoomClass();
 }
-map.on('moveend', () => { updateClusters(); rememberZone(); });
+// Tout le travail lourd (pastilles, liste du bas, statuts) attend que la carte soit immobile 250 ms :
+// pendant une suite de glissements / zooms, plus aucun calcul ne vient couper l'élan de la carte (saccades).
+let mapMoving = false, settleTimer = null, cardsSettle = true, pendingPaint = false;
+map.on('movestart', () => { mapMoving = true; clearTimeout(settleTimer); });
+map.on('moveend', () => {
+  mapMoving = false;
+  clearTimeout(settleTimer);
+  settleTimer = setTimeout(() => {
+    if (mapMoving) return;
+    updateClusters(); rememberZone();
+    if (cardsSettle) renderCards(); cardsSettle = true;
+    if (pendingPaint) { pendingPaint = false; renderMarkers(); }
+    refreshStatuses();
+  }, 250);
+});
 
 function openCluster(members) {
   const b = new maplibregl.LngLatBounds();
@@ -456,7 +470,6 @@ function boxCovered(x) {
   return loadedBoxes.some((b) => now - b.t < REFRESH_MS && b.s <= x.s && b.n >= x.n && b.w <= x.w && b.e >= x.e);
 }
 let statusTimer;
-map.on('moveend', () => { clearTimeout(statusTimer); statusTimer = setTimeout(() => refreshStatuses(), 400); });
 
 const inflight = new Set();
 async function loadBox(x) {
@@ -472,8 +485,8 @@ async function loadBox(x) {
     }
     loadedBoxes.push({ ...x, t: Date.now() });
     while (loadedBoxes.length > 12) loadedBoxes.shift();
-    renderMarkers();
-    renderCards();
+    if (mapMoving) pendingPaint = true; // on repeindra une fois la carte posée
+    else { renderMarkers(); renderCards(); }
     if (state.sheetView === 'detail' && state.selectedId) renderDetail(state.selectedId);
   } finally {
     inflight.delete(key);
@@ -551,8 +564,7 @@ $('#cards').addEventListener('click', (ev) => {
 let cardsTimer;
 let cardsMove = false; // déplacement de carte provoqué par la liste : ne pas reconstruire la liste
 map.on('moveend', () => {
-  if (cardsMove) { cardsMove = false; return; }
-  clearTimeout(cardsTimer); cardsTimer = setTimeout(renderCards, 150);
+  if (cardsMove) { cardsMove = false; cardsSettle = false; } // la liste reste telle quelle
 });
 
 // Resto « en avant » : la 1re carte visible à gauche de la liste. Sa pastille est entourée sur la carte.
@@ -1599,9 +1611,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=201`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=202`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=201`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=202`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1660,7 +1672,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=201" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=202" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1717,8 +1729,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=201" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=201) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=202" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=202) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1726,7 +1738,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=201" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=202" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1738,7 +1750,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=201" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=202" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1818,7 +1830,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=201" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=202" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2300,16 +2312,22 @@ function watchGps() {
 // ---------------------------------------------------------------------------
 const NUDGE_M = 100;
 const parisDay = () => new Date().toLocaleDateString('fr-CA', { timeZone: 'Europe/Paris' });
+let nudgeTick = 0;
 function maybeNudge() {
   if (!introDone || state.sheetView || document.getElementById('nudge')) return;
   const p = myPosition();
   if (!p || (p.accuracy && p.accuracy > 80)) return;
   if (store.get('ydp_nudge_day') === parisDay()) return;
+  if (mapMoving || Date.now() - nudgeTick < 10000) return; // au plus toutes les 10 s, jamais pendant un déplacement
+  nudgeTick = Date.now();
   let best = null;
+  const dLat = 0.002, dLng = 0.003; // tri rapide (~200 m) avant le calcul exact
   state.establishments.forEach((e) => {
-    if (openState(state.hours?.[e.id])?.open === false) return;
+    if (Math.abs(e.lat - p.lat) > dLat || Math.abs(e.lng - p.lng) > dLng) return;
     const d = distanceM(p.lat, p.lng, e.lat, e.lng);
-    if (d <= NUDGE_M && (!best || d < best.d)) best = { e, d };
+    if (d > NUDGE_M || (best && d >= best.d)) return;
+    if (openState(state.hours?.[e.id])?.open === false) return;
+    best = { e, d };
   });
   if (!best) return;
   store.set('ydp_nudge_day', parisDay());
