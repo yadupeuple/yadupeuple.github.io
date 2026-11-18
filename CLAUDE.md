@@ -174,6 +174,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Vitesse du compte (17/11/2026, v179) : la base répond en < 15 ms, l'attente venait des allers-retours réseau à chaque onglet.
   Profil affiché tout de suite s'il est déjà connu (mise à jour en arrière-plan) ; badges, classement, podium et favoris gardés en mémoire
   (acctCache) et préchargés 2,5 s après la connexion et à l'ouverture du compte (prefetchAccount) ; vidés à la déconnexion. v191 : images des badges, avatars et rubans téléchargées à l'avance une fois (preloadAccountImages).
+- Rappel « Tu es chez … » (18/11/2026, v194, maybeNudge dans app.js) : app ouverte + à moins de 100 m d'un resto ouvert → bandeau « Y'a du peuple ? » + bouton Signaler, 1 seule fois par jour (localStorage ydp_nudge_day, jour de Paris), disparaît après 20 s. Pas de notification à heure fixe (choix d'Alexis, peur de lasser).
 - Signalement (v160-162) : petit lexique « 💡 Comment choisir ? » repliable (fermé par défaut) sous les 4 choix (LEXIQUE dans app.js, textes salle / Drive) ; le choix fait ressort, les autres s'estompent.
 
 ## Objectif et croissance (dit par Alexis le 15/11/2026)

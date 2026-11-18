@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=193';
+import { api, DEMO } from './api.js?v=194';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=193';
+} from './config.js?v=194';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=193';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=193';
-import { BRAND_PATHS } from './brands.js?v=193';
+} from './levels.js?v=194';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=194';
+import { BRAND_PATHS } from './brands.js?v=194';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1585,9 +1585,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=193`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=194`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=193`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=194`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1646,7 +1646,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=193" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=194" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1703,8 +1703,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=193" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=193) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=194" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=194) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1712,7 +1712,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=193" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc}">${b ? `<img src="${b.value}?v=194" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1724,7 +1724,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=193" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=194" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1804,7 +1804,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=193" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=194" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2249,6 +2249,7 @@ function watchGps() {
     state.gps = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
     if (first) preloadAround(state.gps.lat, state.gps.lng);
     renderMe();
+    maybeNudge();
     if (firstFix && state.sheetView === 'detail' && state.selectedId) renderDetail(state.selectedId);
     if (firstFix && !testPosition() && introDone) {
       firstFix = false;
@@ -2256,6 +2257,38 @@ function watchGps() {
     }
   }, () => {}, { enableHighAccuracy: false, maximumAge: 60000, timeout: 20000 });
 }
+
+// ---------------------------------------------------------------------------
+// Rappel « Tu es chez … » : une seule fois par jour, quand on est à moins de 100 m d'un resto
+// (la base reste juge de la distance au moment du signalement ; ici on propose seulement).
+// ---------------------------------------------------------------------------
+const NUDGE_M = 100;
+const parisDay = () => new Date().toLocaleDateString('fr-CA', { timeZone: 'Europe/Paris' });
+function maybeNudge() {
+  if (!introDone || state.sheetView || document.getElementById('nudge')) return;
+  const p = myPosition();
+  if (!p || (p.accuracy && p.accuracy > 80)) return;
+  if (store.get('ydp_nudge_day') === parisDay()) return;
+  let best = null;
+  state.establishments.forEach((e) => {
+    if (openState(state.hours?.[e.id])?.open === false) return;
+    const d = distanceM(p.lat, p.lng, e.lat, e.lng);
+    if (d <= NUDGE_M && (!best || d < best.d)) best = { e, d };
+  });
+  if (!best) return;
+  store.set('ydp_nudge_day', parisDay());
+  const el = document.createElement('div');
+  el.id = 'nudge'; el.className = 'nudge';
+  el.innerHTML = `<div class="nudge-t"><b>📍 Tu es chez ${esc(best.e.name)}</b><span>Y'a du peuple ?</span></div>
+    <button class="btn btn-primary" id="nudge-go">Signaler</button>
+    <button class="nudge-x" id="nudge-x" aria-label="Fermer">✕</button>`;
+  document.body.appendChild(el);
+  const close = () => el.remove();
+  $('#nudge-x').onclick = close;
+  $('#nudge-go').onclick = () => { close(); openReport(best.e.id); };
+  setTimeout(close, 20000);
+}
+setInterval(maybeNudge, 15000);
 // Demande la localisation : fenêtre du navigateur si possible, sinon explications pour la réactiver.
 function gpsHelp(kind) {
   const ua = navigator.userAgent;

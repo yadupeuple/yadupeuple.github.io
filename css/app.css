@@ -750,3 +750,15 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .lb-me-fixed { position: fixed; bottom: calc(10px + var(--safe-bottom)); margin: 0; z-index: 11; box-shadow: 0 6px 20px rgba(11,31,58,.35); box-sizing: border-box; }
 #lb-list { padding-bottom: 84px; }
 /* Ma place : barre collée tout en bas de l'écran (le collant compte depuis le bas du « padding » de la feuille, d'où le -40px) */
+
+/* Rappel « Tu es chez … » (une fois par jour) */
+.nudge {
+  position: fixed; left: 12px; right: 12px; top: calc(64px + var(--safe-top)); z-index: 29;
+  display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px;
+  background: var(--navy); color: #fff; border-radius: 18px; box-shadow: var(--shadow);
+}
+.nudge-t { flex: 1; display: flex; flex-direction: column; font-size: 14px; line-height: 1.25; min-width: 0; }
+.nudge-t b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nudge-t span { opacity: .8; font-style: italic; }
+.nudge .btn { padding: 8px 14px; font-size: 14px; width: auto; flex: none; }
+.nudge-x { background: none; border: 0; color: #fff; opacity: .7; font-size: 16px; padding: 6px; cursor: pointer; }
