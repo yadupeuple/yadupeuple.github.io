@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=192';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=192';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=193';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=193';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -148,10 +148,10 @@ export function createDemoApi() {
         ['banner', 'ruban_engrenage', 'icons/banners/ruban_engrenage.webp', 20],
         ['banner', 'ruban_coeur', 'icons/banners/ruban_coeur.webp', 25],
         ['banner', 'ruban_fleurs', 'icons/banners/ruban_fleurs.webp', 30],
-        ['banner', 'ruban_flocon', 'icons/banners/ruban_flocon.webp', 50],
-        ['banner', 'ruban_etoile_violet', 'icons/banners/ruban_etoile_violet.webp', 40],
-        ['banner', 'ruban_diamant', 'icons/banners/ruban_diamant.webp', 60],
-        ['banner', 'ruban_etoile_or', 'icons/banners/ruban_etoile_or.webp', 70],
+        ['banner', 'ruban_flocon', 'icons/banners/ruban_flocon.webp', 40],
+        ['banner', 'ruban_etoile_violet', 'icons/banners/ruban_etoile_violet.webp', 50],
+        ['banner', 'ruban_diamant', 'icons/banners/ruban_diamant.webp', 70],
+        ['banner', 'ruban_etoile_or', 'icons/banners/ruban_etoile_or.webp', 60],
         ['banner', 'ruban_flamme_violet', 'icons/banners/ruban_flamme_violet.webp', 85],
         ['banner', 'ruban_couronne', 'icons/banners/ruban_couronne.webp', 100],
         // badge testeur caché jusqu'au lancement (beta_badge_visible)
