@@ -47,8 +47,12 @@ async function trim(cache) {
   const keys = await cache.keys();
   for (let i = 0; i < keys.length - MAX_ENTRIES; i++) await cache.delete(keys[i]);
 }
+let lastTrim = 0; // le tri se fait au plus une fois par minute (pas à chaque tuile : sinon la carte attend pendant les zooms)
 async function put(cache, req, res) {
-  if (res && res.ok && res.status === 200) { await cache.put(req, res.clone()); await trim(cache); }
+  if (res && res.ok && res.status === 200) {
+    await cache.put(req, res.clone());
+    if (Date.now() - lastTrim > 60000) { lastTrim = Date.now(); await trim(cache); }
+  }
   return res;
 }
 // Tuiles (adresse versionnée), polices, icônes : ne changent jamais pour une même adresse → on sert la copie gardée.
