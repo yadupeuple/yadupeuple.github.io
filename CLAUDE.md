@@ -202,7 +202,7 @@ Bleu nuit `#0B1F3A`, turquoise `#14B8A6`, blanc, touche jaune-orangé `#F5A524`.
 Affluence : calme `#22C55E`, modéré `#EAB308`, animé `#F97316`, max `#EF4444`, aucune info `#9CA3AF`.
 
 ## Avant le lancement public (à ne pas oublier)
-Nettoyer les données de test : décidé par Alexis le 12/11/2026 → remise à zéro des signalements (et des points/badges qui en découlent, **sauf le badge testeur, gardé à vie**) au lancement, mettre beta_open à 0, révéler le badge testeur (beta_badge_visible = 1, customization badge_testeur active, +1 pt : voir bas de supabase/2026-11-15_badge_testeur_cache.sql), à faire seulement quand il dit « on lance » ; comptes gardés : Maylixela, Testeur1, Enthyy · réactiver la confirmation des e-mails dans
+Nettoyer les données de test : décidé par Alexis le 12/11/2026 → remise à zéro des signalements (et des points/badges qui en découlent, **sauf le badge testeur, gardé à vie**) au lancement, mettre beta_open à 0, révéler le badge testeur (beta_badge_visible = 1, customization badge_testeur active, +1 pt : voir bas de supabase/2026-11-15_badge_testeur_cache.sql), à faire seulement quand il dit « on lance » ; comptes gardés : Maylixela (Testeur1 et Enthyy supprimés le 18/11 à la demande d'Alexis) · réactiver la confirmation des e-mails dans
 Supabase · vérification de la marque · tests terrain.
 Fait le 12/11/2026 : mentions-legales.html (éditeur particulier anonyme, hébergeur GitHub), cgu.html, confidentialite.html mis à jour ;
 liens sur l'accueil et en bas des Réglages. À refaire en version « professionnelle » (nom, adresse, SIRET) dès que les
