@@ -131,8 +131,8 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Sausheim, Rixheim, Lutterbach, Morschwiller-le-Bas), horaires + courbes + Drive relevés sur Google Maps.
 - Ajouts du 13/11/2026 (supabase/2026-11-13_jarny_woippy.sql) : McDonald's Conflans-en-Jarnisy, Woippy et aire A4 Saint-Privat,
   KFC Semécourt, Subway Metz Muse, Burger King Clouange.
-- Zone de Carcassonne / Limoux (14/11/2026, supabase/2026-11-14_carcassonne_limoux.sql) : 14 restos ; Drive et horaires des sites
-  officiels (BK, KFC) et d'OpenStreetMap ; **pas encore de courbes Google** (courbe type en attendant) → à relever avec outils/maj_courbes.md.
+- Zone de Carcassonne / Limoux (14/11/2026, supabase/2026-11-14_carcassonne_limoux.sql) : 14 restos (11 restent au 21/11 après nettoyage des fermés) ; Drive et horaires des sites
+  officiels (BK, KFC) et d'OpenStreetMap ; courbes Google relevées lors du relevé en masse du 16/11 pour 10 restos sur 11 ; BK Carcassonne Rocadest : Google n'a aucune donnée (vérifié le 21/11, resto récent) → courbe type, à revérifier dans 3-6 mois.
 - France entière (15/11/2026, v117, supabase/2026-11-15_import_france_1.sql et _2.sql) : source AllThePlaces (localisateurs officiels,
   run 2026-10-31) téléchargée par la base elle-même (extensions http / pg_net, schéma privé `import`) ; colonnes establishments.source /
   source_ref ('atp:<spider>', réf. officielle) ; horaires convertis par import.oh_parse ; Drive = drive_through officiel ; restos déjà
@@ -150,7 +150,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
 - Mise à jour des courbes Google tous les 3-6 mois : outils/maj_courbes.md + outils/gmaps_extract.js.
   Relevé en masse (15/11/2026, tous les restos) : outils/gmaps_batch.js dans le Chrome d'Alexis → import.gmaps_raw (trigger → popular_times),
   supabase/2026-11-15_courbes_google_france.sql. Terminé le 16/11 : 3 621 restos sur 4 248 ont une vraie courbe ; 87 marqués « fermé » par Google,
-  revérifiés : 68 supprimés le 16/11 (supabase/2026-11-16_restos_fermes.sql, accord d'Alexis), 19 gardés ; 24 sans horaires ou fermés supprimés + 24 horaires ajoutés (supabase/2026-11-16_horaires_manquants.sql) ; tous les restos ont des horaires ; fonction import_gmaps_batch désactivée (drop à faire).
+  revérifiés : 68 supprimés le 16/11 (supabase/2026-11-16_restos_fermes.sql, accord d'Alexis), 19 gardés ; 24 sans horaires ou fermés supprimés + 24 horaires ajoutés (supabase/2026-11-16_horaires_manquants.sql) ; tous les restos ont des horaires ; fonction import_gmaps_batch supprimée le 21/11 (accord d'Alexis).
 
 - Réglages (17/11/2026, v184) : cartes au style de l'appli : v185 : carte bleu nuit « Ton pseudo » (avatar + Modifier → openPseudo), carte turquoise installation (si possible), carte turquoise « Ton avis compte », carte restaurateur, puis Se déconnecter / Supprimer mon compte (sans titre « Compte ») ; plus de parrainage ici (il est sur le profil) ; le Mode test (position fictive + affiches QR)
   est sorti des Réglages → bulle 🧪 à côté de 🎨 dans l'en-tête du compte, visible seulement pour le compte testeur (TEST_ACCOUNTS).
