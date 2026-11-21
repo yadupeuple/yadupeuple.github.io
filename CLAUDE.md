@@ -224,6 +224,7 @@ partenaires paient ou qu'Alexis crée une micro-entreprise.
 ## Plus tard (idées validées, pas encore faites)
 statuts de fiabilité (Nouveau venu →
 Pilier de la communauté) · mode nuit/jour dans Réglages (Auto / Clair / Sombre ; carte à assombrir par filtre, couleurs en dur à repasser ; mis de côté le 18/11) · défis et missions · page partenaire payante · stores Apple/Google.
+Idée d'un ami (18/11/2026) : mesurer l'affluence sans signalement, par la position partagée en arrière-plan (comme les AirTags / Google). Pas faisable en appli web (pas de GPS appli fermée) ; demande une vraie appli sur les stores, beaucoup d'utilisateurs et un accord RGPD clair. Version légère possible plus tard : présence anonyme comptée appli ouverte près d'un resto, avec accord, en complément des signalements.
 Badges : images ChatGPT d'Alexis (icons/badges/*.webp), découpées telles quelles : planche 1 (outils/badges_sheet.py)
 + v10, drive10, explorer10, ref1, tour_zone refaits le 12/11/2026, tour_zone6 (Globe-trotteur) le 14/11 (outils/badges_sheet2.py) ; tour_zone10 « Routard du burger » (10 villes, 14/11, outils/badge_detoure.py) ; testeur (loupe + insecte, 15/11, badge_detoure.py) ; en réserve : outils/src/badge_fusee_reserve.png (fusée, pour un futur badge « lancement ») ; ne pas redessiner ; gris tant que non gagnés ;
 nouvelle disposition de la page Profil.
