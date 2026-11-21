@@ -238,7 +238,7 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 /* ---------- Accueil ---------- */
 .welcome {
   position: fixed; inset: 0; z-index: 20; color: #fff;
-  background: #4A9A9D url(../icons/fond-accueil.jpg?v=205) center / cover no-repeat;
+  background: radial-gradient(ellipse 85% 42% at 50% 42%, rgba(255,255,255,.24), rgba(255,255,255,0) 72%), linear-gradient(180deg, #18C8B4, #0D9488);
   display: grid; place-items: center; padding: 24px; animation: fade .25s ease;
 }
 /* Accueil turquoise (21/11/2026) : couleurs inversées par rapport à l'ancien bleu nuit */
@@ -355,14 +355,14 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 .cards { transition: opacity .35s ease, transform .35s ease; }
 body.intro .cards { opacity: 0; transform: translateY(20px); pointer-events: none; }
 /* Accueil : le bleu va jusque sous la barre de navigation du téléphone */
-html.on-welcome, html.on-welcome body { background: #3C8589; }
+html.on-welcome, html.on-welcome body { background: #0D9488; }
 /* Au chargement : rien d'affiché (fond bleu) tant qu'on ne sait pas s'il faut l'accueil ou la carte */
-html.booting, html.booting body { background: #55A9AC; }
+html.booting, html.booting body { background: #18C8B4; }
 /* Écran de démarrage : logo complet sur turquoise (même fond que l'écran de lancement du téléphone) */
 html.booting body::before {
   content: ''; position: fixed; inset: 0; z-index: 100;
-  background: url(../icons/logo-boot.png) center 46% / min(68vw, 340px) auto no-repeat,
-              #4A9A9D url(../icons/fond-accueil.jpg?v=205) center / cover no-repeat;
+  background: url(../icons/logo-boot.png) center 46% / min(60vw, 300px) auto no-repeat,
+              radial-gradient(ellipse 85% 42% at 50% 42%, rgba(255,255,255,.24), rgba(255,255,255,0) 72%), linear-gradient(180deg, #18C8B4, #0D9488);
 }
 html.booting body > *:not(#welcome) { visibility: hidden; }
 .welcome { bottom: calc(-1 * var(--safe-bottom)); padding-bottom: calc(24px + var(--safe-bottom)); min-height: 100lvh; }

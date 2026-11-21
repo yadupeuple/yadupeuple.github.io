@@ -7,7 +7,7 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#55A9AC",
+  "background_color": "#18C8B4",
   "theme_color": "#0B1F3A",
   "icons": [
     {
@@ -23,7 +23,7 @@
       "purpose": "any"
     },
     {
-      "src": "icons/splash-512.png",
+      "src": "icons/splash-mask-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
