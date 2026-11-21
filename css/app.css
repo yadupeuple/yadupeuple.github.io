@@ -238,15 +238,23 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 /* ---------- Accueil ---------- */
 .welcome {
   position: fixed; inset: 0; z-index: 20; color: #fff;
-  background: radial-gradient(120% 80% at 50% 0%, #1B3A63 0%, var(--navy) 60%);
+  background: radial-gradient(90% 55% at 50% 38%, #18C8B4 0%, #0D9488 100%);
   display: grid; place-items: center; padding: 24px; animation: fade .25s ease;
 }
+/* Accueil turquoise (21/11/2026) : couleurs inversées par rapport à l'ancien bleu nuit */
+.welcome h1 { text-shadow: 0 1px 10px rgba(11,31,58,.25); }
+.welcome .slogan { color: var(--navy); }
+.welcome .btn-primary { background: var(--navy); box-shadow: 0 4px 14px rgba(11,31,58,.35); }
+.welcome .btn-primary:active { background: #14305a; }
+.welcome .btn-ghost-light { background: rgba(255,255,255,.22); color: #fff; }
+.welcome .welcome-note, .welcome .welcome-note a { color: var(--navy) !important; }
+.welcome-form .sub, .welcome-form .result p, .welcome-form .field span, .welcome-form .or-sep { color: #fff; }
 .welcome-inner { width: 100%; max-width: 380px; text-align: center; }
 .welcome-logo img { display: block; margin: 0 auto; }
 .welcome h1 { font-size: 32px; margin: 18px 0 10px; letter-spacing: -.02em; }
 .slogan { font-style: italic; font-size: 18px; min-height: 56px; color: #CCFBF1; margin: 0 0 32px; transition: opacity .35s ease; }
 .welcome-actions { display: grid; gap: 10px; }
-.welcome-note { color: #94A3B8; font-size: 13px; margin-top: 18px; line-height: 1.5; }
+.welcome-note { color: var(--navy); font-size: 13px; margin-top: 18px; line-height: 1.5; }
 
 /* ---------- Message furtif ---------- */
 .toast {
@@ -324,12 +332,12 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 .welcome-form .sheet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .welcome-form .sheet-head .grow { flex: 1; }
 .welcome-form h2 { color: #fff; font-size: 20px; margin: 0; }
-.welcome-form .sub, .welcome-form .result p { color: #CBD5E1; font-size: 13.5px; margin-top: 4px; }
+.welcome-form .sub, .welcome-form .result p { color: #fff; font-size: 13.5px; margin-top: 4px; }
 .welcome-form .round-btn { background: rgba(255,255,255,.12); }
 .welcome-form .round-btn svg { stroke: #fff; }
-.welcome-form .field span { color: #E2E8F0; }
+.welcome-form .field span { color: #fff; }
 .welcome-form .field input { background: #fff; color: var(--ink); }
-.welcome-form .or-sep { color: #94A3B8; }
+.welcome-form .or-sep { color: #fff; }
 .welcome-form .or-sep::before, .welcome-form .or-sep::after { background: rgba(255,255,255,.18); }
 .welcome-form .link-btn { color: #5EEAD4; }
 .welcome-form .benefits { color: #E2E8F0; padding-left: 0; list-style: none; margin: 0 0 8px; }
@@ -347,9 +355,15 @@ pre.export { background: #F3F4F6; border-radius: 12px; padding: 10px; font-size:
 .cards { transition: opacity .35s ease, transform .35s ease; }
 body.intro .cards { opacity: 0; transform: translateY(20px); pointer-events: none; }
 /* Accueil : le bleu va jusque sous la barre de navigation du téléphone */
-html.on-welcome, html.on-welcome body { background: #0B1F3A; }
+html.on-welcome, html.on-welcome body { background: #0D9488; }
 /* Au chargement : rien d'affiché (fond bleu) tant qu'on ne sait pas s'il faut l'accueil ou la carte */
-html.booting, html.booting body { background: #0B1F3A; }
+html.booting, html.booting body { background: #12AE9E; }
+/* Écran de démarrage : logo complet sur turquoise (même fond que l'écran de lancement du téléphone) */
+html.booting body::before {
+  content: ''; position: fixed; inset: 0; z-index: 100;
+  background: url(../icons/logo-boot.png) center 46% / min(62vw, 300px) auto no-repeat,
+              radial-gradient(90% 55% at 50% 38%, #18C8B4 0%, #0D9488 100%);
+}
 html.booting body > *:not(#welcome) { visibility: hidden; }
 .welcome { bottom: calc(-1 * var(--safe-bottom)); padding-bottom: calc(24px + var(--safe-bottom)); min-height: 100lvh; }
 /* Resto mis en avant (1re carte de la liste) et resto sélectionné : pastille entourée, avec pointe */
@@ -763,3 +777,6 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .nudge-t span { opacity: .8; font-style: italic; }
 .nudge .btn { padding: 8px 14px; font-size: 14px; width: auto; flex: none; }
 .nudge-x { background: none; border: 0; color: #fff; opacity: .7; font-size: 16px; padding: 6px; cursor: pointer; }
+/* Accueil turquoise : lisibilité des boutons secondaires et des liens */
+.welcome .btn-ghost-light { background: rgba(255,255,255,.92); color: var(--navy); }
+.welcome-form .link-btn { color: #fff; text-decoration: underline; }
