@@ -121,6 +121,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   Sur iPhone : seulement si l'appli est installée sur l'écran d'accueil. Pas encore : offre partenaire dans la notif. **Pas testé de bout en bout sur un vrai téléphone** (testé : base, fonction Edge init, écran Réglages en démo).
 - Filtres (bouton entre la loupe et le profil) : affluence (4 niveaux ; « aucune info » retiré le 13/11/2026), enseignes, « Avec Drive » ;
   s'appliquent à la carte et à la liste du bas, gardés sur le téléphone (localStorage ydp_filters).
+- Base gratuite gardée éveillée (21/11/2026) : Supabase met en pause un projet gratuit après 7 jours sans activité. `.github/workflows/garder-supabase-eveille.yml` appelle get_partners (clé publique) 2 fois par jour ; échec visible dans l'onglet Actions du dépôt GitHub.
 - Contact : contact.yadupeuple@gmail.com
 - Slogans de l'écran d'accueil (dans cet ordre, en italique) :
   « Venu pour manger, pas pour poireauter. » → « Le parking, c'est pas un camping. » →
