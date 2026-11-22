@@ -96,7 +96,7 @@ Erreurs de submit_report : `{ok:false, error, message}` — afficher `message` t
   et agrandies ×4 (outils/extract.py) → icons/avatars/*.webp, icons/banners/*.webp. Ne pas les redessiner.
   Bannières = 19 rubans (16/11/2026, v141, planches ChatGPT d'Alexis outils/src/rubans_sheet2.png + rubans_sheet3.png, découpe
   outils/rubans_sheet2.py, sans ornement au milieu de la bande ; supabase/2026-11-16_nouveaux_rubans.sql) qui portent le pseudo sous l'avatar
-  (hauteur + contour par ruban : custom.RIB dans app.js). Niveaux (revus le 17/11, v169, supabase/2026-11-17_rubans_niveaux_glace_cafe.sql) : 1 (ciel, bonbon, turquoise, orange), 3 violet, 5 laurier, 8 nuit,
+  (hauteur + contour par ruban : custom.RIB dans app.js ; v210 : taille du pseudo réduite selon sa longueur, 20 caractères tiennent en entier, via --n + cqw). Niveaux (revus le 17/11, v169, supabase/2026-11-17_rubans_niveaux_glace_cafe.sql) : 1 (ciel, bonbon, turquoise, orange), 3 violet, 5 laurier, 8 nuit,
   10 vache, 12 damier, 14 flammes, 16 vert (feuilles, ancien ruban du 15/11 réactivé), 20 engrenage, 25 cœur, 30 fleurs, 40 flocon,
   50 étoile violette, 60 étoile or, 70 diamant (60 et 70 échangés le 18/11), 85 flamme violette, 100 couronne rouge. Images de profil Glace et Café ajoutées
   au niveau 1 (planche 1, outils/extract.py, bulle turquoise reprise des tacos par outils/avatar_centrer.py). Les 10 rubans du 15/11 et les anciennes bannières sont désactivés (fichiers gardés).
