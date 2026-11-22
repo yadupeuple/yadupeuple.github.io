@@ -23,13 +23,13 @@
   <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
   <link rel="preconnect" href="https://ygekcpnsjbbdgtmlxdce.supabase.co" crossorigin>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/fav-64.png?v=210" type="image/png" sizes="64x64">
-  <link rel="icon" href="icons/fav-192.png?v=210" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" href="icons/icon-512.png?v=210">
+  <link rel="icon" href="icons/fav-64.png?v=211" type="image/png" sizes="64x64">
+  <link rel="icon" href="icons/fav-192.png?v=211" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icons/icon-512.png?v=211">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
-  <link rel="stylesheet" href="css/app.css?v=210">
+  <link rel="stylesheet" href="css/app.css?v=211">
 </head>
 <body class="intro">
   <div id="map" aria-label="Carte des restaurants"></div>
@@ -72,7 +72,7 @@
   <section class="welcome" id="welcome" hidden>
     <div class="welcome-inner">
       <div class="welcome-logo">
-        <img src="icons/logo-boot.png?v=210" alt="Y'a du peuple ?" width="242" height="203">
+        <img src="icons/logo-boot.png?v=211" alt="Y'a du peuple ?" width="242" height="203">
       </div>
       <h1 class="sr-only">Y'a du peuple&nbsp;?</h1>
       <p class="slogan" id="slogan">Venu pour manger, pas pour poireauter.</p>
@@ -91,6 +91,21 @@
 
   <script src="vendor/maplibre-gl.js"></script>
   <script src="vendor/supabase.js"></script>
-  <script type="module" src="js/app.js?v=210"></script>
+  <script type="module" src="js/app.js?v=211"></script>
+  <script>
+  /* Mise à jour automatique : si le site en ligne a une version plus récente que celle chargée (appli installée qui garde l'ancienne page), on recharge une fois. */
+  (function () {
+    try {
+      var cur = (document.querySelector('script[src*="js/app.js"]').getAttribute('src').match(/v=(\d+)/) || [])[1];
+      if (!cur || /[?&]demo/.test(location.search)) return;
+      fetch('index.html?_=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+        var m = t.match(/js\/app\.js\?v=(\d+)/);
+        if (m && +m[1] > +cur && sessionStorage.getItem('ydp_upd') !== m[1]) {
+          sessionStorage.setItem('ydp_upd', m[1]); location.reload();
+        }
+      }).catch(function () {});
+    } catch (e) {}
+  })();
+  </script>
 </body>
 </html>
