@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=211';
-import { createDemoApi } from './demo.js?v=211';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=212';
+import { createDemoApi } from './demo.js?v=212';
 
 // Charge une table par pages de 1000 : 5 pages en parallèle, puis la suite si besoin.
 async function pagesInParallel(page, first = 5) {
@@ -40,13 +40,26 @@ function createSupabaseApi() {
     const { data, error } = await sb.rpc(name, args);
     if (error) {
       console.error(name, error);
+      if (!error.message?.includes('fetch')) logError(`rpc ${name}: ${error.message || error.code || '?'}`, { source: 'rpc' });
       throw new ApiError(error.message?.includes('fetch') ? 'Pas de connexion internet.' : 'Le serveur ne répond pas. Réessaie.');
     }
     return data;
   }
 
+  // Journal des erreurs (table app_errors, sans donnée personnelle). Ne lève jamais d'erreur.
+  function logError(message, extra = {}) {
+    try {
+      sb.rpc('log_client_error', {
+        p_message: String(message).slice(0, 500), p_source: extra.source || null, p_line: extra.line ?? null,
+        p_stack: extra.stack ? String(extra.stack).slice(0, 2000) : null, p_screen: extra.screen || null,
+        p_version: extra.version || null, p_ua: navigator.userAgent.slice(0, 300),
+      }).then(() => {}, () => {});
+    } catch {}
+  }
+
   return {
     demo: false,
+    logError,
     async getUser() {
       const { data } = await sb.auth.getSession();
       return data.session?.user ?? null;

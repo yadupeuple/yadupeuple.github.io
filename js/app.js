@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=211';
+import { api, DEMO } from './api.js?v=212';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=211';
+} from './config.js?v=212';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=211';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=211';
-import { BRAND_PATHS } from './brands.js?v=211';
+} from './levels.js?v=212';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=212';
+import { BRAND_PATHS } from './brands.js?v=212';
 
 // ---------------------------------------------------------------------------
 // État
@@ -28,6 +28,26 @@ const state = {
 };
 
 const $ = (sel, root = document) => root.querySelector(sel);
+
+// ---------------------------------------------------------------------------
+// Journal des erreurs (23/11/2026) : chaque plantage est envoyé à la base (table app_errors), sans donnée personnelle.
+// ---------------------------------------------------------------------------
+const IGNORED_ERRORS = /ResizeObserver loop|^Script error\.?$|Load failed|Failed to fetch|NetworkError|AbortError|The user aborted/i;
+function reportError(message, extra = {}) {
+  const msg = String(message || '').trim();
+  if (!msg || IGNORED_ERRORS.test(msg)) return;
+  let version = '?'; try { version = APP_VERSION; } catch {} // erreur au tout début du chargement
+  api.logError?.(msg, { ...extra, screen: state.sheetView || (document.getElementById('welcome')?.hidden === false ? 'accueil' : 'carte'), version });
+}
+window.addEventListener('error', (e) => {
+  if (!e.message) return; // image ou fichier qui ne charge pas : pas une erreur de code
+  reportError(e.message, { source: (e.filename || '').replace(location.origin, ''), line: e.lineno, stack: e.error?.stack });
+});
+window.addEventListener('unhandledrejection', (e) => {
+  const r = e.reason;
+  if (r?.name === 'ApiError') return; // erreurs déjà expliquées à l'utilisateur (réseau, serveur)
+  reportError(r?.message || String(r), { source: 'promise', stack: r?.stack });
+});
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -1611,9 +1631,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=211`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=212`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=211`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=212`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1672,7 +1692,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=211" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=212" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1729,8 +1749,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=211" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=211) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=212" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=212) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1738,7 +1758,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=211" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=212" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1750,7 +1770,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=211" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=212" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1830,7 +1850,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=211" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=212" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2233,6 +2253,53 @@ function showCards() {
   introZoom = false;
   document.body.classList.remove('intro');
   renderCards();
+  setTimeout(maybeShowTuto, 900);
+}
+
+// ---------------------------------------------------------------------------
+// Premier lancement guidé (23/11/2026) : 3 écrans, une seule fois par téléphone (localStorage ydp_tuto).
+// ---------------------------------------------------------------------------
+const TUTO = [
+  { icon: '🗺️', title: 'Les couleurs', html: `
+    <div class="tuto-levels">
+      <span><i style="background:#22C55E"></i>Calme</span>
+      <span><i style="background:#EAB308"></i>Un peu de monde</span>
+      <span><i style="background:#F97316"></i>Animé</span>
+      <span><i style="background:#EF4444"></i>Y'a du peuple !</span>
+      <span><i style="background:#9CA3AF"></i>Pas d'info</span>
+    </div>
+    <p>Chaque fast-food affiche son affluence, salle et Drive séparés. Appuie sur une pastille pour voir le détail.</p>` },
+  { icon: '📍', title: 'Signale en 2 secondes', html: `
+    <p>Tu es sur place (à moins de 100 m) ? Ouvre la fiche du resto et appuie sur <b>« J'y suis : je signale l'affluence »</b>.</p>
+    <p>Ton signalement aide tous ceux qui hésitent à venir.</p>` },
+  { icon: '🏆', title: 'Gagne des points', html: `
+    <p>Chaque signalement te rapporte des points : monte de niveau, débloque des badges et grimpe au classement du mois.</p>
+    <p class="tuto-small">La carte se consulte sans compte. Un compte gratuit sert à signaler.</p>` },
+];
+function maybeShowTuto() {
+  if (store.get('ydp_tuto') || state.sheetView || document.querySelector('.badge-pop, .tuto-pop')) return;
+  store.set('ydp_tuto', '1');
+  let i = 0;
+  const el = document.createElement('div');
+  el.className = 'badge-pop tuto-pop';
+  const paint = () => {
+    const t = TUTO[i];
+    el.innerHTML = `
+      <div class="bp-card tuto-card" role="dialog" aria-label="Comment ça marche">
+        <button type="button" class="tuto-skip" aria-label="Passer">Passer</button>
+        <div class="tuto-icon">${t.icon}</div>
+        <div class="bp-name">${t.title}</div>
+        <div class="tuto-body">${t.html}</div>
+        <div class="tuto-dots">${TUTO.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
+        <button type="button" class="btn btn-primary bp-btn tuto-next">${i < TUTO.length - 1 ? 'Suivant' : "C'est parti !"}</button>
+      </div>`;
+    $('.tuto-next', el).onclick = () => { if (i < TUTO.length - 1) { i++; paint(); } else close(); };
+    $('.tuto-skip', el).onclick = close;
+  };
+  const close = () => { el.classList.remove('show'); el.classList.add('hide'); setTimeout(() => el.remove(), 260); };
+  paint();
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
 }
 
 // Animation d'entrée : la carte part de loin (vue de la région) et plonge sur la position.
