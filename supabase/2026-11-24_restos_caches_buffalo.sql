@@ -35,3 +35,6 @@ begin
     execute replace(d, 'where e.id <> p_id and e.has_dine_in', 'where not e.is_hidden and e.id <> p_id and e.has_dine_in');
   end if;
 end $$;
+
+-- 24/11/2026 (suite) : Flunch caché aussi (cafétéria, pas du fast-food), accord d'Alexis.
+update public.establishments set is_hidden = true where brand = 'Flunch';
