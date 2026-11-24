@@ -362,7 +362,7 @@ html.booting, html.booting body { background: #46B8B9; }
    pour ne voir qu'une seule image ; reste affiché jusqu'au départ de la plongée, puis s'efface en fondu (v215). */
 html.booting body::before {
   content: ''; position: fixed; inset: 0; z-index: 100; pointer-events: none;
-  background: #46B8B9 url(../icons/logo-boot.png) center calc(50% - 17px) / 225px auto no-repeat;
+  background: #46B8B9 url(../icons/logo-boot.png) center calc(50% - 13px) / 208px auto no-repeat;
   transition: opacity .4s ease;
 }
 html.boot-out body::before { opacity: 0; }
