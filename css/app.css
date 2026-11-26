@@ -800,3 +800,6 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .tuto-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
 .tuto-dots i { width: 7px; height: 7px; border-radius: 50%; background: #CBD5E1; }
 .tuto-dots i.on { background: #14B8A6; width: 18px; border-radius: 4px; }
+
+/* Bouton « signaler » grisé quand le resto est fermé (26/11/2026) */
+.btn.btn-closed, .btn.btn-closed:disabled { background: #E5E7EB; color: #6B7280; box-shadow: none; cursor: not-allowed; }

@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=217';
+import { api, DEMO } from './api.js?v=218';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=217';
+} from './config.js?v=218';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=217';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=217';
-import { BRAND_PATHS } from './brands.js?v=217';
+} from './levels.js?v=218';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=218';
+import { BRAND_PATHS } from './brands.js?v=218';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1071,7 +1071,9 @@ function renderDetail(id) {
       ? `<button type="button" class="hint hint-go" id="btn-calmer"><span class="hint-grid"><span>💡</span><span>${esc(calmer.label)}</span>${calmer.distance_m != null ? `<span>📍</span><small>à ${calmer.distance_m < 1000 ? calmer.distance_m + ' m' : (calmer.distance_m / 1000).toFixed(1).replace('.', ',') + ' km'}</small>` : ''}</span><span class="hint-arrow">›</span></button>`
       : `<div class="hint">💡 ${esc(calmer.label)}</div>`) : ''}
     ${curveHtml(e, profile, curveLoading)}
-    <button class="btn btn-primary" id="btn-report">J'y suis : je signale l'affluence</button>
+    ${isClosedNow(e)
+      ? `<button class="btn btn-primary btn-closed" id="btn-report" disabled>Fermé : signalement impossible</button>`
+      : `<button class="btn btn-primary" id="btn-report">J'y suis : je signale l'affluence</button>`}
   `;
   openSheet('detail', html);
   if (keepScroll !== null) { $('#sheet-body').scrollTop = keepScroll; requestAnimationFrame(updateScrollHints); }
@@ -1171,9 +1173,18 @@ function getPreciseLocation() {
   });
 }
 
+// Resto fermé en ce moment : statut « ferme » renvoyé par la base, sinon les horaires connus (la base refuse aussi le signalement).
+function isClosedNow(e) {
+  const st = [e.has_dine_in && e.status_salle, e.has_drive && e.status_drive].filter(Boolean);
+  if (st.length && st.every((x) => x.state === 'ferme')) return true;
+  if (st.some((x) => x.state && x.state !== 'ferme')) return false;
+  return openState(state.hours?.[e.id])?.open === false;
+}
+
 function openReport(id, presetService) {
   const e = state.establishments.get(id);
   if (!e) return;
+  if (isClosedNow(e)) { toast('Ce restaurant est fermé en ce moment : signalement impossible.'); return; }
   if (!state.user) { openAccount('Crée un compte (gratuit) pour signaler et gagner des points.', () => openReport(id, presetService)); return; }
   const services = [e.has_dine_in && 'salle', e.has_drive && 'drive'].filter(Boolean);
   const form = { service: presetService || services[0], level: null, wait: null };
@@ -1631,9 +1642,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=217`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=218`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=217`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=218`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1692,7 +1703,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=217" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=218" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1749,8 +1760,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=217" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=217) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=218" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=218) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1758,7 +1769,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=217" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=218" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1770,7 +1781,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=217" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=218" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1850,7 +1861,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=217" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=218" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
