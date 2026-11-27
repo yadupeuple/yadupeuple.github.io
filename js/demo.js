@@ -1,6 +1,6 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=219';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=219';
+import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=220';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=220';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -293,6 +293,21 @@ export function createDemoApi() {
     async monthlyPrize() { await wait(50); return { title: 'Un menu offert', sponsor_name: 'McDonald\'s Linkling', establishment_id: demoPartner.id, winners: 1 }; },
     async partners() { await wait(50); return [demoPartner]; },
     async partnerTrack(_id, kind) { kind === 'view' ? demoStats.views++ : demoStats.clicks++; },
+    async adminDashboard() {
+      await wait();
+      const today = new Date(); const days = [];
+      for (let i = 20; i >= 0; i--) { const d = new Date(today); d.setDate(d.getDate() - i); days.push({ day: d.toISOString().slice(0, 10), reports: i > 13 ? 0 : Math.round(3 + (13 - i) * 1.6 + (i % 3) * 2), signups: i > 13 ? 0 : (i % 4 === 0 ? 5 : 2) }); }
+      return { ok: true, generated_at: new Date().toISOString(),
+        accounts: { total: 41, today: 3, week: 17, with_report: 29, active_7d: 22, testeur_badges: 29, referred: 6, push_users: 9, favorites: 64 },
+        reports: { total: 286, today: 23, week: 158, salle_21d: 171, drive_21d: 115 }, days,
+        cities: [{ city: 'Metz', n: 96 }, { city: 'Thionville', n: 71 }, { city: 'Mondelange', n: 30 }, { city: 'Hagondange', n: 22 }, { city: 'Woippy', n: 14 }],
+        top: [{ pseudo: 'BurgerHunter', n: 31, last_at: new Date().toISOString() }, { pseudo: 'DriveMaster', n: 24, last_at: new Date().toISOString() }, { pseudo: 'Testeur57', n: 19, last_at: new Date().toISOString() }],
+        feedback: { total: 12, week: 5, last: [
+          { created_at: new Date().toISOString(), pseudo: 'DriveMaster', message: 'Le bouton Signaler est un peu caché quand la carte est zoomée.', context: 'fiche' },
+          { created_at: new Date(Date.now() - 864e5).toISOString(), pseudo: 'Testeur57', message: 'Top l\'appli ! Il manque le Burger King de Woippy.', context: 'reglages' }] },
+        errors: { rows_24h: 1, hits_24h: 2, last: [{ created_at: new Date().toISOString(), message: 'TypeError: exemple (démo)', screen: 'carte', app_version: '220', hits: 2 }] },
+        push: { sent_7d: 14 } };
+    },
     async myRestaurant() {
       await wait();
       if (!user || !new URLSearchParams(location.search).has('resto')) return null;

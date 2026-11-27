@@ -803,3 +803,22 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 
 /* Bouton « signaler » grisé quand le resto est fermé (26/11/2026) */
 .btn.btn-closed, .btn.btn-closed:disabled { background: #E5E7EB; color: #6B7280; box-shadow: none; cursor: not-allowed; }
+
+/* Tableau de bord du test (27/11/2026, compte d'Alexis seulement) */
+.adm-loading { text-align: center; font-size: 34px; padding: 40px 0; }
+.adm-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.adm-kpi { background: var(--navy); color: #fff; border-radius: 16px; padding: 12px 12px 11px; }
+.adm-kpi strong { display: block; font-size: 27px; line-height: 1.1; }
+.adm-kpi span { display: block; font-size: 12.5px; color: #CBD5E1; margin: 2px 0 4px; }
+.adm-kpi em { font-style: normal; font-weight: 700; font-size: 12.5px; color: #5EEAD4; }
+.adm-kpi em.zero { color: #94A3B8; font-weight: 600; }
+.adm-chart { display: flex; align-items: flex-end; gap: 3px; height: 96px; padding: 18px 8px 0; background: #F1F5F9; border-radius: 14px; }
+.adm-bar { flex: 1; background: var(--teal); border-radius: 4px 4px 0 0; min-height: 3px; position: relative; }
+.adm-bar.today { background: var(--amber); }
+.adm-bar b { position: absolute; top: -17px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--navy); }
+.adm-axis { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 5px; }
+.adm-split { display: flex; height: 14px; border-radius: 7px; overflow: hidden; }
+.adm-row { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+.adm-row b { color: var(--navy); }
+.adm-fb { background: #F8FAFC; border: 1px solid var(--line); border-radius: 12px; padding: 9px 11px; margin-bottom: 7px; font-size: 14px; overflow-wrap: anywhere; }
+.adm-fb small { display: block; color: var(--muted); margin-bottom: 3px; }

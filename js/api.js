@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=219';
-import { createDemoApi } from './demo.js?v=219';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=220';
+import { createDemoApi } from './demo.js?v=220';
 
 // Charge une table par pages de 1000 : 5 pages en parallèle, puis la suite si besoin.
 async function pagesInParallel(page, first = 5) {
@@ -152,6 +152,7 @@ function createSupabaseApi() {
     submitFeedback: (message, context) => rpc('submit_feedback', { p_message: message, p_context: context }),
     partnerTrack: (id, kind) => rpc('partner_track', { p_establishment: id, p_kind: kind }).catch(() => {}),
     myRestaurant: () => rpc('get_my_restaurant'),
+    adminDashboard: () => rpc('get_admin_dashboard'), // réservé au compte d'Alexis (contrôlé par la base)
     setPartnerOffer: (o) => rpc('set_partner_offer', { p_title: o.title || '', p_details: o.details || null, p_hours: o.hours || 24, p_only_when_calm: !!o.onlyWhenCalm }),
     myProfile: () => rpc('get_my_profile'),
     badgesProgress: () => rpc('get_badges_progress'),
