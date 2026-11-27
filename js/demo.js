@@ -1,6 +1,8 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS } from './demo-data.js?v=223';
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=223';
+import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=224';
+// Comme la base : Buffalo Grill et Flunch cachés (24/11/2026).
+const DEMO_ESTABLISHMENTS = DEMO_ALL.filter((e) => !/^(Buffalo Grill|Flunch)$/.test(e.brand));
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=224';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
