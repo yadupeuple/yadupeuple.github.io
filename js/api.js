@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=221';
-import { createDemoApi } from './demo.js?v=221';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=222';
+import { createDemoApi } from './demo.js?v=222';
 
 // Charge une table par pages de 1000 : 5 pages en parallèle, puis la suite si besoin.
 async function pagesInParallel(page, first = 5) {
@@ -163,6 +163,12 @@ function createSupabaseApi() {
     pushPublicKey: () => rpc('get_push_public_key'),
     savePushSubscription: (s) => rpc('save_push_subscription', { p_endpoint: s.endpoint, p_p256dh: s.keys.p256dh, p_auth: s.keys.auth }),
     deletePushSubscription: (endpoint) => rpc('delete_push_subscription', { p_endpoint: endpoint || null }),
+    // Notification de test (27/11/2026) : la fonction Edge vérifie le compte et n'envoie qu'à ses abonnements.
+    async pushTest(endpoint) {
+      const { data, error } = await sb.functions.invoke('send-calm-alert', { body: { action: 'test', endpoint: endpoint || null } });
+      if (!error) return data;
+      try { return await error.context.json(); } catch { return { ok: false, message: 'Le serveur ne répond pas. Réessaie.' }; }
+    },
     exportMyData: () => rpc('export_my_data'),
     deleteMyAccount: () => rpc('delete_my_account'),
   };
