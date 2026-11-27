@@ -40,7 +40,7 @@ input, select, textarea { font: inherit; }
 .topbar > * { pointer-events: auto; }
 .brand {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  background: rgba(255,255,255,.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   padding: 9px 14px; border-radius: 999px; box-shadow: var(--shadow);
   font-weight: 800; color: var(--navy); font-size: 15px; letter-spacing: -.01em;
 }
@@ -454,7 +454,7 @@ html.booting body > *:not(#welcome) { visibility: hidden; }
 .profile-card .since { white-space: nowrap; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; }
 .profile-card .profile-top .grow { min-width: 0; }
 .profile-card { position: relative; }
-.profile-card #btn-invite { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: rgba(11,31,58,.55); backdrop-filter: blur(4px); }
+.profile-card #btn-invite { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: rgba(11,31,58,.55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
 /* Carte jusqu'en bas de l'écran (sous la barre de navigation du téléphone) */
 html, body { background: #E4EED3; }
 .top-resto { display: flex; align-items: center; gap: 10px; }
@@ -822,3 +822,12 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .adm-row b { color: var(--navy); }
 .adm-fb { background: #F8FAFC; border: 1px solid var(--line); border-radius: 12px; padding: 9px 11px; margin-bottom: 7px; font-size: 14px; overflow-wrap: anywhere; }
 .adm-fb small { display: block; color: var(--muted); margin-bottom: 3px; }
+
+/* « Une info est fausse ? » (fiche resto) */
+.wrong-info-link { display: block; margin: 14px auto 2px; padding: 8px 12px; border: 0; background: none; color: var(--muted); font-size: 13.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.wi-opts { display: grid; gap: 8px; margin-bottom: 12px; }
+.wi-opt { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 12px 14px; font-weight: 700; font-size: 15px; }
+.wi-opt .emo { width: 22px; text-align: center; flex: none; }
+.wi-opt.on { border-color: var(--teal); background: #F0FDFA; color: #0F766E; }
+#wi-text { width: 100%; font-size: 16px; font-weight: 500; resize: vertical; margin-bottom: 10px; }
+.wi-note { font-size: 12.5px; text-align: center; margin: 10px 0 0; }

@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=224';
+import { api, DEMO } from './api.js?v=225';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=224';
+} from './config.js?v=225';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=224';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=224';
-import { BRAND_PATHS } from './brands.js?v=224';
+} from './levels.js?v=225';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=225';
+import { BRAND_PATHS } from './brands.js?v=225';
 
 // ---------------------------------------------------------------------------
 // État
@@ -776,6 +776,51 @@ function openFeedback() {
   };
 }
 
+// « Une info est fausse ? » depuis une fiche : arrive dans les avis (table feedback) avec le resto en contexte.
+// Pas besoin de compte. Rien n'est corrigé tout seul : Alexis vérifie puis corrige dans la base.
+function openWrongInfo(id) {
+  const e = state.establishments.get(id);
+  if (!e) return;
+  const opts = [
+    ['hours', '🕒', 'Les horaires sont faux'],
+    e.has_drive ? ['nodrive', '🚗', "Il n'y a pas de Drive"] : ['drive', '🚗', 'Il y a un Drive'],
+    ['closed', '🔒', 'Fermé définitivement'],
+    ['place', '📍', 'Mal placé sur la carte'],
+    ['name', '✏️', 'Nom ou adresse faux'],
+    ['other', '💬', 'Autre chose'],
+  ];
+  let pick = null;
+  openSheet('wrong-info', `
+    <div class="sheet-head">
+      <div class="grow"><h2>Une info est fausse ?</h2><div class="sub">${esc(e.name)}${e.city ? ` · ${esc(e.city)}` : ''}</div></div>
+      <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
+    </div>
+    <div class="wi-opts">${opts.map(([k, emo, label]) => `<button type="button" class="wi-opt" data-k="${k}"><span class="emo emo-flat">${emo}</span>${esc(label)}</button>`).join('')}</div>
+    <textarea id="wi-text" class="select" rows="3" maxlength="500" placeholder="Précise si tu veux (facultatif). Ex. : ouvert jusqu'à 1 h le samedi"></textarea>
+    <button type="button" class="btn btn-primary" id="wi-send" disabled>Envoyer</button>
+    <p class="muted wi-note">Merci ! On vérifie puis on corrige pour tout le monde.</p>`);
+  $('#btn-close').onclick = () => renderDetail(id); // retour à la fiche sans recompter une vue partenaire
+  document.querySelectorAll('#sheet-body .wi-opt').forEach((b) => b.onclick = () => {
+    pick = b.dataset.k;
+    document.querySelectorAll('#sheet-body .wi-opt').forEach((x) => x.classList.toggle('on', x === b));
+    $('#wi-send').disabled = false;
+  });
+  $('#wi-send').onclick = async () => {
+    const btn = $('#wi-send');
+    const opt = opts.find((o) => o[0] === pick);
+    if (!opt) return;
+    btn.disabled = true;
+    const detail = $('#wi-text').value.trim();
+    const msg = `Info fausse : ${opt[2]}${detail ? ` — ${detail}` : ''}`;
+    const ctx = [`info fausse (${pick})`, `${e.name}${e.city ? ` (${e.city})` : ''}`, `resto ${id}`, `v${APP_VERSION}`].join(' | ');
+    try {
+      const r = await api.submitFeedback(msg, ctx);
+      toast(r?.ok ? 'Merci, c\'est noté ! On vérifie 👍' : (r?.message || 'Envoi impossible pour le moment.'), 3500);
+      if (r?.ok) renderDetail(id); else btn.disabled = false;
+    } catch (err) { toast(err.message || 'Envoi impossible pour le moment.'); btn.disabled = false; }
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Installer l'appli sur l'écran d'accueil (ceux qui l'installent reviennent bien plus souvent)
 // ---------------------------------------------------------------------------
@@ -1074,12 +1119,14 @@ function renderDetail(id) {
     ${isClosedNow(e)
       ? `<button class="btn btn-primary btn-closed" id="btn-report" disabled>Fermé : signalement impossible</button>`
       : `<button class="btn btn-primary" id="btn-report">J'y suis : je signale l'affluence</button>`}
+    <button type="button" class="wrong-info-link" id="btn-wrong-info">Une info est fausse sur ce resto ?</button>
   `;
   openSheet('detail', html);
   if (keepScroll !== null) { $('#sheet-body').scrollTop = keepScroll; requestAnimationFrame(updateScrollHints); }
   detailShown = id;
   $('#btn-close').onclick = closeSheet;
   $('#btn-report').onclick = () => openReport(id);
+  $('#btn-wrong-info').onclick = () => openWrongInfo(id);
   const bc = $('#btn-calmer'); if (bc) bc.onclick = () => openDetail(calmer.id, id);
   const bb = $('#btn-detail-back'); if (bb) bb.onclick = () => { const f = detailBack.from; detailBack = null; openDetail(f); };
   const gpsBtn = document.querySelector('#btn-route-gps');
@@ -1642,9 +1689,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=224`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=225`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=224`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=225`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1703,13 +1750,13 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=224" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=225" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
       <div class="ref-gifts"><div><b>+20 pts</b><span>pour toi</span></div><div><b>+10 pts</b><span>pour ton ami</span></div></div>
       <div class="ref-note"><u>Dès son 1er signalement</u>.${p.referrals_pending ? ` · ${p.referrals_pending} en attente` : ''}${p.parrain ? `<br>Ton parrain : <strong>${esc(p.parrain)}</strong>` : ''}</div>
-      ${p.can_set_referrer && !p.parrain ? `<form id="ref-form" class="ref-form"><input name="code" placeholder="Code d'un parrain" maxlength="12" autocomplete="off"><button class="btn btn-dark">OK</button></form>` : ''}
+      ${p.can_set_referrer && !p.parrain ? `<form id="ref-form" class="ref-form"><input name="code" placeholder="Code d'un parrain" maxlength="12" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false"><button class="btn btn-dark">OK</button></form>` : ''}
       <button class="btn btn-primary ref-btn" id="btn-refer">Inviter des amis</button>
     </div>` : ''}
     <div id="tab-body">${tab === 'profil' ? '' : '<div class="spinner"></div>'}</div>
@@ -1760,8 +1807,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=224" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=224) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=225" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=225) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1769,7 +1816,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=224" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=225" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1781,7 +1828,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=224" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=225" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1861,7 +1908,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=224" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=225" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2590,7 +2637,7 @@ async function bindPushCard(body) {
     } catch (err) {
       const m = String(err?.message || '');
       toast(/push service|registration failed|AbortError/i.test(m) || err?.name === 'AbortError'
-        ? 'Ton téléphone n\'arrive pas à joindre le service de notifications de Google. Redémarre-le, puis réessaie.'
+        ? `Ton téléphone n'arrive pas à joindre le service de notifications ${isIos() ? "d'Apple" : 'de Google'}. Redémarre-le, puis réessaie.`
         : (m || 'Impossible d\'activer les alertes.'), 6000);
     }
     paint();

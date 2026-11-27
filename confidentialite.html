@@ -18,33 +18,48 @@
 </head>
 <body>
 <main>
-  <header><img src="icons/fav-192.png" alt=""><div><h1>Règles de confidentialité</h1><div class="muted">Y'a du peuple ? · version pilote · mise à jour le 12 novembre 2026</div></div></header>
+  <header><img src="icons/fav-192.png" alt=""><div><h1>Règles de confidentialité</h1><div class="muted">Y'a du peuple ? · version pilote · mise à jour le 28 novembre 2026</div></div></header>
 
-  <p>Y'a du peuple ? est une application web qui indique l'affluence des fast-foods (salle et Drive) grâce aux signalements de ses utilisateurs. Cette page explique quelles données sont utilisées et pourquoi.</p>
+  <p>Y'a du peuple ? est une application web qui indique l'affluence des fast-foods (salle et Drive) grâce aux signalements de ses utilisateurs. Cette page explique quelles données sont utilisées, pourquoi, et où elles vont. Responsable : l'éditeur de l'appli (voir les <a href="mentions-legales.html">mentions légales</a>), joignable à <a href="mailto:contact.yadupeuple@gmail.com">contact.yadupeuple@gmail.com</a>.</p>
 
   <h2>Sans compte</h2>
-  <p>La carte se consulte sans compte. Aucune donnée personnelle n'est enregistrée. Si tu autorises la localisation, ta position sert uniquement dans ton navigateur à centrer la carte et à estimer le temps de trajet ; elle n'est pas envoyée ni conservée.</p>
+  <p>La carte se consulte sans compte, sans rien enregistrer sur toi.</p>
+  <p>Si tu autorises la localisation, ta position sert à centrer la carte, à trouver les restos proches et à calculer le temps de trajet. Pour cela, elle est envoyée à notre serveur (Supabase), qui ne la garde pas. Quand tu ouvres la fiche d'un restaurant, ta position et celle du restaurant sont aussi envoyées au service libre de calcul d'itinéraire OSRM, géré par l'association FOSSGIS (Allemagne), qui peut les garder quelque temps dans ses journaux techniques. Tu peux refuser la localisation : la carte marche quand même, mais sans trajet ni signalement.</p>
 
   <h2>Avec un compte</h2>
   <ul>
-    <li><strong>Adresse e-mail</strong> : pour te connecter (e-mail et mot de passe, lien de connexion ou compte Google). Avec Google, nous recevons seulement ton nom, ton adresse e-mail et ta photo de profil ; nous n'utilisons que l'adresse e-mail.</li>
-    <li><strong>Pseudo</strong> : affiché publiquement dans le classement.</li>
+    <li><strong>Adresse e-mail</strong> : pour te connecter (e-mail et mot de passe, lien de connexion ou compte Google). Avec Google, nous recevons seulement ton nom, ton adresse e-mail et ta photo de profil ; nous n'utilisons que l'adresse e-mail. Les e-mails de l'appli (connexion, mot de passe oublié) sont envoyés par Brevo (France).</li>
+    <li><strong>Pseudo</strong> : affiché publiquement dans le classement et sur ton profil public.</li>
     <li><strong>Signalements</strong> : le restaurant, le service (salle ou Drive), le niveau d'affluence, la file au Drive, l'heure, et la distance au restaurant au moment du signalement (pour vérifier que tu es sur place, à moins de 100 m). Tes coordonnées GPS ne sont pas conservées. Les signalements sont affichés aux autres utilisateurs de façon anonyme.</li>
     <li><strong>Points, badges, favoris, avatar et bannière choisis</strong>.</li>
-    <li><strong>Parrainage</strong> : ton code de parrainage et, si tu en as un, le pseudo de ton parrain.</li>
+    <li><strong>Parrainage</strong> : ton code de parrainage et, si tu en as un, le pseudo de ton parrain. Pour éviter la triche, l'appli crée au hasard un identifiant anonyme pour ton téléphone (il ne contient ni ton numéro, ni d'information sur l'appareil) et le relie à ton compte.</li>
+    <li><strong>Alertes, si tu les actives</strong> : l'adresse technique qui permet d'envoyer des notifications à ton téléphone, pour te prévenir quand un de tes favoris est calme. Les notifications passent par le service de ton téléphone (Google sur Android, Apple sur iPhone). Tu peux les couper à tout moment dans les réglages de l'appli.</li>
   </ul>
+
+  <h2>Avis et erreurs</h2>
+  <ul>
+    <li><strong>Avis et « Une info est fausse ? »</strong> : ton message et, selon le cas, le restaurant concerné, la version de l'appli et le type de navigateur. L'avis est relié à ton compte si tu es connecté.</li>
+    <li><strong>Journal des erreurs</strong> : si l'appli rencontre un problème, elle envoie un rapport technique (message d'erreur, écran, version, type de navigateur), sans ton compte ni ta position. Il est effacé au bout de 30 jours.</li>
+  </ul>
+
+  <h2>Sur ton téléphone</h2>
+  <p>L'appli garde sur ton téléphone tes réglages (filtres, dernier endroit regardé sur la carte, connexion) et une copie de la liste des restos pour s'ouvrir plus vite. Rien de tout cela ne sert à te suivre : pas de cookie publicitaire, pas de mesure d'audience.</p>
 
   <h2>Ce que nous ne faisons pas</h2>
   <p>Pas de publicité ciblée, pas de revente de données, pas de traceur publicitaire. Pour les restaurants partenaires, l'appli compte seulement le nombre de vues de leur fiche et de clics sur leur lien ou leur téléphone, sans savoir qui a cliqué.</p>
 
-  <h2>Hébergement</h2>
-  <p>Les données sont hébergées par Supabase (serveurs en Irlande, Union européenne). Le site est servi par GitHub Pages. Le fond de carte vient d'OpenFreeMap (données OpenStreetMap).</p>
+  <h2>Pourquoi nous avons le droit de le faire</h2>
+  <p>Compte, signalements, points et classement : c'est le service que tu demandes en t'inscrivant (voir les <a href="cgu.html">conditions d'utilisation</a>). Localisation et alertes : ton accord, que tu peux retirer quand tu veux dans les réglages du téléphone ou de l'appli. Anti-triche, journal des erreurs et sauvegardes : notre intérêt légitime à garder un service fiable et honnête.</p>
+
+  <h2>Où vont les données</h2>
+  <p>Base de données : Supabase (serveurs en Irlande, Union européenne). Site : GitHub Pages (GitHub, États-Unis). Fond de carte : OpenFreeMap (données OpenStreetMap). Calcul d'itinéraire : OSRM, association FOSSGIS (Allemagne). E-mails : Brevo (France). Connexion avec Google et notifications : Google ou Apple (États-Unis). Pour les services situés aux États-Unis, les transferts sont encadrés par les garanties prévues par le RGPD (cadre de protection des données UE–États-Unis ou clauses contractuelles types de la Commission européenne).</p>
+  <p>Une copie de sauvegarde de la base est faite chaque nuit, uniquement pour pouvoir réparer une panne : chez Supabase (gardée 14 jours) et dans un espace privé chez GitHub.</p>
 
   <h2>Durée de conservation</h2>
-  <p>Tant que ton compte existe. Si tu supprimes ton compte, ton e-mail, ton pseudo, tes points, badges et favoris sont effacés ; tes signalements restent, sans lien avec toi.</p>
+  <p>Tant que ton compte existe. Si tu supprimes ton compte, ton e-mail, ton pseudo, tes points, badges, favoris, alertes et l'identifiant de ton téléphone sont effacés ; tes signalements et tes avis restent, sans lien avec toi. Les copies de sauvegarde peuvent encore contenir ces données quelque temps.</p>
 
   <h2>Tes droits</h2>
-  <p>Dans l'appli, rubrique Compte → Réglages : <em>Télécharger mes données</em> et <em>Supprimer mon compte</em>. Pour toute autre demande (accès, rectification, opposition) : <a href="mailto:contact.yadupeuple@gmail.com">contact.yadupeuple@gmail.com</a>. Tu peux aussi saisir la CNIL (cnil.fr).</p>
+  <p>Dans l'appli, rubrique Compte → Réglages : <em>Télécharger mes données</em> et <em>Supprimer mon compte</em>. Pour toute autre demande (accès, rectification, effacement, opposition) : <a href="mailto:contact.yadupeuple@gmail.com">contact.yadupeuple@gmail.com</a>. Tu peux aussi saisir la CNIL (cnil.fr).</p>
 
   <p class="muted" style="margin-top:32px"><a href="./">← Retour à l'appli</a> · <a href="mentions-legales.html">Mentions légales</a> · <a href="cgu.html">Conditions d'utilisation</a></p>
 </main>
