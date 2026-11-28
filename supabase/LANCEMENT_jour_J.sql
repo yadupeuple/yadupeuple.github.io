@@ -5,8 +5,10 @@
 --
 -- Préparé le 28/11/2026, d'après les décisions d'Alexis (CLAUDE.md, « Avant le lancement public ») :
 -- remise à zéro des signalements et de ce qui en découle, SAUF le badge « Testeur fondateur », gardé à vie.
--- ÉTAT : NON VÉRIFIÉ. Avant le jour J, le rejouer une fois en entier dans une transaction annulée
--- (remplacer le « commit » final par « rollback ») et relire le contrôle de l'étape 8.
+-- ÉTAT : ESSAYÉ le 28/11/2026 à 4 h 30 (confirmation d'Alexis), étapes 0 à 7 dans une transaction annulée :
+-- 22 signalements → 0 ; badges → seul « testeur » (1 compte) ; points [0,0,0,0,172] → [0,0,0,0,11] ;
+-- 1 ruban de niveau 5 remis au ruban de départ ; beta_open 0, badge testeur visible, image du badge active ;
+-- photo de la base faite (26 tables). Vérifié après : rien de changé. Le jour J, relire quand même le contrôle (étape 8).
 --
 -- À faire aussi le jour J, hors de ce script :
 --   * Supabase, partie Authentication : réactiver la confirmation des e-mails (« Confirm email ») ;

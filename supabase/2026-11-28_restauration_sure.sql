@@ -115,3 +115,14 @@ as $function$ select backup.restore_table_into(p_tbl, p_day, 'public') $function
 revoke all on function backup.restore_table_into(text, date, text) from public;
 revoke all on function backup.restore_table(text, date) from public;
 revoke all on function backup.restore_day(date, text) from public;
+
+-- TESTÉ le 28/11/2026 à 4 h 30 (confirmation d'Alexis), dans une transaction annulée, sur une copie
+-- (schéma de test avec les mêmes liens entre tables + un déclencheur piège qui bloque s'il est appelé) :
+--   A. perte totale : restore_day remet les 24 tables dans l'ordre des liens, 12 420 lignes, 0 différence
+--      avec la sauvegarde ; aucun déclencheur appelé ;
+--   B. 200 restos abîmés + 300 supprimés (avec leurs horaires, courbes, signalements en cascade)
+--      + 5 signalements supprimés + réglages modifiés + 1 réglage ajouté : tout est revenu à l'identique,
+--      seule la ligne ajoutée après la sauvegarde est restée (voulu) ;
+--   D. table à numéro automatique : n° 42 remis, la ligne suivante prend le n° 43 ;
+--   E. la fonction sur les vraies tables répond ; anon / authenticated n'y ont pas accès.
+-- Vérifié après : rien de changé dans la base, schéma de test absent.
