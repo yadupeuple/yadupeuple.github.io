@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=233';
+import { api, DEMO } from './api.js?v=234';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=233';
+} from './config.js?v=234';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=233';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=233';
-import { BRAND_PATHS } from './brands.js?v=233';
+} from './levels.js?v=234';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=234';
+import { BRAND_PATHS } from './brands.js?v=234';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1690,9 +1690,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=233`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=234`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=233`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=234`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1752,7 +1752,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=233" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=234" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1809,8 +1809,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=233" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=233) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=234" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=234) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1818,7 +1818,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=233" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=234" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1830,7 +1830,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=233" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=234" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1918,7 +1918,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=233" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=234" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2909,14 +2909,44 @@ function secureRandom(n) { // entier au hasard dans [0, n[, sans biais
   do crypto.getRandomValues(a); while (a[0] >= max);
   return a[0] % n;
 }
+// Sons de la roue, fabriqués par le téléphone (Web Audio : aucun fichier, aucun droit d'auteur).
+function wheelSound() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return { tick() {}, win() {}, muted: true };
+  const ctx = new AC();
+  const out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination);
+  const tone = (freq, t, dur, type = 'triangle', vol = 0.3) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(out); o.start(t); o.stop(t + dur + 0.05);
+  };
+  let lastTick = 0;
+  return {
+    muted: false,
+    resume() { if (ctx.state === 'suspended') ctx.resume(); },
+    tick() { // « clac » de la languette à chaque part
+      if (this.muted) return;
+      const t = ctx.currentTime; if (t - lastTick < 0.035) return; lastTick = t;
+      tone(1800, t, 0.035, 'square', 0.12); tone(900, t, 0.05, 'triangle', 0.1);
+    },
+    win() { // petite fanfare
+      if (this.muted) return;
+      const t = ctx.currentTime + 0.05;
+      [[523, 0], [659, 0.12], [784, 0.24], [1047, 0.36]].forEach(([f, d]) => tone(f, t + d, 0.22, 'triangle', 0.28));
+      [523, 659, 784, 1047].forEach((f) => tone(f, t + 0.52, 1.1, 'triangle', 0.18));
+      [1568, 2093].forEach((f, i) => tone(f, t + 0.56 + i * 0.1, 0.5, 'sine', 0.08));
+    },
+  };
+}
 async function openWheel(month = parisMonth(-1)) {
   closeSheet();
   document.getElementById('wheel')?.remove();
   const official = month < parisMonth(0);
   const el = document.createElement('div');
   el.id = 'wheel';
-  el.innerHTML = `<button class="wh-x" aria-label="Fermer">✕</button>
-    <div class="wh-head"><img src="icons/logo-boot.png?v=233" alt="Y'a du peuple ?"><div class="wh-t">Tirage au sort</div><div class="wh-m">${monthLabel(month)}${official ? '' : ' · essai'}</div></div>
+  el.innerHTML = `<button class="wh-x" aria-label="Fermer">✕</button><button class="wh-snd" aria-label="Son">🔊</button>
+    <div class="wh-head"><img src="icons/logo-boot.png?v=234" alt="Y'a du peuple ?"><div class="wh-t">Tirage au sort</div><div class="wh-m">${monthLabel(month)}${official ? '' : ' · essai'}</div></div>
     <div class="wh-stage"><div class="wh-ptr"></div><canvas width="900" height="900"></canvas><div class="wh-hub"></div></div>
     <div class="wh-now">⏳</div>
     <div class="wh-info"></div>
@@ -2925,6 +2955,10 @@ async function openWheel(month = parisMonth(-1)) {
     <div class="wh-win" hidden></div>`;
   document.body.appendChild(el);
   const $w = (q) => el.querySelector(q);
+  const snd = wheelSound();
+  snd.muted = store.get('ydp_wheel_mute') === '1';
+  $w('.wh-snd').textContent = snd.muted ? '🔇' : '🔊';
+  $w('.wh-snd').onclick = () => { snd.muted = !snd.muted; store.set('ydp_wheel_mute', snd.muted ? '1' : null); $w('.wh-snd').textContent = snd.muted ? '🔇' : '🔊'; };
   $w('.wh-x').onclick = () => el.remove();
   el.querySelectorAll('.wh-tabs button').forEach((b) => { b.onclick = () => { if (!el.classList.contains('spinning')) openWheel(b.dataset.m); }; });
   let d;
@@ -2985,7 +3019,7 @@ async function openWheel(month = parisMonth(-1)) {
   const go = $w('.wh-go');
   go.disabled = false;
   go.onclick = () => {
-    go.disabled = true; el.classList.add('spinning'); $w('.wh-win').hidden = true;
+    go.disabled = true; el.classList.add('spinning'); $w('.wh-win').hidden = true; snd.resume();
     const t = secureRandom(total); // ticket gagnant
     let k = 0, win = slices[0];
     for (const sl of slices) { if (t < k + sl.tickets) { win = sl; break; } k += sl.tickets; }
@@ -2993,17 +3027,20 @@ async function openWheel(month = parisMonth(-1)) {
     const start = rot, base = start - (start % (2 * Math.PI));
     const target = base - inside - 2 * Math.PI * (6 + secureRandom(3)); // la roue tourne dans le sens des aiguilles d'une montre
     const dur = 7000 + secureRandom(1500), t0 = performance.now();
-    let last = null;
+    let last = null, lastPeg = Math.floor(rot / (Math.PI / 16));
     const ease = (x) => 1 - Math.pow(1 - x, 4);
     const step = (now) => {
       const x = Math.min(1, (now - t0) / dur);
       rot = start + (target - start) * ease(x);
       draw();
       const u = under();
+      const peg = Math.floor(rot / (Math.PI / 16)); // 32 picots sur le tour : un « clac » par picot
+      if (peg !== lastPeg) { lastPeg = peg; snd.tick(); }
       if (u !== last) { last = u; $w('.wh-now').textContent = u.pseudo; }
       if (x < 1) { requestAnimationFrame(step); return; }
       el.classList.remove('spinning');
       $w('.wh-now').textContent = win.pseudo;
+      snd.win();
       if (!official) { showWin(win, 'Essai : rien n\'est enregistré.'); go.disabled = false; go.textContent = 'Relancer (essai) 🎡'; return; }
       showWin(win, 'Enregistrement…');
       api.saveDraw(month, win.pseudo).then((r) => {

@@ -863,7 +863,7 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 #wheel .wh-stage { position: relative; width: min(88vw, 52vh, 460px); aspect-ratio: 1; margin: 16px 0 10px; }
 #wheel canvas { width: 100%; height: 100%; display: block; filter: drop-shadow(0 10px 24px rgba(11,31,58,.35)); }
 #wheel .wh-ptr { position: absolute; left: 50%; top: -14px; transform: translateX(-50%); width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 34px solid #0B1F3A; z-index: 2; filter: drop-shadow(0 2px 2px rgba(0,0,0,.3)); }
-#wheel .wh-hub { position: absolute; left: 50%; top: 50%; width: 15%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: #fff url('../icons/icon-192.png?v=233') center / 78% no-repeat; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+#wheel .wh-hub { position: absolute; left: 50%; top: 50%; width: 15%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: #fff url('../icons/icon-192.png?v=234') center / 78% no-repeat; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
 #wheel .wh-now { min-height: 44px; font-size: 32px; font-weight: 900; color: #fff; text-shadow: 0 2px 6px rgba(11,31,58,.35); text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #wheel .wh-info { font-size: 15px; font-weight: 700; color: #0B1F3A; margin: 2px 0 12px; }
 #wheel .wh-actions { width: min(100%, 420px); margin-top: auto; }
@@ -878,3 +878,5 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 #wheel .wh-win-n { font-size: 13px; margin-top: 10px; font-weight: 600; }
 @keyframes whpop { from { transform: translate(-50%, -50%) scale(.6); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 #wheel .wh-win .bp-confetti i { top: 60px; animation: bp-burst 1.2s ease-out .15s both; }
+#wheel .wh-snd { position: absolute; top: max(10px, env(safe-area-inset-top)); left: 12px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(11,31,58,.25); font-size: 18px; }
+#wheel.spinning .wh-snd { opacity: 0; pointer-events: none; }
