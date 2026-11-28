@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=238';
+import { api, DEMO } from './api.js?v=239';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=238';
+} from './config.js?v=239';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=238';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=238';
-import { BRAND_PATHS } from './brands.js?v=238';
+} from './levels.js?v=239';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=239';
+import { BRAND_PATHS } from './brands.js?v=239';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1690,9 +1690,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=238`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=239`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=238`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=239`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1752,7 +1752,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=238" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=239" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1809,8 +1809,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=238" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=238) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=239" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=239) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1818,7 +1818,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=238" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=239" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1827,10 +1827,11 @@ async function openCustomize() {
   const lvl = p.level || 1;
   const mine = new Set((p.badges || []).map((b) => (typeof b === 'string' ? b : b.code)));
   const cell = (c) => {
-    const needBadge = c.requires_badge && !mine.has(c.requires_badge);
-    const locked = lvl < c.min_level || needBadge;
+    const all = !!p.is_admin; // compte organisateur : tout débloqué (la base le vérifie aussi)
+    const needBadge = !all && c.requires_badge && !mine.has(c.requires_badge);
+    const locked = !all && (lvl < c.min_level || needBadge);
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=238" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=239" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1918,7 +1919,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=238" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=239" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2117,7 +2118,7 @@ function settingsHtml(resto = null) {
         <li>🖨️ Une affiche QR code pour votre caisse ou votre Drive</li>
         <li>🏆 Un lot pour votre meilleur signaleur du mois (facultatif)</li>
       </ul>
-      <div class="pc-launch">🚀 <strong>Offre de lancement</strong> : 3 mois offerts aux 10 premiers partenaires de chaque ville, avec le badge « Partenaire fondateur » à vie.</div>
+      <div class="pc-launch">🚀 <strong>Offre de lancement</strong> : 3 mois offerts aux 10 premiers partenaires de chaque ville, avec le badge « Partenaire fondateur », tant qu'ils restent partenaires.</div>
       <a class="btn btn-ghost pc-poster" href="partenaires.html" target="_blank" rel="noopener">📄 Tout savoir sur le partenariat</a>
       <a class="btn btn-primary" href="mailto:${CONTACT_EMAIL}?subject=Partenariat%20Y'a%20du%20peuple">✉️ Nous contacter</a>
       <div class="pc-note">Les statuts d'affluence restent toujours neutres : un partenariat ne les modifie jamais.</div>
@@ -2946,7 +2947,7 @@ async function openWheel(month = parisMonth(-1)) {
   const el = document.createElement('div');
   el.id = 'wheel';
   el.innerHTML = `<button class="wh-x" aria-label="Fermer">✕</button><button class="wh-snd" aria-label="Son">🔊</button>
-    <div class="wh-head"><img src="icons/logo-boot.png?v=238" alt="Y'a du peuple ?"><div class="wh-t">Tirage au sort</div><div class="wh-m">${monthLabel(month)}${official ? '' : ' · essai'}</div></div>
+    <div class="wh-head"><img src="icons/logo-boot.png?v=239" alt="Y'a du peuple ?"><div class="wh-t">Tirage au sort</div><div class="wh-m">${monthLabel(month)}${official ? '' : ' · essai'}</div></div>
     <div class="wh-stage"><div class="wh-ptr"></div><canvas width="900" height="900"></canvas><div class="wh-hub"></div></div>
     <div class="wh-now">⏳</div>
     <div class="wh-info"></div>
