@@ -844,3 +844,10 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .adm-chart-goal { position: relative; }
 .adm-target { position: absolute; left: 0; right: 0; border-top: 2px dashed #22C55E; z-index: 1; pointer-events: none; }
 .adm-target span { position: absolute; left: 6px; top: -16px; font-size: 11px; font-weight: 800; color: #16A34A; }
+
+/* Champion de ville (v231) */
+.champs { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.champ { display: flex; align-items: center; gap: 10px; background: rgba(245,165,36,.16); border: 1px solid rgba(245,165,36,.5); border-radius: 12px; padding: 8px 12px; font-size: 14px; }
+.champ .cup { font-size: 24px; line-height: 1; flex: none; }
+.champ small { display: block; opacity: .75; font-size: 12px; }
+.champ-more { font-size: 12px; opacity: .75; padding-left: 4px; }

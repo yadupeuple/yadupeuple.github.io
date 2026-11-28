@@ -24,6 +24,7 @@ begin;
 
 -- 1. Signalements de test effacés : classements, habitudes et podium repartent de zéro.
 delete from public.reports;
+delete from public.city_champions;   -- titres « Champion de ville » calculés pendant le test (v231)
 
 -- 2. Badges : on ne garde que « Testeur fondateur » ; bonus de catégorie recalculés plus bas.
 delete from public.user_badges where badge_code <> 'testeur';

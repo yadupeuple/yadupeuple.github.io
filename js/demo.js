@@ -1,5 +1,5 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=230';
+import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=231';
 // Comme la base : Buffalo Grill et Flunch cachés (24/11/2026).
 const DEMO_ESTABLISHMENTS = DEMO_ALL.filter((e) => !/^(Buffalo Grill|Flunch)$/.test(e.brand));
 // Démo envoyée aux futurs partenaires (?demo&resto) : le resto partenaire de démonstration ne porte pas le nom d'un vrai restaurant.
@@ -7,7 +7,7 @@ if (new URLSearchParams(location.search).has('resto')) {
   const e = DEMO_ESTABLISHMENTS.find((x) => x.id === '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42');
   if (e) e.name = 'Votre restaurant (démo)';
 }
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=230';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=231';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -49,7 +49,7 @@ function withStatus(e, lat, lng) {
 export function createDemoApi() {
   let user = null;
   const listeners = [];
-  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'ruban_ciel' };
+  const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'ruban_ciel', champions: [{ city: 'Thionville', month: '2026-10-01' }] };
   const favorites = new Set(['1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42']);
   const demoPartner = { id: '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42', founder: true, tagline: 'Restaurant de démonstration', link_url: 'https://exemple.fr', link_label: 'Voir le menu', phone: '03 82 00 00 00',
     offer: { title: '-10 % sur le menu', details: 'Sur présentation de l\'appli en caisse.', only_when_calm: true, ends_at: new Date(Date.now() + 5 * 3600e3).toISOString() } };
@@ -235,7 +235,7 @@ export function createDemoApi() {
     async publicProfile(pseudo) {
       await wait();
       return { pseudo, avatar: 'dragon', banner: 'espace', points: 1840, level: 32, level_name: 'Expert local',
-        member_since: '2026-11-02T10:00:00Z', reports_total: 190, restos_total: 14,
+        member_since: '2026-11-02T10:00:00Z', reports_total: 190, restos_total: 14, champions: [{ city: 'Metz', month: '2026-10-01' }, { city: 'Woippy', month: '2026-09-01' }],
         badges: [{ code: 'v1', name: 'Premier signalement' }, { code: 'v10', name: '5 signalements' }, { code: 'drive10', name: 'Éclaireur du Drive' }, { code: 'ref1', name: 'Parrain' }] };
     },
     async submitReport(r) {
