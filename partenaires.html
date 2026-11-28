@@ -40,6 +40,9 @@
     .step { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
     .num { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--teal); color: var(--navy); font-weight: 900; display: grid; place-items: center; font-size: 16px; }
     .prize { border: 2px solid var(--yel); }
+    .brand ul { margin: 8px 0 12px; padding-left: 0; list-style: none; }
+    .brand li { margin: 6px 0; }
+    .brand .cta { margin: 4px 0 0; }
     .neutral { background: var(--navy); color: #fff; }
     .neutral h2, .neutral p { color: #fff; }
     .neutral p { color: #CBD5E1; }
@@ -90,6 +93,17 @@
     <div class="step"><span class="num">3</span><span>Vous posez l'affiche, publiez une offre quand vous voulez et, si vous le souhaitez, offrez un lot à votre meilleur signaleur du mois. Rien d'autre à faire au quotidien.</span></div>
   </section>
 
+  <section class="card brand">
+    <h2>🏢 Vous êtes une enseigne ou un réseau&nbsp;?</h2>
+    <p>Siège, franchiseur, groupe de plusieurs restaurants&nbsp;: une offre nationale, sur devis, avec un seul contrat et une seule facture pour tous vos restaurants.</p>
+    <ul>
+      <li>⭐ Tous vos restaurants partenaires d'un coup, déjà présents sur la carte</li>
+      <li>📊 Un espace siège&nbsp;: les chiffres de chaque restaurant, par ville et par région</li>
+      <li>🎁 Une offre nationale, ou seulement dans les restaurants où c'est calme</li>
+    </ul>
+    <a class="cta ghost" id="cta-brand" href="mailto:contact.yadupeuple@gmail.com">✉️ Demander un devis enseigne</a>
+  </section>
+
   <section class="card neutral">
     <h2>L'affluence reste toujours neutre</h2>
     <p>Elle vient des clients sur place (à moins de 100 m) et des tendances habituelles. Un partenariat ne la modifie jamais&nbsp;: c'est ce qui rend l'appli crédible pour vos clients.</p>
@@ -100,6 +114,7 @@
     <details><summary>Combien ça coûte&nbsp;?</summary><p>Rien pendant 3 mois. Ensuite, 30&nbsp;€ par mois. Les 10 premiers partenaires de chaque ville (fondateurs) gardent 20&nbsp;€ par mois tant qu'ils restent partenaires. En payant à l'année, 2 mois sont offerts. À la fin des 3 mois offerts, vous décidez de continuer ou non.</p></details>
     <details><summary>Je dois offrir un lot&nbsp;?</summary><p>Non, c'est facultatif. Mais ce sont les récompenses qui donnent envie aux clients de signaler, donc de faire vivre votre fiche. Et le gagnant, un de vos clients, revient chez vous chercher son lot.</p></details>
     <details><summary>Combien de personnes utilisent l'appli&nbsp;?</summary><p>On démarre&nbsp;: l'appli est en test autour de Thionville et de Metz avant son lancement, et on la fait connaître sur les réseaux sociaux. Les partenaires fondateurs sont là dès le début, gratuitement, et profitent de toute la croissance.</p></details>
+    <details><summary>Nous avons plusieurs restaurants (ou toute une enseigne)&nbsp;?</summary><p>On propose une offre réseau, sur devis&nbsp;: un seul contrat et une seule facture pour tous vos restaurants, un espace avec les chiffres de chacun, et une offre que vous pouvez publier partout d'un coup. Écrivez-nous avec le nombre de restaurants concernés.</p></details>
     <details><summary>Je suis franchisé&nbsp;: mon enseigne doit-elle être d'accord&nbsp;?</summary><p>La fiche Pro et vos chiffres ne touchent ni à vos prix ni à vos promotions. Pour l'affiche en restaurant ou une offre, suivez simplement les règles de votre enseigne.</p></details>
     <details><summary>Quand c'est plein, l'appli envoie mes clients ailleurs&nbsp;?</summary><p>Un client qui voit du monde peut aussi choisir de revenir plus tard. Et quand c'est calme chez vous, l'appli l'affiche, avec votre offre&nbsp;: c'est là que vous gagnez des clients.</p></details>
     <details><summary>Les signalements sont-ils fiables&nbsp;?</summary><p>Il faut un compte et être à moins de 100 m du restaurant, une seule fois par demi-heure, et l'appli croise les avis de plusieurs personnes. Personne ne peut payer pour changer un statut, même pas un partenaire.</p></details>
@@ -118,6 +133,8 @@
   const corps = "Bonjour,\n\nJe suis intéressé(e) par le partenariat.\n\nRestaurant : \nVille : \nTéléphone : \nMon pseudo dans l'appli (si j'ai déjà un compte) : \n\nMerci !";
   const href = 'mailto:contact.yadupeuple@gmail.com?subject=' + encodeURIComponent(sujet) + '&body=' + encodeURIComponent(corps);
   document.querySelectorAll('#cta-mail, #cta-mail2').forEach((a) => { a.href = href; });
+  const corpsE = "Bonjour,\n\nNous souhaitons un devis pour une offre enseigne / réseau.\n\nEnseigne ou groupe : \nNombre de restaurants : \nZones (villes, régions, France entière) : \nNom et fonction : \nTéléphone : \n\nMerci !";
+  document.getElementById('cta-brand').href = 'mailto:contact.yadupeuple@gmail.com?subject=' + encodeURIComponent("Devis enseigne Y'a du peuple ?") + '&body=' + encodeURIComponent(corpsE);
 </script>
 </body>
 </html>
