@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=225';
+import { api, DEMO } from './api.js?v=226';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=225';
+} from './config.js?v=226';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=225';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=225';
-import { BRAND_PATHS } from './brands.js?v=225';
+} from './levels.js?v=226';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=226';
+import { BRAND_PATHS } from './brands.js?v=226';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1689,9 +1689,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=225`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=226`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=225`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=226`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1750,7 +1750,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=225" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=226" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1807,8 +1807,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=225" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=225) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=226" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=226) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1816,7 +1816,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=225" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=226" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1828,7 +1828,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=225" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=226" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1908,7 +1908,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=225" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=226" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2098,6 +2098,7 @@ function settingsHtml(resto = null) {
         <li>🖨️ Une affiche QR code pour votre caisse ou votre Drive</li>
       </ul>
       <div class="pc-launch">🚀 <strong>Offre de lancement</strong> : 3 mois offerts aux 10 premiers partenaires, avec le badge « Partenaire fondateur » à vie.</div>
+      <a class="btn btn-ghost pc-poster" href="partenaires.html" target="_blank" rel="noopener">📄 Tout savoir sur le partenariat</a>
       <a class="btn btn-primary" href="mailto:${CONTACT_EMAIL}?subject=Partenariat%20Y'a%20du%20peuple">✉️ Nous contacter</a>
       <div class="pc-note">Les statuts d'affluence restent toujours neutres : un partenariat ne les modifie jamais.</div>
     </details>`}
@@ -2262,6 +2263,35 @@ async function openDashboard() {
   };
   const tot = (r.salle_21d || 0) + (r.drive_21d || 0), ps = tot ? Math.round(100 * r.salle_21d / tot) : 50;
   const list = (rows, fmt) => rows.length ? rows.map(fmt).join('') : '<p class="muted">Rien pour l\'instant.</p>';
+  // Objectifs du test (calculés par la base) : fidélité des comptes de 15 jours et plus, direct à midi dans la zone de test.
+  const goals = (() => {
+    const g = d.goals;
+    if (!g) return '';
+    const rt = g.retention || {}, cohort = rt.cohort || 0, act = rt.active_7d || 0, tp = g.target_pct || 33;
+    const pct = cohort ? Math.round(100 * act / cohort) : null;
+    const rtTxt = !cohort ? "Aucun compte de 15 jours ou plus pour l'instant : revenez dans quelques jours."
+      : act === 0 ? `Aucun des ${n(cohort)} compte${cohort > 1 ? 's' : ''} de 15 jours et plus n'a signalé ces 7 derniers jours.`
+      : `${n(act)} compte${act > 1 ? 's' : ''} sur ${n(cohort)} ${act > 1 ? 'ont' : 'a'} signalé ces 7 derniers jours (comptes de 15 jours et plus).`;
+    const days = g.lunch || [], target = g.lunch_target || 15, last = days.length - 1;
+    const yest = days.length > 1 ? days[last - 1] : null;
+    const max = Math.max(target, ...days.map((x) => x.midi));
+    const week = days.slice(Math.max(0, last - 7), last);
+    const soir = week.length ? Math.round(10 * week.reduce((s, x) => s + x.soir, 0) / week.length) / 10 : 0;
+    const cls = (ok, known) => (known ? (ok ? ' ok' : ' ko') : '');
+    return `<div class="section-title">🎯 Objectifs du test</div>
+      <div class="adm-goal${cls(pct !== null && pct >= tp, pct !== null)}">
+        <div class="adm-goal-top"><strong>${pct === null ? '—' : `${pct} %`}</strong><span>Fidélité</span></div>
+        <p>${rtTxt}</p>
+        <small>Objectif : au moins 1 sur 3 (${tp} %)${cohort ? ` · ${n(rt.reported_ever)} ${rt.reported_ever > 1 ? 'ont' : 'a'} déjà signalé au moins une fois` : ''} · ton compte n'est pas compté</small>
+      </div>
+      <div class="adm-goal${cls(yest && yest.midi >= target, !!yest)}">
+        <div class="adm-goal-top"><strong>${yest ? n(yest.midi) : '—'}</strong><span>Direct à midi, hier</span></div>
+        <p>Restos de la zone ${esc(g.zone || '')} qui ont reçu un signalement entre 12 h et 14 h.</p>
+        <div class="adm-chart adm-chart-goal"><div class="adm-target" style="bottom:${(78 * target / max).toFixed(1)}px"><span>${target}</span></div>${days.map((x, i) => `<div class="adm-bar${i === last ? ' today' : ''}" style="height:${Math.round(100 * x.midi / max)}%" title="${x.day} : ${x.midi}">${x.midi && x.midi === Math.max(...days.map((y) => y.midi)) ? `<b>${x.midi}</b>` : ''}</div>`).join('')}</div>
+        <div class="adm-axis"><span>il y a 2 semaines</span><span>aujourd'hui</span></div>
+        <small>Objectif : ${target} restos chaque midi · le soir (19 h-21 h) : ${String(soir).replace('.', ',')} resto${soir > 1 ? 's' : ''} en moyenne sur 7 jours</small>
+      </div>`;
+  })();
   openSheet('dashboard', `${head(`Mis à jour à ${new Date(d.generated_at).toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit' })}`)}
     <div class="adm-kpis">
       <div class="adm-kpi"><strong>${n(a.total)}</strong><span>comptes</span>${plus(a.today, "aujourd'hui")}</div>
@@ -2269,6 +2299,7 @@ async function openDashboard() {
       <div class="adm-kpi"><strong>${n(r.total)}</strong><span>signalements</span>${plus(r.today, "aujourd'hui")}</div>
       <div class="adm-kpi"><strong>${n(d.feedback.total)}</strong><span>avis reçus</span>${plus(d.feedback.week, 'sur 7 jours')}</div>
     </div>
+    ${goals}
     ${chart('reports', '📍 Signalements par jour')}
     ${chart('signups', '🙋 Nouveaux comptes par jour')}
     <div class="section-title">Salle ou Drive (3 semaines)</div>
@@ -2768,6 +2799,16 @@ async function start() {
     map.jumpTo({ center: [state.establishments.get(deep).lng, state.establishments.get(deep).lat], zoom: 15 });
     showCards();
     openDetail(deep);
+  } else if (DEMO && new URLSearchParams(location.search).has('resto')) {
+    // Démo envoyée aux futurs partenaires : carte sur le resto de démonstration, puis « Mon restaurant » ouvert directement.
+    introDone = true;
+    endBoot();
+    $('#welcome').hidden = true;
+    markersOn = true;
+    const demoResto = state.establishments.get('1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42');
+    if (demoResto) map.jumpTo({ center: [demoResto.lng, demoResto.lat], zoom: 13.5 });
+    showCards();
+    renderAccount('reglages').then(() => setTimeout(() => $('#sheet-body .set-resto')?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 350)).catch(() => {});
   } else if ($('#welcome').hidden) {
     introFly();
   }

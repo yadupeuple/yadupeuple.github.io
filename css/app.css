@@ -831,3 +831,16 @@ html, body, .sheet, .sheet-body, .welcome, .cards { touch-action: pan-x pan-y; }
 .wi-opt.on { border-color: var(--teal); background: #F0FDFA; color: #0F766E; }
 #wi-text { width: 100%; font-size: 16px; font-weight: 500; resize: vertical; margin-bottom: 10px; }
 .wi-note { font-size: 12.5px; text-align: center; margin: 10px 0 0; }
+
+/* Tableau de bord : objectifs du test */
+.adm-goal { border: 2px solid var(--line); border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; background: #fff; }
+.adm-goal.ok { border-color: #22C55E; background: #F0FDF4; }
+.adm-goal.ko { border-color: #F5A524; background: #FFFBEB; }
+.adm-goal-top { display: flex; align-items: baseline; gap: 10px; }
+.adm-goal-top strong { font-size: 30px; line-height: 1.1; color: var(--navy); }
+.adm-goal-top span { font-weight: 800; color: var(--navy); }
+.adm-goal p { margin: 4px 0 8px; font-size: 14px; }
+.adm-goal small { display: block; margin-top: 6px; font-size: 12.5px; color: var(--muted); }
+.adm-chart-goal { position: relative; }
+.adm-target { position: absolute; left: 0; right: 0; border-top: 2px dashed #22C55E; z-index: 1; pointer-events: none; }
+.adm-target span { position: absolute; left: 6px; top: -16px; font-size: 11px; font-weight: 800; color: #16A34A; }

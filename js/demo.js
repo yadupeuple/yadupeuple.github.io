@@ -1,8 +1,13 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=225';
+import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=226';
 // Comme la base : Buffalo Grill et Flunch cachés (24/11/2026).
 const DEMO_ESTABLISHMENTS = DEMO_ALL.filter((e) => !/^(Buffalo Grill|Flunch)$/.test(e.brand));
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=225';
+// Démo envoyée aux futurs partenaires (?demo&resto) : le resto partenaire de démonstration ne porte pas le nom d'un vrai restaurant.
+if (new URLSearchParams(location.search).has('resto')) {
+  const e = DEMO_ESTABLISHMENTS.find((x) => x.id === '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42');
+  if (e) e.name = 'Votre restaurant (démo)';
+}
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=226';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -50,6 +55,8 @@ export function createDemoApi() {
     offer: { title: '-10 % sur le menu', details: 'Sur présentation de l\'appli en caisse.', only_when_calm: true, ends_at: new Date(Date.now() + 5 * 3600e3).toISOString() } };
   const demoStats = { views: 214, clicks: 31 };
   try { if (localStorage.getItem('ydp_demo_user')) user = { id: 'demo', email: 'demo@exemple.fr' }; } catch {}
+  // Lien de démo pour les futurs partenaires (?demo&resto) : déjà connecté, l'espace restaurateur s'ouvre tout seul.
+  if (new URLSearchParams(location.search).has('resto')) user = { id: 'demo', email: 'demo@exemple.fr' };
   const setUser = (u) => {
     user = u;
     try { u ? localStorage.setItem('ydp_demo_user', '1') : localStorage.removeItem('ydp_demo_user'); } catch {}
@@ -292,7 +299,7 @@ export function createDemoApi() {
       { rang: 1, pseudo: 'BurgerHunter', points: 412, avatar: 'dragon', mois: '2026-10' },
       { rang: 2, pseudo: 'DriveMaster', points: 260, avatar: 'voiture', mois: '2026-10' },
       { rang: 3, pseudo: 'Testeur57', points: 185, avatar: 'burger', mois: '2026-10' }]; },
-    async monthlyPrize() { await wait(50); return { title: 'Un menu offert', sponsor_name: 'McDonald\'s Linkling', establishment_id: demoPartner.id, winners: 1 }; },
+    async monthlyPrize() { await wait(50); return { title: 'Un menu offert', sponsor_name: DEMO_ESTABLISHMENTS.find((x) => x.id === demoPartner.id)?.name || 'Restaurant partenaire', establishment_id: demoPartner.id, winners: 1 }; },
     async partners() { await wait(50); return [demoPartner]; },
     async partnerTrack(_id, kind) { kind === 'view' ? demoStats.views++ : demoStats.clicks++; },
     async pushTest() { await wait(); return { ok: true, sent: 1, message: 'Notification envoyée : elle arrive dans quelques secondes. (démo)' }; },
@@ -309,7 +316,9 @@ export function createDemoApi() {
           { created_at: new Date().toISOString(), pseudo: 'DriveMaster', message: 'Le bouton Signaler est un peu caché quand la carte est zoomée.', context: 'fiche' },
           { created_at: new Date(Date.now() - 864e5).toISOString(), pseudo: 'Testeur57', message: 'Top l\'appli ! Il manque le Burger King de Woippy.', context: 'reglages' }] },
         errors: { rows_24h: 1, hits_24h: 2, last: [{ created_at: new Date().toISOString(), message: 'TypeError: exemple (démo)', screen: 'carte', app_version: '220', hits: 2 }] },
-        push: { sent_7d: 14 } };
+        push: { sent_7d: 14 },
+        goals: { retention: { cohort: 18, reported_ever: 14, active_7d: 7 }, target_pct: 33, zone: 'Thionville-Metz', lunch_target: 15,
+          lunch: days.slice(-14).map((x, i) => ({ day: x.day, midi: Math.max(0, Math.round(2 + i * 1.1 + (i % 3))), soir: Math.round(1 + i * 0.6) })) } };
     },
     async myRestaurant() {
       await wait();
