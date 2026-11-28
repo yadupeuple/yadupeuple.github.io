@@ -1,5 +1,5 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=234';
+import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=235';
 // Comme la base : Buffalo Grill et Flunch cachés (24/11/2026).
 const DEMO_ESTABLISHMENTS = DEMO_ALL.filter((e) => !/^(Buffalo Grill|Flunch)$/.test(e.brand));
 // Démo envoyée aux futurs partenaires (?demo&resto) : le resto partenaire de démonstration ne porte pas le nom d'un vrai restaurant.
@@ -7,7 +7,7 @@ if (new URLSearchParams(location.search).has('resto')) {
   const e = DEMO_ESTABLISHMENTS.find((x) => x.id === '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42');
   if (e) e.name = 'Votre restaurant (démo)';
 }
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=234';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=235';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -314,6 +314,8 @@ export function createDemoApi() {
       await wait(150);
       const m = month;
       const names = [['Mila57', 23], ['Kader_Drive', 17], ['LaFringale', 12], ['Juju', 9], ['Nono57', 7], ['TacosKing', 6], ['Sam', 4], ['Lou.Metz', 3], ['Rayan', 2], ['Clem', 2], ['Yanis', 1], ['Ines', 1]];
+      const many = Number(new URLSearchParams(location.search).get('roue')) || 0; // ?demo&roue=60 : simule beaucoup de participants
+      for (let i = names.length; i < many; i++) names.push([`Joueur${i + 1}`, 1 + (i * 7) % 9]);
       return { ok: true, month: m, done: demoDraws[m] || null, entries: names.map(([pseudo, tickets]) => ({ pseudo, tickets })) };
     },
     async saveDraw(month, pseudo) {
