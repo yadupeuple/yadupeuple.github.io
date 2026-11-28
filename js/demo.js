@@ -1,5 +1,5 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=228';
+import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=229';
 // Comme la base : Buffalo Grill et Flunch cachés (24/11/2026).
 const DEMO_ESTABLISHMENTS = DEMO_ALL.filter((e) => !/^(Buffalo Grill|Flunch)$/.test(e.brand));
 // Démo envoyée aux futurs partenaires (?demo&resto) : le resto partenaire de démonstration ne porte pas le nom d'un vrai restaurant.
@@ -7,7 +7,7 @@ if (new URLSearchParams(location.search).has('resto')) {
   const e = DEMO_ESTABLISHMENTS.find((x) => x.id === '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42');
   if (e) e.name = 'Votre restaurant (démo)';
 }
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=228';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=229';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
