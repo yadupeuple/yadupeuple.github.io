@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=231';
+import { api, DEMO } from './api.js?v=232';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=231';
+} from './config.js?v=232';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=231';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=231';
-import { BRAND_PATHS } from './brands.js?v=231';
+} from './levels.js?v=232';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=232';
+import { BRAND_PATHS } from './brands.js?v=232';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1690,9 +1690,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=231`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=232`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=231`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=232`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1752,7 +1752,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=231" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=232" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1809,8 +1809,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=231" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=231) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=232" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=232) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1818,7 +1818,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=231" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=232" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1830,7 +1830,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=231" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=232" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1904,31 +1904,32 @@ function champHtml(list) {
 
 // Badges rangés par catégorie ; les badges pas encore disponibles tout en bas.
 const BADGE_FAMILIES = [
-  ['Spécial', 'Spécial'], ['Volume', 'Signalements'], ['Variété', 'Exploration'], ['Parrainage', 'Parrainage'],
+  ['Spécial', 'Spécial'], ['Classement', 'Classement du mois'], ['Volume', 'Signalements'], ['Variété', 'Exploration'], ['Parrainage', 'Parrainage'],
   ['Moments', 'Moments'], ['Fiabilité', 'Fiabilité'],
 ];
 const BADGE_ICONS = {
   v1: '📍', v10: '🖐️', v50: '🔟', v100: '🥉', v250: '🥈', v500: '🥇',
   drive10: '🚗', explorer: '🧭', explorer10: '🍽️', explorer15: '🗺️', explorer20: '🛣️', explorer30: '✈️', tour_zone: '🗺️', tour_zone6: '✈️', tour_zone10: '🌍', testeur: '🧪',
   ref1: '🤝', ref10: '📣', ref30: '👑',
-  coup_de_feu: '🛡️', regulier: '📅', regulier8: '📅', regulier12: '📅', fiable: '⚡', oeil_lynx: '🦉',
+  coup_de_feu: '🛡️', regulier: '📅', regulier8: '📅', regulier12: '📅', fiable: '⚡', oeil_lynx: '🦉', podium1: '🥇', podium2: '🥈', podium3: '🥉',
 };
 // Illustrations des badges (icons/badges/*.webp, images ChatGPT d'Alexis) ; emoji en secours pour un badge sans image.
-const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10', 'explorer', 'explorer10', 'explorer15', 'explorer20', 'explorer30', 'tour_zone', 'tour_zone6', 'tour_zone10', 'testeur', 'ref1', 'ref10', 'ref30', 'coup_de_feu', 'regulier', 'regulier8', 'regulier12', 'fiable', 'oeil_lynx']);
+const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10', 'explorer', 'explorer10', 'explorer15', 'explorer20', 'explorer30', 'tour_zone', 'tour_zone6', 'tour_zone10', 'testeur', 'ref1', 'ref10', 'ref30', 'coup_de_feu', 'regulier', 'regulier8', 'regulier12', 'fiable', 'oeil_lynx', 'podium1', 'podium2', 'podium3']);
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=231" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=232" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
   const item = (b) => {
-    const prog = b.is_active && b.target_value ? Math.round((b.current_value / b.target_value) * 100) : 0;
-    const sub = !b.is_active ? 'Bientôt disponible' : b.earned ? '✅' : `${b.current_value} / ${b.target_value}`;
+    const noCount = b.current_value == null; // badges du podium : donnés le 1er du mois, pas de compteur
+    const prog = b.is_active && b.target_value && !noCount ? Math.round((b.current_value / b.target_value) * 100) : 0;
+    const sub = !b.is_active ? 'Bientôt disponible' : b.earned ? '✅' : noCount ? 'Attribué le 1er du mois' : `${b.current_value} / ${b.target_value}`;
     return `<li class="${b.is_active ? '' : 'locked'}">
       <span class="badge-art ${b.earned ? 'on' : ''}">${badgeImg(b.code)}${b.is_active ? '' : '<span class="badge-lock">🔒</span>'}</span>
       <div class="grow"><div class="t">${esc(b.name)}</div><div class="s">${esc(b.description)} · ${sub}</div>
-      ${b.is_active && !b.earned ? `<div class="mini-progress"><div style="width:${prog}%"></div></div>` : ''}</div>
+      ${b.is_active && !b.earned && !noCount ? `<div class="mini-progress"><div style="width:${prog}%"></div></div>` : ''}</div>
     </li>`;
   };
   const known = BADGE_FAMILIES.map(([f]) => f);

@@ -1,5 +1,5 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=231';
+import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=232';
 // Comme la base : Buffalo Grill et Flunch cachés (24/11/2026).
 const DEMO_ESTABLISHMENTS = DEMO_ALL.filter((e) => !/^(Buffalo Grill|Flunch)$/.test(e.brand));
 // Démo envoyée aux futurs partenaires (?demo&resto) : le resto partenaire de démonstration ne porte pas le nom d'un vrai restaurant.
@@ -7,7 +7,7 @@ if (new URLSearchParams(location.search).has('resto')) {
   const e = DEMO_ESTABLISHMENTS.find((x) => x.id === '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42');
   if (e) e.name = 'Votre restaurant (démo)';
 }
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=231';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=232';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -187,6 +187,9 @@ export function createDemoApi() {
         ['avatar', 'badge_regulier', 'icons/badges/regulier.webp', 1, 'regulier'],
         ['avatar', 'badge_regulier8', 'icons/badges/regulier8.webp', 1, 'regulier8'],
         ['avatar', 'badge_regulier12', 'icons/badges/regulier12.webp', 1, 'regulier12'],
+        ['avatar', 'badge_podium1', 'icons/badges/podium1.webp', 1, 'podium1'],
+        ['avatar', 'badge_podium2', 'icons/badges/podium2.webp', 1, 'podium2'],
+        ['avatar', 'badge_podium3', 'icons/badges/podium3.webp', 1, 'podium3'],
       ].map(([kind, code, value, min_level, requires_badge = null]) => ({ kind, code, value, min_level, requires_badge }));
     },
     async setCustomization(kind, code) {
@@ -272,6 +275,9 @@ export function createDemoApi() {
         ['regulier', 'Moments', 'Régulier', 'Faire au moins 1 signalement par semaine pendant 4 semaines', false, 1, 4],
         ['regulier8', 'Moments', 'Fidèle', 'Faire au moins 1 signalement par semaine pendant 8 semaines', false, 1, 8],
         ['regulier12', 'Moments', 'Inarrêtable', 'Faire au moins 1 signalement par semaine pendant 12 semaines', false, 1, 12],
+        ['podium1', 'Classement', 'Champion du mois', 'Finir 1er du classement d\'un mois', false, null, 1],
+        ['podium2', 'Classement', 'Vice-champion du mois', 'Finir 2e du classement d\'un mois', false, null, 2],
+        ['podium3', 'Classement', 'Podium du mois', 'Finir 3e du classement d\'un mois', true, null, 3],
         ['fiable', 'Fiabilité', 'Fiable', 'Avoir 10 signalements confirmés par d’autres contributeurs', false, 3, 10],
         ['coup_de_feu', 'Fiabilité', 'Sentinelle', 'Avoir 20 signalements confirmés par d’autres contributeurs', false, 3, 20],
         ['oeil_lynx', 'Fiabilité', 'Œil de lynx', 'Avoir 50 signalements confirmés par d’autres contributeurs', false, 3, 50],
