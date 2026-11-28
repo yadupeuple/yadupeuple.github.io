@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=232';
+import { api, DEMO } from './api.js?v=233';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=232';
+} from './config.js?v=233';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=232';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=232';
-import { BRAND_PATHS } from './brands.js?v=232';
+} from './levels.js?v=233';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=233';
+import { BRAND_PATHS } from './brands.js?v=233';
 
 // ---------------------------------------------------------------------------
 // État
@@ -1690,9 +1690,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=232`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=233`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=232`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=233`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1752,7 +1752,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=232" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=233" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1809,8 +1809,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=232" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=232) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=233" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=233) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1818,7 +1818,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=232" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=233" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1830,7 +1830,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=232" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=233" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1918,7 +1918,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=232" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=233" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2229,6 +2229,7 @@ function openTestTools() {
       <button class="round-btn" id="btn-close" aria-label="Fermer">${ICON.close}</button>
     </div>
     <button class="btn btn-primary" id="btn-dashboard" style="margin-top:4px">📊 Tableau de bord du test</button>
+    <button class="btn btn-dark" id="btn-wheel" style="margin-top:8px">🎡 Roue du tirage au sort</button>
     <div class="section-title">Position fictive</div>
     <p class="muted" style="margin:0 0 8px">« latitude, longitude » pour tester sans être sur place. Vide = vrai GPS.</p>
     <form id="test-form" style="display:flex;gap:8px">
@@ -2242,6 +2243,7 @@ function openTestTools() {
   $('#btn-close').onclick = closeSheet;
   $('#btn-back').onclick = () => renderAccount();
   $('#btn-dashboard').onclick = () => openDashboard();
+  $('#btn-wheel').onclick = () => openWheel();
   $('#test-form').onsubmit = (ev) => {
     ev.preventDefault();
     const v = String(new FormData(ev.target).get('pos') || '').trim();
@@ -2889,6 +2891,130 @@ window.__ydp = { state, map, openDetail, openReport, openAccount, openSearch, op
   window.addEventListener('touchend', end);
   window.addEventListener('touchcancel', end);
 })();
+
+// ---------- Roue du tirage au sort (28/11/2026, v233, idée d'Alexis) ----------
+// 1 signalement validé du mois = 1 ticket = une part de roue proportionnelle. Participants donnés par la base
+// (get_draw_wheel, réservé à l'organisateur ; podium du mois exclu). La roue tire au hasard au moment où on la lance
+// (crypto.getRandomValues) ; le gagnant du mois terminé est enregistré par save_draw_result (1 tirage officiel par mois).
+// Plein écran vertical aux couleurs de l'appli, pour filmer l'écran et poster la vidéo.
+const WHEEL_COLORS = ['#14B8A6', '#0B1F3A', '#F5A524', '#22C55E', '#0D9488', '#1E3A5F', '#F97316', '#EAB308'];
+function parisMonth(offset = 0) {
+  const p = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Paris' }).slice(0, 7).split('-').map(Number);
+  const d = new Date(Date.UTC(p[0], p[1] - 1 + offset, 1));
+  return d.toISOString().slice(0, 10);
+}
+const monthLabel = (m) => { const t = new Date(`${m}T12:00:00`).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }); return t.charAt(0).toUpperCase() + t.slice(1); };
+function secureRandom(n) { // entier au hasard dans [0, n[, sans biais
+  const max = Math.floor(0xFFFFFFFF / n) * n, a = new Uint32Array(1);
+  do crypto.getRandomValues(a); while (a[0] >= max);
+  return a[0] % n;
+}
+async function openWheel(month = parisMonth(-1)) {
+  closeSheet();
+  document.getElementById('wheel')?.remove();
+  const official = month < parisMonth(0);
+  const el = document.createElement('div');
+  el.id = 'wheel';
+  el.innerHTML = `<button class="wh-x" aria-label="Fermer">✕</button>
+    <div class="wh-head"><img src="icons/logo-boot.png?v=233" alt="Y'a du peuple ?"><div class="wh-t">Tirage au sort</div><div class="wh-m">${monthLabel(month)}${official ? '' : ' · essai'}</div></div>
+    <div class="wh-stage"><div class="wh-ptr"></div><canvas width="900" height="900"></canvas><div class="wh-hub"></div></div>
+    <div class="wh-now">⏳</div>
+    <div class="wh-info"></div>
+    <div class="wh-actions"><button class="btn btn-dark wh-go" disabled>Lancer la roue 🎡</button>
+      <div class="wh-tabs"><button data-m="${parisMonth(-1)}" class="${official ? 'on' : ''}">${monthLabel(parisMonth(-1))}</button><button data-m="${parisMonth(0)}" class="${official ? '' : 'on'}">Essai (mois en cours)</button></div></div>
+    <div class="wh-win" hidden></div>`;
+  document.body.appendChild(el);
+  const $w = (q) => el.querySelector(q);
+  $w('.wh-x').onclick = () => el.remove();
+  el.querySelectorAll('.wh-tabs button').forEach((b) => { b.onclick = () => { if (!el.classList.contains('spinning')) openWheel(b.dataset.m); }; });
+  let d;
+  try { d = await api.drawWheel(month); } catch (err) { $w('.wh-now').textContent = err.message; return; }
+  if (!d?.ok) { $w('.wh-now').textContent = d?.message || 'Indisponible.'; return; }
+  const entries = (d.entries || []).filter((e) => e.tickets > 0);
+  const total = entries.reduce((n, e) => n + e.tickets, 0);
+  const plural = (n, w) => `${n.toLocaleString('fr-FR')} ${w}${n > 1 ? 's' : ''}`;
+  $w('.wh-info').textContent = `${plural(entries.length, 'participant')} · ${plural(total, 'ticket')}`;
+  if (!entries.length) { $w('.wh-now').textContent = 'Personne sur la roue pour ce mois-ci.'; return; }
+  // Parts de la roue (angle 0 = en haut, sens des aiguilles d'une montre)
+  let acc = 0;
+  const slices = entries.map((e, i) => { const a0 = acc; acc += (e.tickets / total) * 2 * Math.PI; return { ...e, a0, a1: acc, color: WHEEL_COLORS[i % WHEEL_COLORS.length] }; });
+  if (slices.length > 1 && slices[slices.length - 1].color === slices[0].color) slices[slices.length - 1].color = WHEEL_COLORS[(slices.length) % WHEEL_COLORS.length === 0 ? 1 : slices.length % WHEEL_COLORS.length];
+  const cv = $w('canvas'), ctx = cv.getContext('2d'), R = 440, C = 450;
+  let rot = 0;
+  const draw = () => {
+    ctx.clearRect(0, 0, 900, 900);
+    ctx.save(); ctx.translate(C, C); ctx.rotate(rot);
+    slices.forEach((sl) => {
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, R, sl.a0 - Math.PI / 2, sl.a1 - Math.PI / 2); ctx.closePath();
+      ctx.fillStyle = sl.color; ctx.fill();
+      if (slices.length > 1) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.stroke(); }
+      const span = sl.a1 - sl.a0;
+      if (span > 0.13) { // nom écrit seulement si la part est assez grande
+        ctx.save(); ctx.rotate((sl.a0 + sl.a1) / 2 - Math.PI / 2);
+        const fs = Math.max(22, Math.min(44, span * 150));
+        ctx.font = `800 ${fs}px Inter, system-ui, sans-serif`;
+        ctx.fillStyle = ['#F5A524', '#22C55E', '#EAB308'].includes(sl.color) ? '#0B1F3A' : '#fff';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        let txt = sl.pseudo; while (ctx.measureText(txt).width > R - 120 && txt.length > 3) txt = `${txt.slice(0, -2)}…`;
+        ctx.fillText(txt, R - 26, 0); ctx.restore();
+      }
+    });
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(C, C, R, 0, 2 * Math.PI); ctx.lineWidth = 10; ctx.strokeStyle = '#fff'; ctx.stroke();
+  };
+  const under = () => { // part sous le pointeur (en haut)
+    const a = ((-rot % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    return slices.find((sl) => a >= sl.a0 && a < sl.a1) || slices[slices.length - 1];
+  };
+  draw();
+  $w('.wh-now').textContent = official && d.done ? '' : 'Prêt ?';
+  const showWin = (sl, saved) => {
+    const pct = Math.round(1000 * sl.tickets / total) / 10;
+    $w('.wh-win').innerHTML = `<div class="bp-confetti">${Array.from({ length: 18 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</div>
+      <div class="wh-win-t">🎉 Bravo</div><div class="wh-win-p">${esc(sl.pseudo)}</div>
+      <div class="wh-win-s">${plural(sl.tickets, 'ticket')} sur ${total.toLocaleString('fr-FR')} (${String(pct).replace('.', ',')} % de chances)</div>
+      <div class="wh-win-n">${saved || ''}</div>`;
+    $w('.wh-win').hidden = false;
+  };
+  if (official && d.done) {
+    const sl = slices.find((x) => x.pseudo === d.done.pseudo) || { pseudo: d.done.pseudo, tickets: d.done.tickets };
+    showWin(sl, `Tirage officiel enregistré le ${new Date(d.done.created_at).toLocaleString('fr-FR', { timeZone: 'Europe/Paris', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}.`);
+    $w('.wh-go').textContent = 'Tirage déjà fait ✅';
+    return;
+  }
+  const go = $w('.wh-go');
+  go.disabled = false;
+  go.onclick = () => {
+    go.disabled = true; el.classList.add('spinning'); $w('.wh-win').hidden = true;
+    const t = secureRandom(total); // ticket gagnant
+    let k = 0, win = slices[0];
+    for (const sl of slices) { if (t < k + sl.tickets) { win = sl; break; } k += sl.tickets; }
+    const inside = win.a0 + (win.a1 - win.a0) * (0.15 + 0.7 * (secureRandom(1000) / 1000));
+    const start = rot, base = start - (start % (2 * Math.PI));
+    const target = base - inside - 2 * Math.PI * (6 + secureRandom(3)); // la roue tourne dans le sens des aiguilles d'une montre
+    const dur = 7000 + secureRandom(1500), t0 = performance.now();
+    let last = null;
+    const ease = (x) => 1 - Math.pow(1 - x, 4);
+    const step = (now) => {
+      const x = Math.min(1, (now - t0) / dur);
+      rot = start + (target - start) * ease(x);
+      draw();
+      const u = under();
+      if (u !== last) { last = u; $w('.wh-now').textContent = u.pseudo; }
+      if (x < 1) { requestAnimationFrame(step); return; }
+      el.classList.remove('spinning');
+      $w('.wh-now').textContent = win.pseudo;
+      if (!official) { showWin(win, 'Essai : rien n\'est enregistré.'); go.disabled = false; go.textContent = 'Relancer (essai) 🎡'; return; }
+      showWin(win, 'Enregistrement…');
+      api.saveDraw(month, win.pseudo).then((r) => {
+        $w('.wh-win-n').textContent = r?.ok ? 'Tirage officiel enregistré ✅' : (r?.message || 'Pas enregistré.');
+        go.textContent = r?.ok ? 'Tirage déjà fait ✅' : 'Lancer la roue 🎡';
+        if (!r?.ok) go.disabled = false;
+      }).catch((err) => { $w('.wh-win-n').textContent = err.message; go.disabled = false; });
+    };
+    requestAnimationFrame(step);
+  };
+}
 
 // iPhone (Safari ignore user-scalable=no) : bloque le pincement hors de la carte
 ['gesturestart', 'gesturechange'].forEach((t) => document.addEventListener(t, (ev) => {

@@ -1,5 +1,5 @@
 // Faux serveur pour le mode démo (?demo) : aucune donnée réelle n'est lue ni écrite.
-import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=232';
+import { DEMO_ESTABLISHMENTS as DEMO_ALL } from './demo-data.js?v=233';
 // Comme la base : Buffalo Grill et Flunch cachés (24/11/2026).
 const DEMO_ESTABLISHMENTS = DEMO_ALL.filter((e) => !/^(Buffalo Grill|Flunch)$/.test(e.brand));
 // Démo envoyée aux futurs partenaires (?demo&resto) : le resto partenaire de démonstration ne porte pas le nom d'un vrai restaurant.
@@ -7,7 +7,7 @@ if (new URLSearchParams(location.search).has('resto')) {
   const e = DEMO_ESTABLISHMENTS.find((x) => x.id === '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42');
   if (e) e.name = 'Votre restaurant (démo)';
 }
-import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=232';
+import { distanceM, LEVELS, theoryLevelAt, parisNow } from './levels.js?v=233';
 
 const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
@@ -49,6 +49,7 @@ function withStatus(e, lat, lng) {
 export function createDemoApi() {
   let user = null;
   const listeners = [];
+  const demoDraws = {};
   const profile = { pseudo: 'Testeur57', points: 135, level: 2, level_name: 'Curieux', next_level_at: 250, badges: ['v1', 'v10'], member_since: '2026-11-06T13:00:00Z', reports_total: 14, reports_30d: 9, restos_total: 4, top_resto: 'McDonald\'s Kinepolis', ref_code: 'AB12CD', referrals: 2, referrals_pending: 1, parrain: null, can_set_referrer: true, avatar: 'burger', banner: 'ruban_ciel', champions: [{ city: 'Thionville', month: '2026-10-01' }] };
   const favorites = new Set(['1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42']);
   const demoPartner = { id: '1410c6a8-46d9-4d6c-83f2-c98b8c7a4c42', founder: true, tagline: 'Restaurant de démonstration', link_url: 'https://exemple.fr', link_label: 'Voir le menu', phone: '03 82 00 00 00',
@@ -309,6 +310,20 @@ export function createDemoApi() {
     async partners() { await wait(50); return [demoPartner]; },
     async partnerTrack(_id, kind) { kind === 'view' ? demoStats.views++ : demoStats.clicks++; },
     async pushTest() { await wait(); return { ok: true, sent: 1, message: 'Notification envoyée : elle arrive dans quelques secondes. (démo)' }; },
+    async drawWheel(month) {
+      await wait(150);
+      const m = month;
+      const names = [['Mila57', 23], ['Kader_Drive', 17], ['LaFringale', 12], ['Juju', 9], ['Nono57', 7], ['TacosKing', 6], ['Sam', 4], ['Lou.Metz', 3], ['Rayan', 2], ['Clem', 2], ['Yanis', 1], ['Ines', 1]];
+      return { ok: true, month: m, done: demoDraws[m] || null, entries: names.map(([pseudo, tickets]) => ({ pseudo, tickets })) };
+    },
+    async saveDraw(month, pseudo) {
+      await wait(150);
+      const now = new Date(), cm = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+      if (month >= cm) return { ok: false, message: "Le mois n'est pas terminé : tirage d'essai seulement." };
+      if (demoDraws[month]) return { ok: false, message: 'Le tirage de ce mois est déjà enregistré.' };
+      demoDraws[month] = { pseudo, tickets: 1, total_tickets: 87, participants: 12, created_at: new Date().toISOString() };
+      return { ok: true, pseudo };
+    },
     async adminDashboard() {
       await wait();
       const today = new Date(); const days = [];

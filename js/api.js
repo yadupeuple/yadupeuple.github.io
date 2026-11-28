@@ -1,6 +1,6 @@
 // Accès aux données : Supabase en vrai, ou un faux serveur en mode démo (?demo).
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=232';
-import { createDemoApi } from './demo.js?v=232';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js?v=233';
+import { createDemoApi } from './demo.js?v=233';
 
 // Charge une table par pages de 1000 : 5 pages en parallèle, puis la suite si besoin.
 async function pagesInParallel(page, first = 5) {
@@ -153,6 +153,8 @@ function createSupabaseApi() {
     partnerTrack: (id, kind) => rpc('partner_track', { p_establishment: id, p_kind: kind }).catch(() => {}),
     myRestaurant: () => rpc('get_my_restaurant'),
     adminDashboard: () => rpc('get_admin_dashboard'), // réservé au compte d'Alexis (contrôlé par la base)
+    drawWheel: (month) => rpc('get_draw_wheel', { p_month: month || null }), // roue du tirage (admin, contrôlé par la base)
+    saveDraw: (month, pseudo) => rpc('save_draw_result', { p_month: month, p_pseudo: pseudo }),
     setPartnerOffer: (o) => rpc('set_partner_offer', { p_title: o.title || '', p_details: o.details || null, p_hours: o.hours || 24, p_only_when_calm: !!o.onlyWhenCalm }),
     myProfile: () => rpc('get_my_profile'),
     badgesProgress: () => rpc('get_badges_progress'),
