@@ -23,13 +23,13 @@
   <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
   <link rel="preconnect" href="https://ygekcpnsjbbdgtmlxdce.supabase.co" crossorigin>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/fav-64.png?v=240" type="image/png" sizes="64x64">
-  <link rel="icon" href="icons/fav-192.png?v=240" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" href="icons/icon-512.png?v=240">
+  <link rel="icon" href="icons/fav-64.png?v=241" type="image/png" sizes="64x64">
+  <link rel="icon" href="icons/fav-192.png?v=241" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icons/icon-512.png?v=241">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
-  <link rel="stylesheet" href="css/app.css?v=240" id="app-css">
+  <link rel="stylesheet" href="css/app.css?v=241" id="app-css">
   <style>/* Secours si app.css n'arrive pas : on garde l'écran turquoise au lieu d'une page sans style */
     html.booting, html.booting body, html.css-wait, html.css-wait body { background:#46B8B9; margin:0 }
     html.booting body > *:not(#welcome), html.css-wait body > * { visibility:hidden }
@@ -76,7 +76,7 @@
   <section class="welcome" id="welcome" hidden>
     <div class="welcome-inner">
       <div class="welcome-logo">
-        <img src="icons/logo-boot.png?v=240" alt="Y'a du peuple ?" width="242" height="203">
+        <img src="icons/logo-boot.png?v=241" alt="Y'a du peuple ?" width="242" height="203">
       </div>
       <h1 class="sr-only">Y'a du peuple&nbsp;?</h1>
       <p class="slogan" id="slogan">Venu pour manger, pas pour poireauter.</p>
@@ -95,7 +95,7 @@
 
   <script src="vendor/maplibre-gl.js"></script>
   <script src="vendor/supabase.js"></script>
-  <script type="module" src="js/app.js?v=240"></script>
+  <script type="module" src="js/app.js?v=241"></script>
   <script>
   /* Contrôle du style : si app.css n'a pas été appliqué (réseau coupé au 1er chargement), on le redemande, puis on recharge la page une fois. */
   (function () {
@@ -105,7 +105,7 @@
       document.documentElement.classList.add('css-wait');
       if (n === 0) {
         var l = document.createElement('link'); l.rel = 'stylesheet';
-        l.href = 'css/app.css?v=240&r=' + Date.now(); document.head.appendChild(l);
+        l.href = 'css/app.css?v=241&r=' + Date.now(); document.head.appendChild(l);
         setTimeout(function () { check(1); }, 2500);
       } else if (!sessionStorage.getItem('ydp_css_reload')) {
         sessionStorage.setItem('ydp_css_reload', '1'); location.reload();
