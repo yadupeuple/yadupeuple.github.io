@@ -1,17 +1,17 @@
 // Y'a du peuple ? — logique de l'appli (carte, fiche, signalement, compte).
-import { api, DEMO } from './api.js?v=235';
+import { api, DEMO } from './api.js?v=236';
 import {
   MAP_STYLE_URL, DEFAULT_CENTER, DEFAULT_ZOOM, CONTACT_EMAIL, GOOGLE_CLIENT_ID,
   ROUTE, REFRESH_MS,
-} from './config.js?v=235';
+} from './config.js?v=236';
 import {
   LEVELS, LEVEL_INFO, WAIT_INFO, NO_INFO, levelInfo, describeStatus, mainStatus, brandShort,
   theoryLevelAt, parisNow, bestTimeToday, fmtHour, distanceM, fmtDistance, ago,
   levelFromPercent, gDay, dayHours, openDuringHour, bestTimeFromProfile, openState, hoursLines,
   estimateRoute, fmtDuration,
-} from './levels.js?v=235';
-import { airbnbize, addShieldImage } from './mapstyle.js?v=235';
-import { BRAND_PATHS } from './brands.js?v=235';
+} from './levels.js?v=236';
+import { airbnbize, addShieldImage } from './mapstyle.js?v=236';
+import { BRAND_PATHS } from './brands.js?v=236';
 
 // ---------------------------------------------------------------------------
 // État
@@ -920,7 +920,7 @@ function serviceBlock(e, service) {
     </details>` : '';
   return `
     <div class="service">
-      <div class="service-top"><span class="service-name">${service === 'salle' ? 'En salle' : 'Au Drive'}</span></div>
+      <div class="service-top"><span class="service-name">${service === 'salle' ? 'En salle' : 'Au drive'}</span></div>
       <div class="level-badge"><span class="dot" style="background:${d.info.color}"></span>${esc(d.info.label)}</div>
       <div class="service-line">${esc(d.line)}</div>
       ${waitHtml}
@@ -1246,7 +1246,7 @@ function openReport(id, presetService) {
       ${error ? `<div class="error-box">${esc(error)}</div>` : ''}
       ${services.length > 1 ? `
         <div class="seg" role="tablist">
-          ${services.map((s) => `<button data-service="${s}" class="${form.service === s ? 'on' : ''}">${s === 'salle' ? '<span class="emo emo-flat">🍔</span>En salle' : '<span class="emo">🚗</span>Au Drive'}</button>`).join('')}
+          ${services.map((s) => `<button data-service="${s}" class="${form.service === s ? 'on' : ''}">${s === 'salle' ? '<span class="emo emo-flat">🍔</span>En salle' : '<span class="emo">🚗</span>Au drive'}</button>`).join('')}
         </div>` : ''}
       <div class="label">${form.service === 'drive' ? 'Comment ça bouge au Drive ?' : 'Combien de monde en salle ?'}</div>
       <div class="levels">
@@ -1302,10 +1302,10 @@ function openReport(id, presetService) {
 // Petit lexique sous les 4 choix du signalement (idée d'Alexis et de sa femme, 17/11/2026)
 const LEXIQUE = {
   salle: {
-    calme: ': des tables libres partout, personne ou presque aux bornes et au comptoir.',
-    modere: ': quelques clients qui attendent, on trouve encore une table sans chercher.',
-    frequente: ': file aux bornes ou au comptoir, salle bien remplie, plus que quelques tables de libres.',
-    tres_frequente: ': salle pleine, longue attente, du monde debout qui attend sa commande.',
+    calme: ': on entre et on commande tout de suite, la salle est presque vide.',
+    modere: ': 2 ou 3 personnes devant toi, on trouve une table sans problème.',
+    frequente: ': ça attend aux bornes et au comptoir, il reste peu de tables.',
+    tres_frequente: ': salle pleine, longue attente, des gens debout attendent leur commande.',
   },
   drive: {
     calme: ': on passe direct, pas ou presque pas d\'attente.',
@@ -1690,9 +1690,9 @@ let imagesPreloaded = false;
 function preloadAccountImages() {
   if (imagesPreloaded) return;
   imagesPreloaded = true;
-  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=235`));
+  const urls = new Set([...BADGE_ART].map((c) => `icons/badges/${c}.webp?v=236`));
   custom.load().then((list) => {
-    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=235`); });
+    (list || []).forEach((c) => { if (/\.(webp|png|svg)$/.test(c.value || '')) urls.add(`${c.value}?v=236`); });
   }).catch(() => {}).finally(() => {
     const go = () => urls.forEach((u) => { const im = new Image(); im.decoding = 'async'; im.src = u; im.decode?.().catch(() => {}); preloaded.push(im); });
     (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
@@ -1752,7 +1752,7 @@ async function renderAccount(tab = 'profil', opts = {}) {
     </div>
     <div class="referral">
       <div class="ref-head">
-        <img class="ref-ico" src="icons/badges/ref1.webp?v=235" alt="">
+        <img class="ref-ico" src="icons/badges/ref1.webp?v=236" alt="">
         <div class="grow"><div class="t">Parrainage</div><div class="s">Invite tes amis : vous gagnez tous les deux.</div></div>
         <span class="ref-count"><b>${p.referrals ?? 0}</b>${(p.referrals ?? 0) > 1 ? 'amis' : 'ami'}</span>
       </div>
@@ -1809,8 +1809,8 @@ const custom = {
   async load() { if (!this.list.length) this.list = await api.customizations() || []; return this.list; },
   find(kind, code) { return this.list.find((c) => c.kind === kind && c.code === code); },
   // Valeur = fichier image de l'appli (icons/avatars/…svg, icons/banners/…svg) ; ancien format emoji/dégradé toléré.
-  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=235" alt="" class="${cls}">` : (v || ''); },
-  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=235) center/cover` : v; },
+  img(v, cls = '') { return /\.(webp|png|svg)$/.test(v || '') ? `<img src="${v}?v=236" alt="" class="${cls}">` : (v || ''); },
+  bg(v) { return /\.(webp|png|svg)$/.test(v || '') ? `url(${v}?v=236) center/cover` : v; },
   avatar(code) { return this.img(this.find('avatar', code)?.value, 'avatar-img' + (String(code).startsWith('badge_') ? ' is-badge' : '')); },
   // Bannière = ruban qui porte le pseudo (rubans du 16/11/2026, outils/rubans_sheet2.py, découpés tels quels).
   // Pseudo : centré sur la bande de chaque ruban (hauteur mesurée) + contour de la couleur du ruban, foncée.
@@ -1818,7 +1818,7 @@ const custom = {
   ribbon(code, pseudo) {
     const b = this.find('banner', code) || this.list.find((c) => c.kind === 'banner');
     const [ty, tc] = this.RIB[b?.code] || ['46%', '#0B1F3A'];
-    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=235" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
+    return `<div class="ribbon" style="--ty:${ty};--tc:${tc};--n:${Math.max(8, [...String(pseudo || '')].length)}">${b ? `<img src="${b.value}?v=236" alt="">` : ''}<span>${esc(pseudo || '')}</span></div>`;
   },
 };
 async function openCustomize() {
@@ -1830,7 +1830,7 @@ async function openCustomize() {
     const needBadge = c.requires_badge && !mine.has(c.requires_badge);
     const locked = lvl < c.min_level || needBadge;
     const on = (c.kind === 'avatar' ? p.avatar : p.banner) === c.code;
-    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=235" alt=""></span>`;
+    const inner = c.kind === 'avatar' ? `<span class="cz-emoji">${custom.img(c.value, 'cz-img')}</span>` : `<span class="cz-ribbon"><img src="${c.value}?v=236" alt=""></span>`;
     const label = c.requires_badge ? (needBadge ? '🔒' : '✅') : `${locked ? '🔒 ' : ''}Niv. ${c.min_level}`;
     return `<button type="button" class="cz ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-kind="${c.kind}" data-code="${c.code}" ${locked ? 'disabled' : ''}>
       ${inner}<span class="cz-lock">${esc(label)}</span></button>`;
@@ -1918,7 +1918,7 @@ const BADGE_ART = new Set(['v1', 'v10', 'v50', 'v100', 'v250', 'v500', 'drive10'
 // Badges en .svg : plus aucun (outils/badges_sheet.py et badges_sheet2.py découpent les images ChatGPT).
 const BADGE_SVG = new Set(); // tous les badges sont maintenant des images ChatGPT (.webp)
 const badgeImg = (code) => BADGE_ART.has(code)
-  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=235" alt="" class="badge-img">`
+  ? `<img src="icons/badges/${code}.${BADGE_SVG.has(code) ? 'svg' : 'webp'}?v=236" alt="" class="badge-img">`
   : `<span class="badge-emoji">${BADGE_ICONS[code] || '🏅'}</span>`;
 function badgesHtml(rows = []) {
   if (!rows.length) return '<p class="muted">Aucun badge pour le moment.</p>';
@@ -2946,7 +2946,7 @@ async function openWheel(month = parisMonth(-1)) {
   const el = document.createElement('div');
   el.id = 'wheel';
   el.innerHTML = `<button class="wh-x" aria-label="Fermer">✕</button><button class="wh-snd" aria-label="Son">🔊</button>
-    <div class="wh-head"><img src="icons/logo-boot.png?v=235" alt="Y'a du peuple ?"><div class="wh-t">Tirage au sort</div><div class="wh-m">${monthLabel(month)}${official ? '' : ' · essai'}</div></div>
+    <div class="wh-head"><img src="icons/logo-boot.png?v=236" alt="Y'a du peuple ?"><div class="wh-t">Tirage au sort</div><div class="wh-m">${monthLabel(month)}${official ? '' : ' · essai'}</div></div>
     <div class="wh-stage"><div class="wh-ptr"></div><canvas width="900" height="900"></canvas><div class="wh-hub"></div></div>
     <div class="wh-now">⏳</div>
     <div class="wh-info"></div>
