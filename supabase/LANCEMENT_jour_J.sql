@@ -69,6 +69,10 @@ where not exists (
     and (c.requires_badge is null
          or exists (select 1 from public.user_badges ub where ub.user_id = p.id and ub.badge_code = c.requires_badge)));
 
+-- 7 bis. Badges du podium (en attente pendant la version test) : réactivés + calcul automatique le 1er du mois.
+update public.badges set is_active = true where kind = 'podium';
+select cron.schedule('badges-podium', '20 0 1 * *', $$select public.award_podium_badges()$$);
+
 -- 8. Contrôle avant de valider : 0 signalement, seulement des badges testeur, points = 0 ou 11, beta_open = 0.
 select
   (select count(*) from public.reports) as signalements,
